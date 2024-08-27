@@ -10,7 +10,7 @@
     "lint": "ng lint",
     "lint:fix": "ng lint --fix",
     "prettier": "npx prettier --write .",
-    "deploy": "ng build && firebase deploy"
+    "deploy": "ng build --configuration production"
   },
   "private": true,
   "dependencies": {
