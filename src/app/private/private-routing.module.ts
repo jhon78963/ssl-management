@@ -25,10 +25,21 @@ const routes: Routes = [
       ),
   },
   {
+    path: 'management',
+    title: 'Gestión',
+    data: { breadcrumb: 'Gestión' },
+    loadChildren: () =>
+      import('./management/management.module').then(m => m.ManagementModule),
+  },
+  {
     path: '',
     pathMatch: 'full',
     redirectTo: 'home',
     data: { breadcrumb: 'Home' },
+  },
+  {
+    path: '**',
+    redirectTo: '',
   },
 ];
 

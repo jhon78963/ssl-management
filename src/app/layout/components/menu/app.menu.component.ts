@@ -28,6 +28,22 @@ export class AppMenuComponent implements OnInit {
           },
         ],
       },
+      {
+        label: 'Gestión',
+        icon: 'pi pi-home',
+        items: [
+          {
+            label: 'Empresa',
+            icon: 'pi pi-fw pi-cog',
+            routerLink: ['/management/company'],
+          },
+          {
+            label: 'Redes Sociales',
+            icon: 'pi pi-fw pi-users',
+            routerLink: ['/management/social-network'],
+          },
+        ],
+      },
     ];
   }
 }
