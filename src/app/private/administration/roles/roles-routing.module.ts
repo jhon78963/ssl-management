@@ -4,7 +4,7 @@ import { RoleListComponent } from './pages/list/roles.component';
 
 const routes: Routes = [
   { path: '', component: RoleListComponent },
-  { path: '', pathMatch: 'full', redirectTo: 'users' },
+  { path: '', pathMatch: 'full', redirectTo: 'roles' },
 ];
 
 @NgModule({

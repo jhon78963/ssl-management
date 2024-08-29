@@ -37,10 +37,6 @@ const routes: Routes = [
     redirectTo: 'home',
     data: { breadcrumb: 'Home' },
   },
-  {
-    path: '**',
-    redirectTo: '',
-  },
 ];
 
 @NgModule({
