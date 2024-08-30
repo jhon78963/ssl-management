@@ -1,9 +1,9 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { CompanyListComponent } from './pages/list/company.component';
+import { CompanyFormComponent } from './pages/form/company-form.component';
 
 const routes: Routes = [
-  { path: '', component: CompanyListComponent },
+  { path: '', component: CompanyFormComponent },
   { path: '', pathMatch: 'full', redirectTo: 'company' },
 ];
 

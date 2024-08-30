@@ -1,9 +1,9 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { SocialNetworkListComponent } from './pages/list/social-network.component';
+import { SocialNetworkFormComponent } from './pages/form/social-network-form.component';
 
 const routes: Routes = [
-  { path: '', component: SocialNetworkListComponent },
+  { path: '', component: SocialNetworkFormComponent },
   { path: '', pathMatch: 'full', redirectTo: 'social-network' },
 ];
 
