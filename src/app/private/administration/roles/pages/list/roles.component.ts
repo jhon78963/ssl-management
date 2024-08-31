@@ -117,7 +117,7 @@ export class RoleListComponent implements OnInit, OnDestroy {
     }, 600);
   }
 
-  get roles(): Observable<any[]> {
+  get roles(): Observable<Role[]> {
     return this.rolesService.getList();
   }
 

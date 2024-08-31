@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CompanyService } from '../../services/company.service';
 import { Company } from '../../models/company.model';
 import { MessageService } from 'primeng/api';
+import { COMPANY_ID } from '../../../../../utils/constants';
 
 @Component({
   selector: 'app-company-form',
@@ -11,7 +12,7 @@ import { MessageService } from 'primeng/api';
   providers: [MessageService],
 })
 export class CompanyFormComponent implements OnInit {
-  companyId: number = 1;
+  companyId: number = COMPANY_ID;
 
   constructor(
     private readonly formBuilder: FormBuilder,
