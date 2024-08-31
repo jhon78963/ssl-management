@@ -58,7 +58,6 @@ export class UserFormComponent implements OnInit {
           error: () => this.dialogRef.close(),
         });
       } else {
-        delete user.roleId;
         this.usersService.create(user).subscribe({
           next: () => this.dialogRef.close(),
           error: () => this.dialogRef.close(),
