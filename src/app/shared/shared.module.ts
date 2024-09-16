@@ -29,6 +29,7 @@ import { TablePaginationComponent } from './custom-form-components/table-paginat
 import { PaginatorModule } from 'primeng/paginator';
 import { FileUploadModule } from 'primeng/fileupload';
 import { UploadExcelComponent } from './custom-form-components/upload-excel/upload-excel.component';
+import { TabViewComponent } from './custom-form-components/tab-view/tab-view.component';
 
 const PRIMENG_MODULES = [
   InputTextModule,
@@ -62,6 +63,7 @@ const STANDALONES_COMPONENTS = [
   TableStaticComponent,
   TablePaginationComponent,
   UploadExcelComponent,
+  TabViewComponent,
 ];
 
 @NgModule({

@@ -32,6 +32,12 @@ const routes: Routes = [
       import('./management/management.module').then(m => m.ManagementModule),
   },
   {
+    path: 'room',
+    title: 'Habitaciones',
+    data: { breadcrumb: 'Habitaciones' },
+    loadChildren: () => import('./room/room.module').then(m => m.RoomModule),
+  },
+  {
     path: '',
     pathMatch: 'full',
     redirectTo: 'home',

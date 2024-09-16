@@ -44,6 +44,11 @@ export class AppMenuComponent implements OnInit {
           },
         ],
       },
+      {
+        label: 'Habitaciones',
+        icon: 'pi pi-home',
+        routerLink: ['/room/rooms'],
+      },
     ];
   }
 }
