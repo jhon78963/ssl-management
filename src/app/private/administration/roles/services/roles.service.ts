@@ -15,7 +15,6 @@ import { Role, RoleListResponse } from '../models/roles.model';
 export class RolesService {
   roles: Role[] = [];
   total: number = 0;
-  private currentRole$ = new BehaviorSubject<Role | null>(null);
   roles$: BehaviorSubject<Role[]> = new BehaviorSubject<Role[]>(this.roles);
   total$: BehaviorSubject<number> = new BehaviorSubject<number>(this.total);
 
