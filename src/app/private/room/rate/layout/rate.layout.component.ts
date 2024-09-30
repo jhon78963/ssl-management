@@ -9,31 +9,26 @@ import { ToastModule } from 'primeng/toast';
   selector: 'app-room.layout',
   standalone: true,
   imports: [ConfirmDialogModule, TabMenuModule, ToastModule, TabViewModule],
-  templateUrl: './room.layout.component.html',
-  styleUrl: './room.layout.component.scss',
+  templateUrl: './rate.layout.component.html',
+  styleUrl: './rate.layout.component.scss',
   providers: [MessageService, ConfirmationService],
 })
-export class RoomLayoutComponent {
+export class RateLayoutComponent {
   tabs: MenuItem[] = [
     {
       id: '1',
-      label: 'Habitaciones',
-      routerLink: ['./rooms'],
+      label: 'Tarifarios',
+      routerLink: ['./rates'],
     },
     {
       id: '2',
-      label: 'Comodidades',
-      routerLink: ['./amenities'],
+      label: 'Horas',
+      routerLink: ['./hours'],
     },
     {
       id: '3',
-      label: 'Tarifario',
-      routerLink: ['./rate'],
-    },
-    {
-      id: '4',
-      label: 'Comentarios',
-      routerLink: ['./reviews'],
+      label: 'Días',
+      routerLink: ['./days'],
     },
   ];
   activeItem: MenuItem = this.tabs[0];

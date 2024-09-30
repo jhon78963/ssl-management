@@ -6,7 +6,6 @@ const routes: Routes = [
   {
     path: '',
     component: RoomLayoutComponent,
-
     children: [
       {
         path: 'rooms',
@@ -23,11 +22,9 @@ const routes: Routes = [
           ),
       },
       {
-        path: 'rates',
-        loadComponent: () =>
-          import('./rates/pages/list/rates.component').then(
-            c => c.RatesComponent,
-          ),
+        path: 'rate',
+        loadChildren: () =>
+          import('./rate/rates.module').then(m => m.RatesModule),
       },
       {
         path: 'reviews',

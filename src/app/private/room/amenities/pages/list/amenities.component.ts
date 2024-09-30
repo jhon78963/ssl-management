@@ -1,22 +1,24 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
-import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { ToastModule } from 'primeng/toast';
-import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
+import { debounceTime, Observable, Subject } from 'rxjs';
+
 import { ConfirmationService, MessageService } from 'primeng/api';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
+import { PaginatorState } from 'primeng/paginator';
+import { ToastModule } from 'primeng/toast';
+
+import { AmenitiesService } from '../../services/amenities.service';
+import { LoadingService } from '../../../../../services/loading.service';
+import { AmenitiesFormComponent } from '../form/amenities-form.component';
 
 import { Amenity } from '../../models/amenities.model';
-import { SharedModule } from '../../../../../shared/shared.module';
 import {
   CallToAction,
   Column,
 } from '../../../../../interfaces/table.interface';
-import { debounceTime, Observable, Subject } from 'rxjs';
-import { AmenitiesService } from '../../services/amenities.service';
-import { LoadingService } from '../../../../../services/loading.service';
-import { PaginatorState } from 'primeng/paginator';
-import { AmenitiesFormComponent } from '../form/amenities-form.component';
+import { SharedModule } from '../../../../../shared/shared.module';
 
 @Component({
   selector: 'app-amenities',
@@ -137,7 +139,7 @@ export class AmenitiesComponent implements OnInit, OnDestroy {
     this.amenityModal.onClose.subscribe({
       next: value => {
         value && value?.success
-          ? this.showSuccess('Role Creado.')
+          ? this.showSuccess('Comodidad Creada.')
           : value?.error
             ? this.showError(value?.error)
             : null;
@@ -156,7 +158,7 @@ export class AmenitiesComponent implements OnInit, OnDestroy {
     this.amenityModal.onClose.subscribe({
       next: value => {
         value && value?.success
-          ? this.showSuccess('Role editado.')
+          ? this.showSuccess('Comodidad actualizada.')
           : value?.error
             ? this.showError(value?.error)
             : null;

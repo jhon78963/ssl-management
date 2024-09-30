@@ -1,11 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
+
 import { Observable } from 'rxjs';
+
 import { UsersService } from '../../services/users.service';
 import { RolesService } from '../../../roles/services/roles.service';
-import { User } from '../../models/users.model';
+
 import { Role } from '../../../roles/models/roles.model';
+import { User } from '../../models/users.model';
 
 @Component({
   selector: 'app-users-form',

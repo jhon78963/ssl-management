@@ -158,7 +158,7 @@ export class RoleListComponent implements OnInit, OnDestroy {
     this.roleModal.onClose.subscribe({
       next: value => {
         value && value?.success
-          ? this.showSuccess('Role editado.')
+          ? this.showSuccess('Role actualizado.')
           : value?.error
             ? this.showError(value?.error)
             : null;

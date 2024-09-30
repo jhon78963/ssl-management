@@ -126,7 +126,7 @@ export class UserListComponent implements OnInit, OnDestroy {
     this.userModal.onClose.subscribe({
       next: value => {
         value && value?.success
-          ? this.showSuccess('Usuario editado.')
+          ? this.showSuccess('Usuario actualizado.')
           : value?.error
             ? this.showError(value?.error)
             : null;
