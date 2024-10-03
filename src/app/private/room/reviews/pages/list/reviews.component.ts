@@ -87,6 +87,11 @@ export class ReviewsComponent implements OnInit, OnDestroy {
         clickable: false,
       },
       {
+        header: 'Habitación',
+        field: 'room',
+        clickable: false,
+      },
+      {
         field: 'button',
         header: 'Acción',
         clickable: false,
