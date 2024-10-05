@@ -9,34 +9,34 @@ import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { PaginatorState } from 'primeng/paginator';
 import { ToastModule } from 'primeng/toast';
 
-import { ReviewsService } from '../../services/reviews.service';
 import { LoadingService } from '../../../../../services/loading.service';
-import { ReviewsFormComponent } from '../form/reviews-form.component';
+import { RoomTypesFormComponent } from '../form/room-types-form.component';
+import { RoomTypesService } from '../../services/room-types.service';
+import { SharedModule } from '../../../../../shared/shared.module';
 
-import { Review } from '../../models/reviews.model';
 import {
   CallToAction,
   Column,
 } from '../../../../../interfaces/table.interface';
-import { SharedModule } from '../../../../../shared/shared.module';
+import { RoomType } from '../../models/room-types.model';
 
 @Component({
-  selector: 'app-reviews',
+  selector: 'app-room-types',
   standalone: true,
   imports: [CommonModule, ConfirmDialogModule, ToastModule, SharedModule],
-  templateUrl: './reviews.component.html',
-  styleUrl: './reviews.component.scss',
+  templateUrl: './room-types.component.html',
+  styleUrl: './room-types.component.scss',
   providers: [ConfirmationService, DialogService, MessageService],
 })
-export class ReviewsComponent implements OnInit, OnDestroy {
-  reviewModal: DynamicDialogRef | undefined;
+export class RoomTypesComponent implements OnInit, OnDestroy {
+  roomTypeModal: DynamicDialogRef | undefined;
   columns: Column[] = [];
   cellToAction: any;
   data: any[] = [];
   limit: number = 10;
   page: number = 1;
   description: string = '';
-  callToAction: CallToAction<Review>[] = [
+  callToAction: CallToAction<RoomType>[] = [
     {
       type: 'button',
       size: 'small',
@@ -44,7 +44,7 @@ export class ReviewsComponent implements OnInit, OnDestroy {
       outlined: true,
       pTooltip: 'Editar',
       tooltipPosition: 'bottom',
-      click: (rowData: Review) => this.reviewEditButton(rowData.id),
+      click: (rowData: RoomType) => this.roomTypeEditButton(rowData.id),
     },
     {
       type: 'button',
@@ -53,8 +53,8 @@ export class ReviewsComponent implements OnInit, OnDestroy {
       outlined: true,
       pTooltip: 'Eliminar',
       tooltipPosition: 'bottom',
-      click: (rowData: Review, event?: Event) =>
-        this.reviewDeleteButton(rowData.id, event!),
+      click: (rowData: RoomType, event?: Event) =>
+        this.roomTypeDeleteButton(rowData.id, event!),
     },
   ];
 
@@ -62,7 +62,7 @@ export class ReviewsComponent implements OnInit, OnDestroy {
 
   constructor(
     private readonly dialogService: DialogService,
-    private readonly reviewsService: ReviewsService,
+    private readonly roomTypesService: RoomTypesService,
     public messageService: MessageService,
     private confirmationService: ConfirmationService,
     private loadingService: LoadingService,
@@ -72,23 +72,8 @@ export class ReviewsComponent implements OnInit, OnDestroy {
     this.columns = [
       { header: '#', field: 'id', clickable: false },
       {
-        header: 'Cliente',
-        field: 'customerName',
-        clickable: false,
-      },
-      {
-        header: 'Reseña',
+        header: 'Tipo de Habitación',
         field: 'description',
-        clickable: false,
-      },
-      {
-        header: 'Calificación',
-        field: 'rating',
-        clickable: false,
-      },
-      {
-        header: 'Habitación',
-        field: 'room',
         clickable: false,
       },
       {
@@ -98,16 +83,16 @@ export class ReviewsComponent implements OnInit, OnDestroy {
       },
     ];
 
-    this.getReviews(this.limit, this.page, this.description);
+    this.getRoomTypes(this.limit, this.page, this.description);
     this.searchTermSubject.pipe(debounceTime(600)).subscribe(() => {
       this.loadingService.sendLoadingState(true);
-      this.getReviews(this.limit, this.page, this.description);
+      this.getRoomTypes(this.limit, this.page, this.description);
     });
   }
 
   ngOnDestroy(): void {
-    if (this.reviewModal) {
-      this.reviewModal.close();
+    if (this.roomTypeModal) {
+      this.roomTypeModal.close();
     }
   }
 
@@ -120,41 +105,41 @@ export class ReviewsComponent implements OnInit, OnDestroy {
     this.searchTermSubject.next(term);
   }
 
-  async getReviews(
+  async getRoomTypes(
     limit = this.limit,
     page = this.page,
     description = this.description,
   ): Promise<void> {
     this.updatePage(page);
-    this.reviewsService.callGetList(limit, page, description).subscribe();
+    this.roomTypesService.callGetList(limit, page, description).subscribe();
     setTimeout(() => {
       this.loadingService.sendLoadingState(false);
     }, 600);
   }
 
-  get reviews(): Observable<Review[]> {
-    return this.reviewsService.getList();
+  get roomTypes(): Observable<RoomType[]> {
+    return this.roomTypesService.getList();
   }
 
   get total(): Observable<number> {
-    return this.reviewsService.getTotal();
+    return this.roomTypesService.getTotal();
   }
 
   async onPageSelected(event: PaginatorState) {
     this.updatePage((event.page ?? 0) + 1);
-    this.getReviews(event.rows, this.page);
+    this.getRoomTypes(event.rows, this.page);
   }
 
-  reviewCreateButton(): void {
-    this.reviewModal = this.dialogService.open(ReviewsFormComponent, {
+  roomTypeCreateButton(): void {
+    this.roomTypeModal = this.dialogService.open(RoomTypesFormComponent, {
       data: {},
       header: 'Crear',
     });
 
-    this.reviewModal.onClose.subscribe({
+    this.roomTypeModal.onClose.subscribe({
       next: value => {
         value && value?.success
-          ? this.showSuccess('Reseña Creada.')
+          ? this.showSuccess('Tipo de habitación creado.')
           : value?.error
             ? this.showError(value?.error)
             : null;
@@ -162,18 +147,18 @@ export class ReviewsComponent implements OnInit, OnDestroy {
     });
   }
 
-  reviewEditButton(id: number): void {
-    this.reviewModal = this.dialogService.open(ReviewsFormComponent, {
+  roomTypeEditButton(id: number): void {
+    this.roomTypeModal = this.dialogService.open(RoomTypesFormComponent, {
       data: {
         id,
       },
       header: 'Editar',
     });
 
-    this.reviewModal.onClose.subscribe({
+    this.roomTypeModal.onClose.subscribe({
       next: value => {
         value && value?.success
-          ? this.showSuccess('Reseña actualizada.')
+          ? this.showSuccess('Tipo de habitación actualizado.')
           : value?.error
             ? this.showError(value?.error)
             : null;
@@ -181,11 +166,11 @@ export class ReviewsComponent implements OnInit, OnDestroy {
     });
   }
 
-  reviewDeleteButton(id: number, event: Event) {
+  roomTypeDeleteButton(id: number, event: Event) {
     this.confirmationService.confirm({
       target: event.target as EventTarget,
-      message: 'Deseas eliminar esta reseña?',
-      header: 'Eliminar reseña',
+      message: 'Deseas eliminar este tipo de habitación?',
+      header: 'Eliminar tipo de habitación',
       icon: 'pi pi-info-circle',
       acceptButtonStyleClass: 'p-button-danger p-button-text',
       rejectButtonStyleClass: 'p-button-text p-button-text',
@@ -193,12 +178,14 @@ export class ReviewsComponent implements OnInit, OnDestroy {
       rejectIcon: 'none',
 
       accept: () => {
-        this.reviewsService.delete(id).subscribe(() => {
-          this.showSuccess('La reseña ha sido eliminado');
+        this.roomTypesService.delete(id).subscribe(() => {
+          this.showSuccess('El tipo de habitación ha sido eliminado');
         });
       },
       reject: () => {
-        this.showError('No se eleminó la reseña, intenteló nuevamente');
+        this.showError(
+          'No se eleminó el tipo de habitación, intenteló nuevamente',
+        );
       },
     });
   }

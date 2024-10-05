@@ -2,13 +2,15 @@
   <form [formGroup]="form" (ngSubmit)="buttonSaveReview()" class="pt-2">
     <div class="p-fluid p-formgrid grid">
       <div class="field col-12 md:col-6">
-        <app-input-text
-          label="Cliente"
-          for="customerName"
-          type="text"
-          id="customerName"
-          placeholder="Ingrese nombre del cliente"
-          controlName="customerName"></app-input-text>
+        <app-input-select
+          placeholder="Seleccione habitación"
+          label="Habitación"
+          controlName="roomId"
+          for="roomId"
+          [options]="(rooms | async) ?? []"
+          id="roomId"
+          optionLabel="roomName"
+          optionValue="id"></app-input-select>
       </div>
       <div class="field col-12 md:col-6">
         <app-input-select
@@ -23,12 +25,21 @@
       </div>
       <div class="field col-12">
         <app-input-text
+          label="Cliente"
+          for="customerName"
+          type="text"
+          id="customerName"
+          placeholder="Ingrese nombre del cliente"
+          controlName="customerName"></app-input-text>
+      </div>
+      <div class="field col-12">
+        <app-input-textarea
           label="Reseña"
           for="description"
           type="text"
           id="description"
           placeholder="Ingrese reseña del cliente"
-          controlName="description"></app-input-text>
+          controlName="description"></app-input-textarea>
       </div>
       <button
         type="submit"

@@ -15,6 +15,13 @@ const routes: Routes = [
           ),
       },
       {
+        path: 'room-types',
+        loadComponent: () =>
+          import('./room-types/pages/list/room-types.component').then(
+            c => c.RoomTypesComponent,
+          ),
+      },
+      {
         path: 'amenities',
         loadComponent: () =>
           import('./amenities/pages/list/amenities.component').then(

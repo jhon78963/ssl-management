@@ -7,71 +7,64 @@ import {
   Validators,
 } from '@angular/forms';
 
+import { Observable } from 'rxjs';
+
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 
-import { ReviewsService } from '../../services/reviews.service';
+import { RoomsService } from '../../services/rooms.service';
+import { RoomTypesService } from '../../../room-types/services/room-types.service';
 import { SharedModule } from '../../../../../shared/shared.module';
-import { Rating, Review } from '../../models/reviews.model';
-import { RoomsService } from '../../../rooms/services/rooms.service';
-import { Observable } from 'rxjs';
-import { Room } from '../../../rooms/models/rooms.model';
+
+import { Room } from '../../models/rooms.model';
+import { RoomType } from '../../../room-types/models/room-types.model';
 
 @Component({
-  selector: 'app-reviews-form',
+  selector: 'app-rooms-form',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, SharedModule],
-  templateUrl: './reviews-form.component.html',
-  styleUrl: './reviews-form.component.scss',
+  templateUrl: './rooms-form.component.html',
+  styleUrl: './rooms-form.component.scss',
 })
-export class ReviewsFormComponent implements OnInit {
+export class RoomsFormComponent implements OnInit {
   constructor(
     private readonly formBuilder: FormBuilder,
-    private readonly reviewsService: ReviewsService,
     private readonly roomsService: RoomsService,
+    private readonly roomTypesService: RoomTypesService,
     private readonly dialogRef: DynamicDialogRef,
     private readonly dynamicDialogConfig: DynamicDialogConfig,
   ) {}
 
-  ratings: Rating[] = [
-    { id: 1, rating: '1 estrella' },
-    { id: 2, rating: '2 estrellas' },
-    { id: 3, rating: '3 estrellas' },
-    { id: 4, rating: '4 estrellas' },
-    { id: 5, rating: '5 estrellas' },
-  ];
-
   form: FormGroup = this.formBuilder.group({
-    customerName: ['', Validators.required],
-    description: ['', Validators.required],
-    rating: ['', Validators.required],
-    roomId: ['', Validators.required],
+    roomNumber: ['', Validators.required],
+    capacity: ['', Validators.required],
+    roomTypeId: [null, Validators.required],
   });
 
   ngOnInit(): void {
     if (this.dynamicDialogConfig.data.id) {
       const id = this.dynamicDialogConfig.data.id;
-      this.reviewsService.getOne(id).subscribe((response: Review) => {
+      this.roomsService.getOne(id).subscribe((response: Room) => {
         this.form.patchValue(response);
       });
     }
-    this.roomsService.callGetList().subscribe();
+    this.roomTypesService.callGetList().subscribe();
   }
 
-  get rooms(): Observable<Room[]> {
-    return this.roomsService.getList();
+  get roomTypes(): Observable<RoomType[]> {
+    return this.roomTypesService.getList();
   }
 
-  buttonSaveReview() {
+  roomSaveButton() {
     if (this.form) {
-      const review = new Review(this.form.value);
+      const roomtype = new Room(this.form.value);
       if (this.dynamicDialogConfig.data.id) {
         const id = this.dynamicDialogConfig.data.id;
-        this.reviewsService.edit(id, review).subscribe({
+        this.roomsService.edit(id, roomtype).subscribe({
           next: () => this.dialogRef.close(),
           error: () => this.dialogRef.close(),
         });
       } else {
-        this.reviewsService.create(review).subscribe({
+        this.roomsService.create(roomtype).subscribe({
           next: () => this.dialogRef.close(),
           error: () => this.dialogRef.close(),
         });

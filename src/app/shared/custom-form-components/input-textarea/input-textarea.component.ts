@@ -17,7 +17,7 @@ import { InputTextareaModule } from 'primeng/inputtextarea';
 })
 export class InputTextareaComponent implements OnInit {
   @Input() placeholder: string = 'placeholder';
-  @Input() rows: number = 5;
+  @Input() rows: number = 3;
   @Input() cols: number = 30;
   @Input() label: string = '';
   @Input() controlName: string = 'text';

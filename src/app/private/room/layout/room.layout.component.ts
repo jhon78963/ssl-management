@@ -22,16 +22,21 @@ export class RoomLayoutComponent {
     },
     {
       id: '2',
+      label: 'Tipo de Habitaciones',
+      routerLink: ['./room-types'],
+    },
+    {
+      id: '3',
       label: 'Comodidades',
       routerLink: ['./amenities'],
     },
     {
-      id: '3',
+      id: '4',
       label: 'Tarifario',
       routerLink: ['./rate'],
     },
     {
-      id: '4',
+      id: '5',
       label: 'Comentarios',
       routerLink: ['./reviews'],
     },
