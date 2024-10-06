@@ -82,7 +82,7 @@ export class RoomsComponent implements OnInit, OnDestroy {
         clickable: false,
       },
       {
-        header: 'Capacida',
+        header: 'Capacidad',
         field: 'capacity',
         clickable: false,
       },
