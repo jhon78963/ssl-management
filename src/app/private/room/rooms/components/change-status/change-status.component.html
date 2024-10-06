@@ -3,7 +3,7 @@
     <div class="p-fluid">
       <div *ngFor="let status of statuses" class="field-checkbox">
         <p-radioButton [value]="status.value" formControlName="status" />
-        <label [for]="status.label" class="ml-2">
+        <label [for]="status.value" class="ml-2">
           {{ status.label }}
         </label>
       </div>
