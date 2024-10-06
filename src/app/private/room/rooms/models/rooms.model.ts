@@ -8,6 +8,11 @@ export interface Image {
   filePath: string;
 }
 
+export interface RoomStatus {
+  label: string;
+  value: string;
+}
+
 export interface IRoom {
   id: number;
   roomNumber: number;

@@ -9,10 +9,11 @@ import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { PaginatorState } from 'primeng/paginator';
 import { ToastModule } from 'primeng/toast';
 
-import { LoadingService } from '../../../../../services/loading.service';
-import { RoomsFormComponent } from '../form/rooms-form.component';
-import { RoomsService } from '../../services/rooms.service';
 import { SharedModule } from '../../../../../shared/shared.module';
+import { ChangeStatusComponent } from '../../components/change-status/change-status.component';
+import { RoomsFormComponent } from '../form/rooms-form.component';
+import { LoadingService } from '../../../../../services/loading.service';
+import { RoomsService } from '../../services/rooms.service';
 
 import {
   CallToAction,
@@ -37,6 +38,15 @@ export class RoomsComponent implements OnInit, OnDestroy {
   page: number = 1;
   description: string = '';
   callToAction: CallToAction<Room>[] = [
+    {
+      type: 'button',
+      size: 'small',
+      icon: 'pi pi-sync',
+      outlined: true,
+      pTooltip: 'Cambiar estado',
+      tooltipPosition: 'bottom',
+      click: (rowData: Room) => this.roomChangeStatusButton(rowData.id),
+    },
     {
       type: 'button',
       size: 'small',
@@ -88,7 +98,7 @@ export class RoomsComponent implements OnInit, OnDestroy {
       },
       {
         header: 'Estado',
-        field: 'status',
+        field: 'roomStatus',
         clickable: false,
       },
       {
@@ -155,6 +165,25 @@ export class RoomsComponent implements OnInit, OnDestroy {
       next: value => {
         value && value?.success
           ? this.showSuccess('Habitación creada.')
+          : value?.error
+            ? this.showError(value?.error)
+            : null;
+      },
+    });
+  }
+
+  roomChangeStatusButton(id: number): void {
+    this.roomModal = this.dialogService.open(ChangeStatusComponent, {
+      data: {
+        id,
+      },
+      header: 'Cambiar estado',
+    });
+
+    this.roomModal.onClose.subscribe({
+      next: value => {
+        value && value?.success
+          ? this.showSuccess('Habitación actualizada.')
           : value?.error
             ? this.showError(value?.error)
             : null;
