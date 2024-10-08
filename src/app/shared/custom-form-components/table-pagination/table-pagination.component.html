@@ -24,7 +24,16 @@
           'text-end': col.clickable === false
         }"
         (click)="col.clickable === true ? cellToAction.click(rowData) : ''">
-        {{ getFieldValue(col.field, rowData) }}
+        @if (col.image) {
+          <img
+            width="50"
+            alt="constancia-3.png"
+            class="file-thumbnail-image"
+            [src]="getFieldValue(col.field, rowData)" />
+        } @else {
+          {{ getFieldValue(col.field, rowData) }}
+        }
+
         <span
           *ngIf="
             col.field === 'button' && callToAction && callToAction.length > 0

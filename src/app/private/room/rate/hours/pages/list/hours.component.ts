@@ -70,21 +70,24 @@ export class HoursComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.columns = [
-      { header: '#', field: 'id', clickable: false },
+      { header: '#', field: 'id', clickable: false, image: false },
       {
         header: 'Duración',
         field: 'durationNumber',
         clickable: false,
+        image: false,
       },
       {
         header: 'Duración (Horas)',
         field: 'duration',
         clickable: false,
+        image: false,
       },
       {
         field: 'button',
         header: 'Acción',
         clickable: false,
+        image: false,
       },
     ];
 

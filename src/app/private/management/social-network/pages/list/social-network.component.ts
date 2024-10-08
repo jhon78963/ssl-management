@@ -60,26 +60,30 @@ export class SocialNetworkListComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.columns = [
-      { header: '#', field: 'id', clickable: false },
+      { header: '#', field: 'id', clickable: false, image: false },
       {
         header: 'Red Social',
         field: 'name',
         clickable: false,
+        image: false,
       },
       {
         header: 'Ícono',
         field: 'icon',
         clickable: false,
+        image: false,
       },
       {
         header: 'Enlace',
         field: 'url',
         clickable: false,
+        image: false,
       },
       {
         field: 'button',
         header: 'Acción',
         clickable: false,
+        image: false,
       },
     ];
 

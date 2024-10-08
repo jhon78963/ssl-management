@@ -4,23 +4,36 @@ import { FormsModule } from '@angular/forms';
 
 import { DynamicDialogConfig } from 'primeng/dynamicdialog';
 import { FileUploadModule } from 'primeng/fileupload';
+import { OverlayPanelModule } from 'primeng/overlaypanel';
+import { TableModule } from 'primeng/table';
+import { ToastModule } from 'primeng/toast';
 import { TooltipModule } from 'primeng/tooltip';
 
 import { RoomImagesService } from '../../../services/room-images.service';
 
-import { Image } from '../../../models/rooms.model';
 import { environment } from '../../../../../../../environments/environment';
+import { Image } from '../../../../images/models/images.model';
 
 @Component({
   selector: 'app-images',
   standalone: true,
-  imports: [CommonModule, FormsModule, FileUploadModule, TooltipModule],
+  imports: [
+    CommonModule,
+    FileUploadModule,
+    FormsModule,
+    OverlayPanelModule,
+    TableModule,
+    ToastModule,
+    TooltipModule,
+  ],
   templateUrl: './images.component.html',
   styleUrl: './images.component.scss',
 })
 export class AddImagesComponent implements OnInit {
   apiUrl = environment.BASE_URL;
   uploadedFiles: Image[] = [];
+  leftFiles: Image[] = [];
+  selectedFile: Image | undefined;
   url: string = '';
 
   constructor(
@@ -30,9 +43,11 @@ export class AddImagesComponent implements OnInit {
 
   ngOnInit(): void {
     const id = this.dynamicDialogConfig.data.id;
-    this.url = `${this.apiUrl}/images/${id}/add`;
+    this.url = `${this.apiUrl}/images/${id}/multiple-add`;
     this.updateImages(id);
   }
+
+  uploadExistingImages() {}
 
   updateImages(id: number): void {
     this.roomImagesService.findAll(id).subscribe({
@@ -41,11 +56,27 @@ export class AddImagesComponent implements OnInit {
       },
       error: () => {},
     });
+
+    this.roomImagesService.findLeft(id).subscribe({
+      next: (response: Image[]) => {
+        this.leftFiles = response;
+      },
+      error: () => {},
+    });
   }
 
   removeImage(imageId: number): void {
     const roomId = this.dynamicDialogConfig.data.id;
     this.roomImagesService.remove(roomId, imageId).subscribe({
+      next: () => this.updateImages(roomId),
+      error: () => {},
+    });
+  }
+
+  addImage(event: any) {
+    const roomId = this.dynamicDialogConfig.data.id;
+    const imageId = event.data.id;
+    this.roomImagesService.add(roomId, imageId).subscribe({
       next: () => this.updateImages(roomId),
       error: () => {},
     });

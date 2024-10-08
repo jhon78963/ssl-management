@@ -57,11 +57,11 @@ export class UserListComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.columns = [
-      { header: 'Username', field: 'username', clickable: false },
-      { header: 'Email', field: 'email', clickable: false },
-      { header: 'Nombres', field: 'name', clickable: false },
-      { header: 'Apellidos', field: 'surname', clickable: false },
-      { header: 'Acción', field: 'button', clickable: false },
+      { header: 'Username', field: 'username', clickable: false, image: false },
+      { header: 'Email', field: 'email', clickable: false, image: false },
+      { header: 'Nombres', field: 'name', clickable: false, image: false },
+      { header: 'Apellidos', field: 'surname', clickable: false, image: false },
+      { header: 'Acción', field: 'button', clickable: false, image: false },
     ];
 
     this.getUSers(this.limit, this.page, this.name);

@@ -31,6 +31,47 @@
             }
           }
         </ng-template>
+        <ng-template pTemplate="toolbar">
+          <p-button
+            label="Choose existing"
+            icon="pi pi-plus-circle"
+            (click)="op2.toggle($event)">
+          </p-button>
+          <p-overlayPanel
+            #op2
+            [showCloseIcon]="true"
+            [style]="{ width: '450px' }">
+            <ng-template pTemplate>
+              <p-toast />
+              <p-table
+                [value]="leftFiles"
+                selectionMode="single"
+                [(selection)]="selectedFile"
+                dataKey="code"
+                (onRowSelect)="addImage($event)"
+                [tableStyle]="{ 'min-width': '50rem' }">
+                <ng-template pTemplate="header">
+                  <tr>
+                    <th>Thumbnail</th>
+                    <th>Imagen</th>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-image>
+                  <tr [pSelectableRow]="image">
+                    <td>
+                      <img
+                        [src]="image.imagePath"
+                        [alt]="image.imageName"
+                        width="50"
+                        class="shadow-2" />
+                    </td>
+                    <td>{{ image.imageName }}</td>
+                  </tr>
+                </ng-template>
+              </p-table>
+            </ng-template>
+          </p-overlayPanel>
+        </ng-template>
       </p-fileUpload>
     </div>
   </div>

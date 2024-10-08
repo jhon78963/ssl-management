@@ -19,8 +19,9 @@ import {
   CallToAction,
   Column,
 } from '../../../../../interfaces/table.interface';
-import { Image, Room } from '../../models/rooms.model';
 import { AddImagesComponent } from '../../components/add/images/images.component';
+import { Image } from '../../../images/models/images.model';
+import { Room } from '../../models/rooms.model';
 
 @Component({
   selector: 'app-rooms',
@@ -118,31 +119,36 @@ export class RoomsComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.columns = [
-      { header: '#', field: 'id', clickable: false },
+      { header: '#', field: 'id', clickable: false, image: false },
       {
         header: 'Tipo de Habitación',
         field: 'roomType',
         clickable: false,
+        image: false,
       },
       {
         header: 'Número de Habitación',
         field: 'roomName',
         clickable: false,
+        image: false,
       },
       {
         header: 'Capacidad',
         field: 'capacity',
         clickable: false,
+        image: false,
       },
       {
         header: 'Estado',
         field: 'roomStatus',
         clickable: false,
+        image: false,
       },
       {
         field: 'button',
         header: 'Acción',
         clickable: false,
+        image: false,
       },
     ];
 

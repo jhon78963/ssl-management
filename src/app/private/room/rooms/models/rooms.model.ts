@@ -1,12 +1,7 @@
 import { IAmenity } from '../../amenities/models/amenities.model';
+import { Image } from '../../images/models/images.model';
 import { IRate } from '../../rate/rates/models/rates.model';
 import { IReview } from '../../reviews/models/reviews.model';
-
-export interface Image {
-  id: number;
-  imageName: string;
-  imagePath: string;
-}
 
 export interface RoomStatus {
   label: string;

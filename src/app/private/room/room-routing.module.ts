@@ -41,6 +41,13 @@ const routes: Routes = [
           ),
       },
       {
+        path: 'images',
+        loadComponent: () =>
+          import('./images/pages/list/images.component').then(
+            c => c.ImagesComponent,
+          ),
+      },
+      {
         path: '',
         redirectTo: 'rooms',
         pathMatch: 'full',

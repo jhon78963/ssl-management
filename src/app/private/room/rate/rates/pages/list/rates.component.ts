@@ -70,26 +70,30 @@ export class RatesComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.columns = [
-      { header: '#', field: 'id', clickable: false },
+      { header: '#', field: 'id', clickable: false, image: false },
       {
         header: 'Día',
         field: 'day',
         clickable: false,
+        image: false,
       },
       {
         header: 'Hora',
         field: 'hour',
         clickable: false,
+        image: false,
       },
       {
         header: 'Precio',
         field: 'price',
         clickable: false,
+        image: false,
       },
       {
         field: 'button',
         header: 'Acción',
         clickable: false,
+        image: false,
       },
     ];
 

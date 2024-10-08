@@ -40,6 +40,11 @@ export class RoomLayoutComponent {
       label: 'Comentarios',
       routerLink: ['./reviews'],
     },
+    {
+      id: '6',
+      label: 'Images',
+      routerLink: ['./images'],
+    },
   ];
   activeItem: MenuItem = this.tabs[0];
 }

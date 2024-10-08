@@ -12,6 +12,7 @@ export interface Column {
   header: string;
   field: string;
   clickable: boolean;
+  image: boolean;
 }
 
 export interface Paginate {
