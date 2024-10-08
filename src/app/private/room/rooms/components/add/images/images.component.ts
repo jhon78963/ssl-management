@@ -47,8 +47,6 @@ export class AddImagesComponent implements OnInit {
     this.updateImages(id);
   }
 
-  uploadExistingImages() {}
-
   updateImages(id: number): void {
     this.roomImagesService.findAll(id).subscribe({
       next: (response: Image[]) => {

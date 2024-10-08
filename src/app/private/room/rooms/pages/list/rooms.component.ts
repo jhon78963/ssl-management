@@ -22,6 +22,8 @@ import {
 import { AddImagesComponent } from '../../components/add/images/images.component';
 import { Image } from '../../../images/models/images.model';
 import { Room } from '../../models/rooms.model';
+import { Amenity } from '../../../amenities/models/amenities.model';
+import { AddAmenitiesComponent } from '../../components/add/amenities/amenities.component';
 
 @Component({
   selector: 'app-rooms',
@@ -75,7 +77,8 @@ export class RoomsComponent implements OnInit, OnDestroy {
       outlined: true,
       pTooltip: 'Agregar comodidades',
       tooltipPosition: 'bottom',
-      click: (rowData: Room) => this.addRoomAmenityButton(rowData.id),
+      click: (rowData: Room) =>
+        this.addRoomAmenityButton(rowData.id, rowData.amenities),
     },
     {
       type: 'button',
@@ -267,8 +270,21 @@ export class RoomsComponent implements OnInit, OnDestroy {
     });
   }
 
-  addRoomAmenityButton(id: number) {
-    console.log(id);
+  addRoomAmenityButton(id: number, amenities: Amenity[]) {
+    this.roomModal = this.dialogService.open(AddAmenitiesComponent, {
+      data: { id, amenities },
+      header: 'Agregar comodidades',
+    });
+
+    this.roomModal.onClose.subscribe({
+      next: value => {
+        value && value?.success
+          ? this.showSuccess('Comodidad agregada.')
+          : value?.error
+            ? this.showError(value?.error)
+            : null;
+      },
+    });
   }
 
   addRoomRateButton(id: number) {
