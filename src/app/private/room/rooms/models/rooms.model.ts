@@ -4,8 +4,8 @@ import { IReview } from '../../reviews/models/reviews.model';
 
 export interface Image {
   id: number;
-  fileName: string;
-  filePath: string;
+  imageName: string;
+  imagePath: string;
 }
 
 export interface RoomStatus {

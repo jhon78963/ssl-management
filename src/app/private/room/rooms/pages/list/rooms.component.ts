@@ -19,7 +19,8 @@ import {
   CallToAction,
   Column,
 } from '../../../../../interfaces/table.interface';
-import { Room } from '../../models/rooms.model';
+import { Image, Room } from '../../models/rooms.model';
+import { AddImagesComponent } from '../../components/add/images/images.component';
 
 @Component({
   selector: 'app-rooms',
@@ -41,6 +42,15 @@ export class RoomsComponent implements OnInit, OnDestroy {
     {
       type: 'button',
       size: 'small',
+      icon: 'pi pi-pencil',
+      outlined: true,
+      pTooltip: 'Editar',
+      tooltipPosition: 'bottom',
+      click: (rowData: Room) => this.roomEditButton(rowData.id),
+    },
+    {
+      type: 'button',
+      size: 'small',
       icon: 'pi pi-sync',
       outlined: true,
       pTooltip: 'Cambiar estado',
@@ -50,11 +60,39 @@ export class RoomsComponent implements OnInit, OnDestroy {
     {
       type: 'button',
       size: 'small',
-      icon: 'pi pi-pencil',
+      icon: 'pi pi-images',
       outlined: true,
-      pTooltip: 'Editar',
+      pTooltip: 'Agregar imagenes',
       tooltipPosition: 'bottom',
-      click: (rowData: Room) => this.roomEditButton(rowData.id),
+      click: (rowData: Room) =>
+        this.addRoomImageButton(rowData.id, rowData.images),
+    },
+    {
+      type: 'button',
+      size: 'small',
+      icon: 'pi pi-objects-column',
+      outlined: true,
+      pTooltip: 'Agregar comodidades',
+      tooltipPosition: 'bottom',
+      click: (rowData: Room) => this.addRoomAmenityButton(rowData.id),
+    },
+    {
+      type: 'button',
+      size: 'small',
+      icon: 'pi pi-calendar',
+      outlined: true,
+      pTooltip: 'Agregar tarifarios',
+      tooltipPosition: 'bottom',
+      click: (rowData: Room) => this.addRoomRateButton(rowData.id),
+    },
+    {
+      type: 'button',
+      size: 'small',
+      icon: 'pi pi-comments',
+      outlined: true,
+      pTooltip: 'Agregar reseñas',
+      tooltipPosition: 'bottom',
+      click: (rowData: Room) => this.addRoomReviewButton(rowData.id),
     },
     {
       type: 'button',
@@ -172,11 +210,26 @@ export class RoomsComponent implements OnInit, OnDestroy {
     });
   }
 
+  roomEditButton(id: number): void {
+    this.roomModal = this.dialogService.open(RoomsFormComponent, {
+      data: { id },
+      header: 'Editar',
+    });
+
+    this.roomModal.onClose.subscribe({
+      next: value => {
+        value && value?.success
+          ? this.showSuccess('Habitación actualizada.')
+          : value?.error
+            ? this.showError(value?.error)
+            : null;
+      },
+    });
+  }
+
   roomChangeStatusButton(id: number): void {
     this.roomModal = this.dialogService.open(ChangeStatusComponent, {
-      data: {
-        id,
-      },
+      data: { id },
       header: 'Cambiar estado',
     });
 
@@ -191,23 +244,33 @@ export class RoomsComponent implements OnInit, OnDestroy {
     });
   }
 
-  roomEditButton(id: number): void {
-    this.roomModal = this.dialogService.open(RoomsFormComponent, {
-      data: {
-        id,
-      },
-      header: 'Editar',
+  addRoomImageButton(id: number, images: Image[]) {
+    this.roomModal = this.dialogService.open(AddImagesComponent, {
+      data: { id, images },
+      header: 'Agregar imágenes',
     });
 
     this.roomModal.onClose.subscribe({
       next: value => {
         value && value?.success
-          ? this.showSuccess('Habitación actualizada.')
+          ? this.showSuccess('Imágen agregada.')
           : value?.error
             ? this.showError(value?.error)
             : null;
       },
     });
+  }
+
+  addRoomAmenityButton(id: number) {
+    console.log(id);
+  }
+
+  addRoomRateButton(id: number) {
+    console.log(id);
+  }
+
+  addRoomReviewButton(id: number) {
+    console.log(id);
   }
 
   roomDeleteButton(id: number, event: Event) {
