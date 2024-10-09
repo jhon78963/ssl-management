@@ -9,6 +9,8 @@ export interface IReview {
   description: string;
   rating: string;
   roomId: number;
+  date: string;
+  image: string;
 }
 
 export class Review {
@@ -17,6 +19,8 @@ export class Review {
   description: string;
   rating: string;
   roomId: number;
+  date: string;
+  image: string;
 
   constructor(review: IReview) {
     this.id = review.id;
@@ -24,6 +28,8 @@ export class Review {
     this.description = review.description;
     this.rating = review.rating;
     this.roomId = review.roomId;
+    this.date = review.date;
+    this.image = review.image;
   }
 }
 

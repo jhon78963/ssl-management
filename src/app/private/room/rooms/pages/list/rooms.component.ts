@@ -24,6 +24,10 @@ import { Image } from '../../../images/models/images.model';
 import { Room } from '../../models/rooms.model';
 import { Amenity } from '../../../amenities/models/amenities.model';
 import { AddAmenitiesComponent } from '../../components/add/amenities/amenities.component';
+import { Review } from '../../../reviews/models/reviews.model';
+import { AddReviewsComponent } from '../../components/add/reviews/reviews.component';
+import { Rate } from '../../../rate/rates/models/rates.model';
+import { AddRatesComponent } from '../../components/add/rates/rates.component';
 
 @Component({
   selector: 'app-rooms',
@@ -87,7 +91,8 @@ export class RoomsComponent implements OnInit, OnDestroy {
       outlined: true,
       pTooltip: 'Agregar tarifarios',
       tooltipPosition: 'bottom',
-      click: (rowData: Room) => this.addRoomRateButton(rowData.id),
+      click: (rowData: Room) =>
+        this.addRoomRateButton(rowData.id, rowData.rates),
     },
     {
       type: 'button',
@@ -96,7 +101,8 @@ export class RoomsComponent implements OnInit, OnDestroy {
       outlined: true,
       pTooltip: 'Agregar reseñas',
       tooltipPosition: 'bottom',
-      click: (rowData: Room) => this.addRoomReviewButton(rowData.id),
+      click: (rowData: Room) =>
+        this.addRoomReviewButton(rowData.id, rowData.reviews),
     },
     {
       type: 'button',
@@ -287,12 +293,38 @@ export class RoomsComponent implements OnInit, OnDestroy {
     });
   }
 
-  addRoomRateButton(id: number) {
-    console.log(id);
+  addRoomRateButton(id: number, rates: Rate[]) {
+    this.roomModal = this.dialogService.open(AddRatesComponent, {
+      data: { id, rates },
+      header: 'Agregar comodidades',
+    });
+
+    this.roomModal.onClose.subscribe({
+      next: value => {
+        value && value?.success
+          ? this.showSuccess('Comodidad agregada.')
+          : value?.error
+            ? this.showError(value?.error)
+            : null;
+      },
+    });
   }
 
-  addRoomReviewButton(id: number) {
-    console.log(id);
+  addRoomReviewButton(id: number, reviews: Review[]) {
+    this.roomModal = this.dialogService.open(AddReviewsComponent, {
+      data: { id, reviews },
+      header: 'Reseñas',
+    });
+
+    this.roomModal.onClose.subscribe({
+      next: value => {
+        value && value?.success
+          ? this.showSuccess('Comodidad agregada.')
+          : value?.error
+            ? this.showError(value?.error)
+            : null;
+      },
+    });
   }
 
   roomDeleteButton(id: number, event: Event) {

@@ -6,15 +6,16 @@
   targetHeader="Seleccionados"
   [dragdrop]="true"
   [responsive]="true"
-  [sourceStyle]="{ height: '30rem' }"
-  [targetStyle]="{ height: '30rem' }"
+  [sourceStyle]="{ height: '30rem', width: '30rem' }"
+  [targetStyle]="{ height: '30rem', width: '30rem' }"
   breakpoint="1400px"
   [showSourceControls]="false"
   [showTargetControls]="false"
   (onMoveToTarget)="addAmenity($event)"
   (onMoveAllToTarget)="addAmenity($event)"
   (onMoveToSource)="removeAmenity($event)"
-  (onMoveAllToSource)="removeAmenity($event)">
+  (onMoveAllToSource)="removeAmenity($event)"
+  filterBy="description">
   <ng-template let-amenity pTemplate="item">
     <div class="flex flex-wrap p-2 align-items-center gap-3">
       <div class="flex-1 flex flex-column gap-2">
@@ -25,20 +26,3 @@
     </div>
   </ng-template>
 </p-pickList>
-<!-- <p-table
-  [value]="leftAmenities"
-  selectionMode="single"
-  [(selection)]="selectedAmenity"
-  dataKey="code"
-  (onRowSelect)="addAmenity($event)">
-  <ng-template pTemplate="header">
-    <tr>
-      <th class="text-center">Comodidad</th>
-    </tr>
-  </ng-template>
-  <ng-template pTemplate="body" let-amenity>
-    <tr [pSelectableRow]="amenity">
-      <td class="text-center">{{ amenity.description }}</td>
-    </tr>
-  </ng-template>
-</p-table> -->
