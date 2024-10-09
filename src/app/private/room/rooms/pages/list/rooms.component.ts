@@ -142,12 +142,6 @@ export class RoomsComponent implements OnInit, OnDestroy {
         image: false,
       },
       {
-        header: 'Capacidad',
-        field: 'capacity',
-        clickable: false,
-        image: false,
-      },
-      {
         header: 'Estado',
         field: 'roomStatus',
         clickable: false,

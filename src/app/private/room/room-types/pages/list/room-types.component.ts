@@ -78,6 +78,30 @@ export class RoomTypesComponent implements OnInit, OnDestroy {
         image: false,
       },
       {
+        header: 'Capacidad',
+        field: 'capacityTable',
+        clickable: false,
+        image: false,
+      },
+      {
+        header: 'Precio regular',
+        field: 'pricePerCapacityTable',
+        clickable: false,
+        image: false,
+      },
+      {
+        header: 'Precio por persona adicional',
+        field: 'pricePerAdditionalPersonTable',
+        clickable: false,
+        image: false,
+      },
+      {
+        header: 'Edad libre',
+        field: 'ageFreeTable',
+        clickable: false,
+        image: false,
+      },
+      {
         field: 'button',
         header: 'Acción',
         clickable: false,

@@ -1,7 +1,7 @@
 @if (form) {
   <form [formGroup]="form" (ngSubmit)="roomSaveButton()" class="pt-2">
     <div class="p-fluid p-formgrid grid">
-      <div class="field col-12">
+      <div class="field col-12 md:col-6">
         <app-input-select
           placeholder="Seleccione tipo de habitación"
           label="Tipo de Habitación"
@@ -20,15 +20,6 @@
           id="roomNumber"
           placeholder="Ingrese número de habitación"
           controlName="roomNumber"></app-input-text>
-      </div>
-      <div class="field col-12 md:col-6">
-        <app-input-text
-          label="Capacidad de la habitación"
-          for="capacity"
-          type="text"
-          id="capacity"
-          placeholder="Ingrese capacidad de la habitación"
-          controlName="capacity"></app-input-text>
       </div>
       <button
         type="submit"

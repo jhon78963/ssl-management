@@ -31,6 +31,10 @@ export class RoomTypesFormComponent implements OnInit {
 
   form: FormGroup = this.formBuilder.group({
     description: ['', Validators.required],
+    capacity: ['', Validators.required],
+    pricePerCapacity: ['', Validators.required],
+    pricePerAdditionalPerson: ['', Validators.required],
+    ageFree: ['', Validators.required],
   });
 
   ngOnInit(): void {
