@@ -48,7 +48,8 @@
                 selectionMode="single"
                 [(selection)]="selectedFile"
                 dataKey="code"
-                (onRowSelect)="addImage($event)">
+                (onRowSelect)="addImage($event)"
+                appendTo="body">
                 <ng-template pTemplate="header">
                   <tr>
                     <th class="text-center">Imagen</th>

@@ -3,7 +3,7 @@ import { TableModule } from 'primeng/table';
 import { ToastModule } from 'primeng/toast';
 import { DynamicDialogConfig } from 'primeng/dynamicdialog';
 import { PickListModule } from 'primeng/picklist';
-import { RoomAmenitiesService } from '../../../rooms/services/room-amenities.service';
+import { RoomAmenitiesService } from '../../services/room-type-amenities.service';
 import { Amenity } from '../../../amenities/models/amenities.model';
 
 @Component({

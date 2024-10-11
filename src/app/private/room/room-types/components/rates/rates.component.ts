@@ -4,7 +4,7 @@ import { TableModule } from 'primeng/table';
 import { ToastModule } from 'primeng/toast';
 import { Rate } from '../../../rate/rates/models/rates.model';
 import { DynamicDialogConfig } from 'primeng/dynamicdialog';
-import { RoomRatesService } from '../../../rooms/services/room-rates.service';
+import { RoomRatesService } from '../../services/room-type-rates.service';
 
 @Component({
   selector: 'app-rates',

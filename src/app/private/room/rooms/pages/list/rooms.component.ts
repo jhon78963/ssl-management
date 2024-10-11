@@ -9,25 +9,22 @@ import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { PaginatorState } from 'primeng/paginator';
 import { ToastModule } from 'primeng/toast';
 
-import { SharedModule } from '../../../../../shared/shared.module';
 import { ChangeStatusComponent } from '../../components/change-status/change-status.component';
-import { RoomsFormComponent } from '../form/rooms-form.component';
 import { LoadingService } from '../../../../../services/loading.service';
+import { RoomsFormComponent } from '../form/rooms-form.component';
 import { RoomsService } from '../../services/rooms.service';
+import { SharedModule } from '../../../../../shared/shared.module';
 
 import {
   CallToAction,
   Column,
 } from '../../../../../interfaces/table.interface';
 import { AddImagesComponent } from '../../components/add/images/images.component';
-import { Image } from '../../../images/models/images.model';
-import { Room } from '../../models/rooms.model';
-import { Amenity } from '../../../amenities/models/amenities.model';
-import { AddAmenitiesComponent } from '../../components/add/amenities/amenities.component';
-import { Review } from '../../../reviews/models/reviews.model';
 import { AddReviewsComponent } from '../../components/add/reviews/reviews.component';
-import { Rate } from '../../../rate/rates/models/rates.model';
-import { AddRatesComponent } from '../../components/add/rates/rates.component';
+
+import { Image } from '../../../images/models/images.model';
+import { Review } from '../../../reviews/models/reviews.model';
+import { Room } from '../../models/rooms.model';
 
 @Component({
   selector: 'app-rooms',
@@ -243,40 +240,6 @@ export class RoomsComponent implements OnInit, OnDestroy {
       next: value => {
         value && value?.success
           ? this.showSuccess('Imágen agregada.')
-          : value?.error
-            ? this.showError(value?.error)
-            : null;
-      },
-    });
-  }
-
-  addRoomAmenityButton(id: number, amenities: Amenity[]) {
-    this.roomModal = this.dialogService.open(AddAmenitiesComponent, {
-      data: { id, amenities },
-      header: 'Agregar comodidades',
-    });
-
-    this.roomModal.onClose.subscribe({
-      next: value => {
-        value && value?.success
-          ? this.showSuccess('Comodidad agregada.')
-          : value?.error
-            ? this.showError(value?.error)
-            : null;
-      },
-    });
-  }
-
-  addRoomRateButton(id: number, rates: Rate[]) {
-    this.roomModal = this.dialogService.open(AddRatesComponent, {
-      data: { id, rates },
-      header: 'Agregar comodidades',
-    });
-
-    this.roomModal.onClose.subscribe({
-      next: value => {
-        value && value?.success
-          ? this.showSuccess('Comodidad agregada.')
           : value?.error
             ? this.showError(value?.error)
             : null;

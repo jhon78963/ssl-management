@@ -1,3 +1,6 @@
+::ng-deep p-dropdown {
+  z-index: 1000
+}
 ::ng-deep p-dropdown.float .p-dropdown {
     border: none;
     border-bottom: 1px solid #d4d6d9;

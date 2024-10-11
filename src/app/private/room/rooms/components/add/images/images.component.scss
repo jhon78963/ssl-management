@@ -4,9 +4,6 @@
   padding: 1rem 1rem;
 }
 
-// ::ng-deep {
-//   .p-fileupload-filename {
-//     padding: 1rem 1rem;
-//     white-space: nowrap;
-//   }
-// }
+::ng-deep p-table {
+  z-index: 1000;
+}
