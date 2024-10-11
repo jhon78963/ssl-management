@@ -1,3 +1,6 @@
+import { IAmenity } from '../../amenities/models/amenities.model';
+import { IRate } from '../../rate/rates/models/rates.model';
+
 export interface IRoomType {
   id: number;
   description: string;
@@ -5,6 +8,8 @@ export interface IRoomType {
   pricePerCapacity: number;
   pricePerAdditionalPerson: number;
   ageFree: number;
+  amenities: IAmenity[];
+  rates: IRate[];
 }
 
 export class RoomType {
@@ -14,6 +19,8 @@ export class RoomType {
   pricePerCapacity: number;
   pricePerAdditionalPerson: number;
   ageFree: number;
+  amenities: IAmenity[];
+  rates: IRate[];
   constructor(roomType: IRoomType) {
     this.id = roomType.id;
     this.description = roomType.description;
@@ -21,6 +28,8 @@ export class RoomType {
     this.pricePerCapacity = roomType.pricePerCapacity;
     this.pricePerAdditionalPerson = roomType.pricePerAdditionalPerson;
     this.ageFree = roomType.ageFree;
+    this.amenities = roomType.amenities;
+    this.rates = roomType.rates;
   }
 }
 

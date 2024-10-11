@@ -77,26 +77,6 @@ export class RoomsComponent implements OnInit, OnDestroy {
     {
       type: 'button',
       size: 'small',
-      icon: 'pi pi-objects-column',
-      outlined: true,
-      pTooltip: 'Agregar comodidades',
-      tooltipPosition: 'bottom',
-      click: (rowData: Room) =>
-        this.addRoomAmenityButton(rowData.id, rowData.amenities),
-    },
-    {
-      type: 'button',
-      size: 'small',
-      icon: 'pi pi-calendar',
-      outlined: true,
-      pTooltip: 'Agregar tarifarios',
-      tooltipPosition: 'bottom',
-      click: (rowData: Room) =>
-        this.addRoomRateButton(rowData.id, rowData.rates),
-    },
-    {
-      type: 'button',
-      size: 'small',
       icon: 'pi pi-comments',
       outlined: true,
       pTooltip: 'Agregar reseñas',

@@ -19,6 +19,10 @@ import {
   Column,
 } from '../../../../../interfaces/table.interface';
 import { RoomType } from '../../models/room-types.model';
+import { AddAmenitiesComponent } from '../../components/amenities/amenities.component';
+import { Amenity } from '../../../amenities/models/amenities.model';
+import { Rate } from '../../../rate/rates/models/rates.model';
+import { AddRatesComponent } from '../../components/rates/rates.component';
 
 @Component({
   selector: 'app-room-types',
@@ -45,6 +49,26 @@ export class RoomTypesComponent implements OnInit, OnDestroy {
       pTooltip: 'Editar',
       tooltipPosition: 'bottom',
       click: (rowData: RoomType) => this.roomTypeEditButton(rowData.id),
+    },
+    {
+      type: 'button',
+      size: 'small',
+      icon: 'pi pi-objects-column',
+      outlined: true,
+      pTooltip: 'Agregar comodidades',
+      tooltipPosition: 'bottom',
+      click: (rowData: RoomType) =>
+        this.addRoomAmenityButton(rowData.id, rowData.amenities),
+    },
+    {
+      type: 'button',
+      size: 'small',
+      icon: 'pi pi-calendar',
+      outlined: true,
+      pTooltip: 'Agregar tarifarios',
+      tooltipPosition: 'bottom',
+      click: (rowData: RoomType) =>
+        this.addRoomRateButton(rowData.id, rowData.rates),
     },
     {
       type: 'button',
@@ -154,6 +178,40 @@ export class RoomTypesComponent implements OnInit, OnDestroy {
   async onPageSelected(event: PaginatorState) {
     this.updatePage((event.page ?? 0) + 1);
     this.getRoomTypes(event.rows, this.page);
+  }
+
+  addRoomAmenityButton(id: number, amenities: Amenity[]) {
+    this.roomTypeModal = this.dialogService.open(AddAmenitiesComponent, {
+      data: { id, amenities },
+      header: 'Agregar comodidades',
+    });
+
+    this.roomTypeModal.onClose.subscribe({
+      next: value => {
+        value && value?.success
+          ? this.showSuccess('Comodidad agregada.')
+          : value?.error
+            ? this.showError(value?.error)
+            : null;
+      },
+    });
+  }
+
+  addRoomRateButton(id: number, rates: Rate[]) {
+    this.roomTypeModal = this.dialogService.open(AddRatesComponent, {
+      data: { id, rates },
+      header: 'Agregar comodidades',
+    });
+
+    this.roomTypeModal.onClose.subscribe({
+      next: value => {
+        value && value?.success
+          ? this.showSuccess('Comodidad agregada.')
+          : value?.error
+            ? this.showError(value?.error)
+            : null;
+      },
+    });
   }
 
   roomTypeCreateButton(): void {
