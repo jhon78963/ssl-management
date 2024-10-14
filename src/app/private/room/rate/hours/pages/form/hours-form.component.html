@@ -4,13 +4,18 @@
       <div class="field col-12">
         <app-input-text
           label="Duración (horas)"
-          for="durationNumber"
+          for="duration"
           type="text"
-          id="durationNumber"
+          id="duration"
           placeholder="Ingrese la duración"
-          controlName="durationNumber"></app-input-text>
+          controlName="duration"></app-input-text>
       </div>
-      <button type="submit" pButton label="Guardar" class="mt-3"></button>
+      <button
+        type="submit"
+        pButton
+        label="Guardar"
+        class="mt-3"
+        [disabled]="!isFormValid"></button>
     </div>
   </form>
 }

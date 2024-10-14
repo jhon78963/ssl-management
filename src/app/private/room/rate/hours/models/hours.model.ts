@@ -1,18 +1,18 @@
 export interface IHour {
   id: number;
-  durationNumber: number;
-  duration: string;
+  duration: number;
+  durationString: string;
 }
 
 export class Hour {
   id: number;
-  durationNumber: number;
-  duration: string;
+  duration: number;
+  durationString: string;
 
   constructor(hour: IHour) {
     this.id = hour.id;
-    this.durationNumber = hour.durationNumber;
     this.duration = hour.duration;
+    this.durationString = hour.durationString;
   }
 }
 

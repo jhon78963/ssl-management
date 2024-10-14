@@ -73,13 +73,13 @@ export class HoursComponent implements OnInit, OnDestroy {
       { header: '#', field: 'id', clickable: false, image: false },
       {
         header: 'Duración',
-        field: 'durationNumber',
+        field: 'duration',
         clickable: false,
         image: false,
       },
       {
         header: 'Duración (Horas)',
-        field: 'duration',
+        field: 'durationString',
         clickable: false,
         image: false,
       },

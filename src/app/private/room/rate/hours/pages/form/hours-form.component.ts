@@ -38,7 +38,7 @@ export class HoursFormComponent implements OnInit {
   ) {}
 
   form: FormGroup = this.formBuilder.group({
-    durationNumber: ['', Validators.required],
+    duration: [null, Validators.required],
   });
 
   ngOnInit(): void {
@@ -66,5 +66,9 @@ export class HoursFormComponent implements OnInit {
         });
       }
     }
+  }
+
+  get isFormValid(): boolean {
+    return this.form.valid;
   }
 }
