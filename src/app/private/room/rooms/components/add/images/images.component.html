@@ -7,7 +7,7 @@
         (onUpload)="onUpload()"
         [multiple]="true"
         accept="image/*"
-        [maxFileSize]="1000000">
+        [maxFileSize]="5000000">
         <ng-template pTemplate="content">
           @if (uploadedFiles.length) {
             @for (image of uploadedFiles; track $index) {
