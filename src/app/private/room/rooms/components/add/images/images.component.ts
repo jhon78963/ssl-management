@@ -10,6 +10,7 @@ import { ToastModule } from 'primeng/toast';
 import { TooltipModule } from 'primeng/tooltip';
 
 import { RoomImagesService } from '../../../services/room-images.service';
+import { ProgressSpinnerService } from '../../../../../../services/progress-spinner.service';
 
 import { environment } from '../../../../../../../environments/environment';
 import { Image } from '../../../../images/models/images.model';
@@ -39,6 +40,7 @@ export class AddImagesComponent implements OnInit {
   constructor(
     private readonly dynamicDialogConfig: DynamicDialogConfig,
     private readonly roomImagesService: RoomImagesService,
+    private readonly progressSpinnerService: ProgressSpinnerService,
   ) {}
 
   ngOnInit(): void {
@@ -65,18 +67,26 @@ export class AddImagesComponent implements OnInit {
 
   removeImage(imageId: number): void {
     const roomId = this.dynamicDialogConfig.data.id;
+    this.progressSpinnerService.show();
     this.roomImagesService.remove(roomId, imageId).subscribe({
-      next: () => this.updateImages(roomId),
-      error: () => {},
+      next: () => {
+        this.progressSpinnerService.hidden();
+        this.updateImages(roomId);
+      },
+      error: () => this.progressSpinnerService.hidden(),
     });
   }
 
   addImage(event: any) {
     const roomId = this.dynamicDialogConfig.data.id;
     const imageId = event.data.id;
+    this.progressSpinnerService.show();
     this.roomImagesService.add(roomId, imageId).subscribe({
-      next: () => this.updateImages(roomId),
-      error: () => {},
+      next: () => {
+        this.progressSpinnerService.hidden();
+        this.updateImages(roomId);
+      },
+      error: () => this.progressSpinnerService.hidden(),
     });
   }
 
