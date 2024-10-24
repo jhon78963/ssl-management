@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
-import { debounceTime, Observable, Subject } from 'rxjs';
+import { debounceTime, finalize, Observable, Subject } from 'rxjs';
 
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
@@ -19,6 +19,7 @@ import {
 } from '../../../../../interfaces/table.interface';
 import { SharedModule } from '../../../../../shared/shared.module';
 import { ImagesShowComponent } from '../show/images-show.component';
+import { ProgressSpinnerService } from '../../../../../services/progress-spinner.service';
 
 @Component({
   selector: 'app-images',
@@ -66,6 +67,7 @@ export class ImagesComponent implements OnInit, OnDestroy {
     public messageService: MessageService,
     private loadingService: LoadingService,
     private confirmationService: ConfirmationService,
+    private readonly progressSpinnerService: ProgressSpinnerService,
   ) {}
 
   ngOnInit(): void {
@@ -152,12 +154,21 @@ export class ImagesComponent implements OnInit, OnDestroy {
       rejectIcon: 'none',
 
       accept: () => {
-        this.imagesService.delete(id).subscribe(() => {
-          this.showSuccess('La imagen ha sido eliminado');
-        });
+        this.progressSpinnerService.show();
+        this.imagesService
+          .delete(id)
+          .pipe(
+            finalize(() => {
+              this.progressSpinnerService.hidden();
+            }),
+          )
+          .subscribe(() => {
+            this.showSuccess('La imagen ha sido eliminado');
+          });
       },
       reject: () => {
         this.showError('No se eleminó la imagen, intenteló nuevamente');
+        this.progressSpinnerService.hidden();
       },
     });
   }

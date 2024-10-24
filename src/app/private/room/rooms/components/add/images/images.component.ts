@@ -14,6 +14,7 @@ import { ProgressSpinnerService } from '../../../../../../services/progress-spin
 
 import { environment } from '../../../../../../../environments/environment';
 import { Image } from '../../../../images/models/images.model';
+import { finalize } from 'rxjs';
 
 @Component({
   selector: 'app-images',
@@ -68,26 +69,34 @@ export class AddImagesComponent implements OnInit {
   removeImage(imageId: number): void {
     const roomId = this.dynamicDialogConfig.data.id;
     this.progressSpinnerService.show();
-    this.roomImagesService.remove(roomId, imageId).subscribe({
-      next: () => {
-        this.progressSpinnerService.hidden();
-        this.updateImages(roomId);
-      },
-      error: () => this.progressSpinnerService.hidden(),
-    });
+    this.roomImagesService
+      .remove(roomId, imageId)
+      .pipe(
+        finalize(() => {
+          this.progressSpinnerService.hidden();
+        }),
+      )
+      .subscribe({
+        next: () => this.updateImages(roomId),
+        error: () => {},
+      });
   }
 
   addImage(event: any) {
     const roomId = this.dynamicDialogConfig.data.id;
     const imageId = event.data.id;
     this.progressSpinnerService.show();
-    this.roomImagesService.add(roomId, imageId).subscribe({
-      next: () => {
-        this.progressSpinnerService.hidden();
-        this.updateImages(roomId);
-      },
-      error: () => this.progressSpinnerService.hidden(),
-    });
+    this.roomImagesService
+      .add(roomId, imageId)
+      .pipe(
+        finalize(() => {
+          this.progressSpinnerService.hidden();
+        }),
+      )
+      .subscribe({
+        next: () => this.updateImages(roomId),
+        error: () => {},
+      });
   }
 
   onUpload(): void {
