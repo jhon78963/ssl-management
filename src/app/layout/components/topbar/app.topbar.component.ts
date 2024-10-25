@@ -36,7 +36,8 @@ export class AppTopbarComponent {
   }
 
   onLogout() {
-    this.authService.logout().subscribe({
+    const tokenData = JSON.parse(localStorage.getItem('tokenData') || '{}');
+    this.authService.logout(tokenData.refreshToken).subscribe({
       next: () => {
         localStorage.removeItem('tokenData');
         localStorage.removeItem('user');

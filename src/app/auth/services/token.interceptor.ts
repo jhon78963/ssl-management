@@ -33,24 +33,26 @@ export const tokenInterceptor: HttpInterceptorFn = (request, next) => {
         tokenData &&
         tokenData.refreshToken
       ) {
-        return authService.refreshToken(tokenData.refreshToken).pipe(
-          switchMap((response: any) => {
-            localStorage.setItem('tokenData', JSON.stringify(response));
-            const newRequest = request.clone({
-              setHeaders: {
-                Authorization: `Bearer ${response.token}`,
-              },
-            });
+        return authService
+          .refreshToken(tokenData.refreshToken, tokenData.token)
+          .pipe(
+            switchMap((response: any) => {
+              localStorage.setItem('tokenData', JSON.stringify(response));
+              const newRequest = request.clone({
+                setHeaders: {
+                  Authorization: `Bearer ${response.token}`,
+                },
+              });
 
-            return next(newRequest);
-          }),
-          catchError(refreshError => {
-            console.error('Error refreshing token:', refreshError);
-            localStorage.clear();
-            router.navigate(['auth']);
-            return throwError(() => refreshError);
-          }),
-        );
+              return next(newRequest);
+            }),
+            catchError(refreshError => {
+              console.error('Error refreshing token:', refreshError);
+              localStorage.clear();
+              router.navigate(['auth']);
+              return throwError(() => refreshError);
+            }),
+          );
       }
       return throwError(() => error);
     }),
