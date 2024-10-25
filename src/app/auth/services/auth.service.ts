@@ -44,8 +44,11 @@ export class AuthService {
     return this.apiService.post('auth/me', {});
   }
 
-  logout(refreshToken: string | null) {
-    return this.apiService.post('auth/logout', { refreshToken });
+  logout(
+    refreshToken: string | null,
+    accessToken: string | null,
+  ): Observable<string> {
+    return this.apiService.post('auth/logout', { refreshToken, accessToken });
   }
 
   refreshToken(

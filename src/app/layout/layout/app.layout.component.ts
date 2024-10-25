@@ -165,7 +165,7 @@ export class AppLayoutComponent implements OnDestroy {
 
   onLogout() {
     const tokenData = JSON.parse(localStorage.getItem('tokenData') || '{}');
-    this.authService.logout(tokenData.refreshToken);
+    this.authService.logout(tokenData.refreshToken, tokenData.token);
   }
   // get user() {
   //   return this.authService.currentUser();
