@@ -11,6 +11,7 @@ import { PaginatorModule } from 'primeng/paginator';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { MaleLockersService } from '../../../services/male-lockers.service';
 import { FemaleLockersService } from '../../../services/female-lockers.service';
+import { TooltipModule } from 'primeng/tooltip';
 
 @Component({
   selector: 'app-customer-reservation-form',
@@ -24,6 +25,7 @@ import { FemaleLockersService } from '../../../services/female-lockers.service';
     SelectButtonModule,
     PaginatorModule,
     InputNumberModule,
+    TooltipModule,
   ],
   templateUrl: './customer-reservation-form.component.html',
   styleUrl: './customer-reservation-form.component.scss',
@@ -119,6 +121,18 @@ export class CustomerReservationFormComponent implements OnInit {
     }
   }
 
+  reservation(locker: Locker) {
+    console.log(locker);
+  }
+
+  show(locker: Locker) {
+    console.log(locker);
+  }
+
+  finish(locker: Locker) {
+    console.log(locker);
+  }
+
   statusChange(event: any) {
     if (event.value?.value == 1) {
       this.first = (this.page - 1) * this.limit;
@@ -145,32 +159,6 @@ export class CustomerReservationFormComponent implements OnInit {
     }
   }
 
-  femaleStatusChange(event: any) {
-    if (event.value?.value == 1) {
-      this.first = (this.femalePage - 1) * this.femaleLimit;
-      this.femaleStatus = 'AVAILABLE';
-      this.femaleStatusSelected = this.statusOptions[0];
-      this.getFemaleLockers(
-        this.femaleLimit,
-        this.femalePage,
-        this.femaleNumber,
-        this.femaleGender,
-        this.femaleStatus,
-      );
-    } else {
-      this.firstFemale = (this.femalePage - 1) * this.femaleLimit;
-      this.femaleStatus = 'IN_USE';
-      this.femaleStatusSelected = this.statusOptions[1];
-      this.getFemaleLockers(
-        this.femaleLimit,
-        this.femalePage,
-        this.femaleNumber,
-        this.femaleGender,
-        this.femaleStatus,
-      );
-    }
-  }
-
   onMaleLockerPageChange(event: any) {
     this.page = event.page + 1;
     this.first = event.first;
@@ -183,40 +171,8 @@ export class CustomerReservationFormComponent implements OnInit {
     );
   }
 
-  onFemaleLockerPageChange(event: any) {
-    this.femalePage = event.page + 1;
-    this.firstFemale = event.first;
-    this.getFemaleLockers(
-      this.femaleLimit,
-      this.femalePage,
-      this.femaleNumber,
-      this.femaleGender,
-      this.femaleStatus,
-    );
-  }
-
   onFilter(term: any) {
     this.searchTermSubject.next(term);
-    // this.number = term;
-    // this.getMaleLockers(
-    //   this.limit,
-    //   this.page,
-    //   this.number,
-    //   this.gender,
-    //   this.status,
-    // );
-  }
-
-  onFemaleFilter(term: any) {
-    this.searchFemaleTermSubject.next(term);
-    // this.femaleNumber = term;
-    // this.getFemaleLockers(
-    //   this.femaleLimit,
-    //   this.femalePage,
-    //   this.femaleNumber,
-    //   this.femaleGender,
-    //   this.femaleStatus,
-    // );
   }
 
   async getMaleLockers(
@@ -257,5 +213,47 @@ export class CustomerReservationFormComponent implements OnInit {
 
   get femaleLockertotal(): Observable<number> {
     return this.femaleLockersService.getTotal();
+  }
+
+  femaleStatusChange(event: any) {
+    if (event.value?.value == 1) {
+      this.first = (this.femalePage - 1) * this.femaleLimit;
+      this.femaleStatus = 'AVAILABLE';
+      this.femaleStatusSelected = this.statusOptions[0];
+      this.getFemaleLockers(
+        this.femaleLimit,
+        this.femalePage,
+        this.femaleNumber,
+        this.femaleGender,
+        this.femaleStatus,
+      );
+    } else {
+      this.firstFemale = (this.femalePage - 1) * this.femaleLimit;
+      this.femaleStatus = 'IN_USE';
+      this.femaleStatusSelected = this.statusOptions[1];
+      this.getFemaleLockers(
+        this.femaleLimit,
+        this.femalePage,
+        this.femaleNumber,
+        this.femaleGender,
+        this.femaleStatus,
+      );
+    }
+  }
+
+  onFemaleLockerPageChange(event: any) {
+    this.femalePage = event.page + 1;
+    this.firstFemale = event.first;
+    this.getFemaleLockers(
+      this.femaleLimit,
+      this.femalePage,
+      this.femaleNumber,
+      this.femaleGender,
+      this.femaleStatus,
+    );
+  }
+
+  onFemaleFilter(term: any) {
+    this.searchFemaleTermSubject.next(term);
   }
 }
