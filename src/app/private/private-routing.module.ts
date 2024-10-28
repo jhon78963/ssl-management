@@ -38,6 +38,13 @@ const routes: Routes = [
     loadChildren: () => import('./room/room.module').then(m => m.RoomModule),
   },
   {
+    path: 'reservation',
+    title: 'Reservaciones',
+    data: { breadcrumb: 'Reservaciones' },
+    loadChildren: () =>
+      import('./reservation/reservation.module').then(m => m.ReservationModule),
+  },
+  {
     path: '',
     pathMatch: 'full',
     redirectTo: 'home',
