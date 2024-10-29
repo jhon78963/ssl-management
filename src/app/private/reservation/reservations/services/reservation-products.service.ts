@@ -9,8 +9,11 @@ import { Product } from '../models/product.model';
 export class ReservationProductsService {
   constructor(private readonly apiService: ApiService) {}
 
-  add(roomId: number, productId: number): Observable<void> {
-    return this.apiService.post(`products/${roomId}/add/${productId}`, {});
+  add(reservationId: number, productId: number): Observable<void> {
+    return this.apiService.post(
+      `products/${reservationId}/add/${productId}`,
+      {},
+    );
   }
 
   findAll(id: number): Observable<Product[]> {
@@ -21,7 +24,9 @@ export class ReservationProductsService {
     return this.apiService.get(`products/${id}/left`);
   }
 
-  remove(roomId: number, productId: number): Observable<void> {
-    return this.apiService.delete(`products/${roomId}/remove/${productId}`);
+  remove(reservationId: number, productId: number): Observable<void> {
+    return this.apiService.delete(
+      `products/${reservationId}/remove/${productId}`,
+    );
   }
 }

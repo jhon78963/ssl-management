@@ -9,8 +9,11 @@ import { Service } from '../models/service.model';
 export class ReservationServicesService {
   constructor(private readonly apiService: ApiService) {}
 
-  add(roomId: number, serviceId: number): Observable<void> {
-    return this.apiService.post(`services/${roomId}/add/${serviceId}`, {});
+  add(reservationId: number, serviceId: number): Observable<void> {
+    return this.apiService.post(
+      `services/${reservationId}/add/${serviceId}`,
+      {},
+    );
   }
 
   findAll(id: number): Observable<Service[]> {
@@ -21,7 +24,9 @@ export class ReservationServicesService {
     return this.apiService.get(`services/${id}/left`);
   }
 
-  remove(roomId: number, serviceId: number): Observable<void> {
-    return this.apiService.delete(`services/${roomId}/remove/${serviceId}`);
+  remove(reservationId: number, serviceId: number): Observable<void> {
+    return this.apiService.delete(
+      `services/${reservationId}/remove/${serviceId}`,
+    );
   }
 }

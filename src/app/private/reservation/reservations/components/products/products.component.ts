@@ -27,7 +27,6 @@ export class ProductsAddComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // const id = this.dynamicDialogConfig.data.id;
     this.updateProducts(this.reservationId);
   }
 
@@ -35,6 +34,7 @@ export class ProductsAddComponent implements OnInit {
     this.reservationProductsService.findLeft(id).subscribe({
       next: (response: Product[]) => {
         this.sourceProducts = response;
+        console.log(response);
         this.cdr.markForCheck();
       },
       error: () => {},
@@ -43,6 +43,7 @@ export class ProductsAddComponent implements OnInit {
     this.reservationProductsService.findAll(id).subscribe({
       next: (response: any) => {
         this.targetProducts = response;
+        console.log(response);
         this.cdr.markForCheck();
       },
       error: () => {},
@@ -50,7 +51,6 @@ export class ProductsAddComponent implements OnInit {
   }
 
   addProduct(event: any): void {
-    // const reservationId = this.dynamicDialogConfig.data.id;
     const products = event.items;
     products.map((product: any) => {
       this.reservationProductsService
@@ -64,7 +64,6 @@ export class ProductsAddComponent implements OnInit {
   }
 
   removeProduct(event: any): void {
-    // const reservationId = this.dynamicDialogConfig.data.id;
     const products = event.items;
     products.map((product: any) => {
       this.reservationProductsService
