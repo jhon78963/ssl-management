@@ -1,6 +1,16 @@
 import { Injectable } from '@angular/core';
-import { Locker, LockerListResponse } from '../models/locker.model';
-import { BehaviorSubject, debounceTime, map, Observable } from 'rxjs';
+import {
+  Locker,
+  LockerListResponse,
+  StatusLocker,
+} from '../models/locker.model';
+import {
+  BehaviorSubject,
+  debounceTime,
+  map,
+  Observable,
+  switchMap,
+} from 'rxjs';
 import { ApiService } from '../../../../services/api.service';
 
 @Injectable({
@@ -43,6 +53,12 @@ export class MaleLockersService {
 
   getTotal(): Observable<number> {
     return this.total$.asObservable();
+  }
+
+  changeStatus(id: number, data: StatusLocker) {
+    return this.apiService
+      .patch(`lockers/change-status/${id}`, data)
+      .pipe(switchMap(() => this.callGetList()));
   }
 
   private updateLockers(value: Locker[]): void {

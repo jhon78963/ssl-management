@@ -1,0 +1,28 @@
+<p-toast />
+<p-pickList
+  [source]="sourceProducts"
+  [target]="targetProducts"
+  sourceHeader="Disponibles"
+  targetHeader="Seleccionados"
+  [dragdrop]="true"
+  [responsive]="true"
+  [sourceStyle]="{ height: '30rem', width: '30rem' }"
+  [targetStyle]="{ height: '30rem', width: '30rem' }"
+  breakpoint="1400px"
+  [showSourceControls]="false"
+  [showTargetControls]="false"
+  (onMoveToTarget)="addProduct($event)"
+  (onMoveAllToTarget)="addProduct($event)"
+  (onMoveToSource)="removeProduct($event)"
+  (onMoveAllToSource)="removeProduct($event)"
+  filterBy="name">
+  <ng-template let-product pTemplate="item">
+    <div class="flex flex-wrap p-2 align-items-center gap-3">
+      <div class="flex-1 flex flex-column gap-2">
+        <span class="font-bold">
+          {{ product.name }}
+        </span>
+      </div>
+    </div>
+  </ng-template>
+</p-pickList>

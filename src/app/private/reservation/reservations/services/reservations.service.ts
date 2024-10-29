@@ -11,6 +11,7 @@ import {
 import { ApiService } from '../../../../services/api.service';
 
 import {
+  CreatedReservation,
   Reservation,
   ReservationListResponse,
 } from '../models/reservation.model';
@@ -59,10 +60,21 @@ export class ReservationsService {
     return this.apiService.get(`rooms/${id}`);
   }
 
-  create(data: Reservation): Observable<void> {
-    return this.apiService
-      .post('reservations', data)
-      .pipe(switchMap(() => this.callGetList()));
+  // create(data: Reservation): Observable<any> {
+  //   return this.apiService
+  //     .post('reservations', data)
+  //     .pipe(switchMap(() => this.callGetList()));
+  // }
+
+  create(data: Reservation): Observable<CreatedReservation> {
+    return this.apiService.post<CreatedReservation>('reservations', data).pipe(
+      switchMap((createdReservation: CreatedReservation) => {
+        // Después de crear, actualizamos la lista de reservas
+        return this.callGetList().pipe(
+          map(() => createdReservation), // Regresamos la reserva creada
+        );
+      }),
+    );
   }
 
   edit(id: number, data: Reservation): Observable<void> {

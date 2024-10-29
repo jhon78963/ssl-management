@@ -12,6 +12,9 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { MaleLockersService } from '../../../services/male-lockers.service';
 import { FemaleLockersService } from '../../../services/female-lockers.service';
 import { TooltipModule } from 'primeng/tooltip';
+import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
+import { MessageService } from 'primeng/api';
+import { ReservationFormComponent } from '../../../components/reservation/reservation.component';
 
 @Component({
   selector: 'app-customer-reservation-form',
@@ -29,8 +32,10 @@ import { TooltipModule } from 'primeng/tooltip';
   ],
   templateUrl: './customer-reservation-form.component.html',
   styleUrl: './customer-reservation-form.component.scss',
+  providers: [MessageService],
 })
 export class CustomerReservationFormComponent implements OnInit {
+  modal: DynamicDialogRef | undefined;
   genderOptions = [
     { name: 'Masculino', value: 1 },
     { name: 'Femenino', value: 2 },
@@ -67,6 +72,8 @@ export class CustomerReservationFormComponent implements OnInit {
   private searchFemaleTermSubject = new Subject<string>();
 
   constructor(
+    private readonly dialogService: DialogService,
+    public messageService: MessageService,
     private readonly femaleLockersService: FemaleLockersService,
     private readonly maleLockersService: MaleLockersService,
   ) {}
@@ -122,11 +129,57 @@ export class CustomerReservationFormComponent implements OnInit {
   }
 
   reservation(locker: Locker) {
-    console.log(locker);
+    this.modal = this.dialogService.open(ReservationFormComponent, {
+      data: { locker },
+      header: 'Registrar',
+    });
+
+    this.modal.onClose.subscribe({
+      next: () => {},
+      error: () => {
+        this.getMaleLockers(
+          this.limit,
+          this.page,
+          this.number,
+          this.gender,
+          this.status,
+        );
+        this.getMaleLockers(
+          this.limit,
+          this.page,
+          this.number,
+          this.gender,
+          this.status,
+        );
+      },
+    });
   }
 
   show(locker: Locker) {
-    console.log(locker);
+    this.modal = this.dialogService.open(ReservationFormComponent, {
+      data: { locker },
+      header: 'Agregar servicios',
+    });
+
+    this.modal.onClose.subscribe({
+      next: () => {},
+      error: () => {
+        this.getMaleLockers(
+          this.limit,
+          this.page,
+          this.number,
+          this.gender,
+          this.status,
+        );
+        this.getMaleLockers(
+          this.limit,
+          this.page,
+          this.number,
+          this.gender,
+          this.status,
+        );
+      },
+    });
   }
 
   finish(locker: Locker) {
@@ -172,7 +225,15 @@ export class CustomerReservationFormComponent implements OnInit {
   }
 
   onFilter(term: any) {
-    this.searchTermSubject.next(term);
+    const input = term.target.value;
+    if (input == '') {
+      this.searchTermSubject.next('');
+    }
+    const sanitizedInput = input.replace(/\D/g, '');
+    term.target.value = sanitizedInput;
+    if (sanitizedInput) {
+      this.searchTermSubject.next(sanitizedInput);
+    }
   }
 
   async getMaleLockers(
@@ -254,6 +315,32 @@ export class CustomerReservationFormComponent implements OnInit {
   }
 
   onFemaleFilter(term: any) {
-    this.searchFemaleTermSubject.next(term);
+    const input = term.target.value;
+    if (input == '') {
+      this.searchTermSubject.next('');
+    }
+    const sanitizedInput = input.replace(/\D/g, '');
+    term.target.value = sanitizedInput;
+    if (sanitizedInput) {
+      this.searchFemaleTermSubject.next(sanitizedInput);
+    }
+  }
+
+  showSuccess(message: string): void {
+    this.messageService.add({
+      severity: 'success',
+      summary: 'Confirmado',
+      detail: message,
+      life: 3000,
+    });
+  }
+
+  showError(message: string): void {
+    this.messageService.add({
+      severity: 'error',
+      summary: 'Error',
+      detail: message,
+      life: 3000,
+    });
   }
 }

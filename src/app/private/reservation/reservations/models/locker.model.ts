@@ -1,24 +1,50 @@
 export interface ILocker {
   id: number;
   number: number;
+  price: number;
+  priceString: string;
   status: string;
   genderId: number;
-  gender: string;
+  gender?: string;
+  reservationId?: number;
+  customerDni?: string;
+  customerName?: string;
+  customerSurname?: string;
 }
 
 export class Locker {
   id: number;
   number: number;
+  price: number;
   status: string;
   genderId: number;
-  gender: string;
+  gender?: string;
+  reservationId?: number;
+  customerDni?: string;
+  customerName?: string;
+  customerSurname?: string;
 
   constructor(locker: ILocker) {
     this.id = locker.id;
     this.number = locker.number;
+    this.price = locker.price;
     this.status = locker.status;
     this.genderId = locker.genderId;
-    this.gender = locker.gender;
+  }
+}
+
+export interface IStatusLocker {
+  id: number;
+  status: string;
+}
+
+export class StatusLocker {
+  id: number;
+  status: string;
+
+  constructor(locker: IStatusLocker) {
+    this.id = locker.id;
+    this.status = locker.status;
   }
 }
 

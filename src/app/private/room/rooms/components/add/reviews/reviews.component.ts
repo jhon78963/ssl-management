@@ -8,7 +8,6 @@ import { RatingModule } from 'primeng/rating';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { TooltipModule } from 'primeng/tooltip';
-import { ReviewsService } from '../../../../reviews/services/reviews.service';
 import { MessageService } from 'primeng/api';
 
 @Component({
@@ -34,7 +33,6 @@ export class AddReviewsComponent implements OnInit {
   constructor(
     private readonly dynamicDialogConfig: DynamicDialogConfig,
     private readonly roomReviewsService: RoomReviewsService,
-    private readonly reviewsService: ReviewsService,
     public messageService: MessageService,
   ) {}
 
