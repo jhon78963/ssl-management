@@ -27,7 +27,6 @@ export class ServicesAddComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // const id = this.dynamicDialogConfig.data.id;
     this.updateServices(this.reservationId);
   }
 
@@ -50,7 +49,6 @@ export class ServicesAddComponent implements OnInit {
   }
 
   addService(event: any): void {
-    // const reservationId = this.dynamicDialogConfig.data.id;
     const services = event.items;
     services.map((service: any) => {
       this.reservationServicesService
@@ -60,11 +58,10 @@ export class ServicesAddComponent implements OnInit {
           error: () => {},
         });
     });
-    this.updateServices(this.reservationId);
+    // this.updateServices(this.reservationId);
   }
 
   removeService(event: any): void {
-    // const reservationId = this.dynamicDialogConfig.data.id;
     const services = event.items;
     services.map((service: any) => {
       this.reservationServicesService
@@ -74,6 +71,6 @@ export class ServicesAddComponent implements OnInit {
           error: () => {},
         });
     });
-    this.updateServices(this.reservationId);
+    // this.updateServices(this.reservationId);
   }
 }

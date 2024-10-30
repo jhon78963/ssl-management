@@ -91,6 +91,24 @@ export interface CreatedReservation {
   reservationId: number;
 }
 
+export interface IFinishReservation {
+  id: number;
+  status: string;
+  total: number;
+}
+
+export class FinishReservation {
+  id: number;
+  status: string;
+  total: number;
+
+  constructor(reservation: IFinishReservation) {
+    this.id = reservation.id;
+    this.status = reservation.status;
+    this.total = reservation.total;
+  }
+}
+
 export interface Paginate {
   total: number;
   pages: number;

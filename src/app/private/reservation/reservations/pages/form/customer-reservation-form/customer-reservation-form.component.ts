@@ -15,6 +15,8 @@ import { TooltipModule } from 'primeng/tooltip';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { MessageService } from 'primeng/api';
 import { ReservationFormComponent } from '../../../components/reservation/reservation.component';
+import { CheckoutComponent } from '../../../components/checkout/checkout.component';
+import { showSuccess } from '../../../../../../utils/notifications';
 
 @Component({
   selector: 'app-customer-reservation-form',
@@ -129,6 +131,7 @@ export class CustomerReservationFormComponent implements OnInit {
   }
 
   reservation(locker: Locker) {
+    console.log(locker);
     this.modal = this.dialogService.open(ReservationFormComponent, {
       data: { locker },
       header: 'Registrar',
@@ -183,7 +186,32 @@ export class CustomerReservationFormComponent implements OnInit {
   }
 
   finish(locker: Locker) {
-    console.log(locker);
+    this.modal = this.dialogService.open(CheckoutComponent, {
+      data: { locker },
+      header: 'Checkout',
+    });
+
+    this.modal.onClose.subscribe({
+      next: () => {
+        showSuccess(this.messageService, 'Se registró con exitó.');
+      },
+      error: () => {
+        this.getMaleLockers(
+          this.limit,
+          this.page,
+          this.number,
+          this.gender,
+          this.status,
+        );
+        this.getMaleLockers(
+          this.limit,
+          this.page,
+          this.number,
+          this.gender,
+          this.status,
+        );
+      },
+    });
   }
 
   statusChange(event: any) {
@@ -324,23 +352,5 @@ export class CustomerReservationFormComponent implements OnInit {
     if (sanitizedInput) {
       this.searchFemaleTermSubject.next(sanitizedInput);
     }
-  }
-
-  showSuccess(message: string): void {
-    this.messageService.add({
-      severity: 'success',
-      summary: 'Confirmado',
-      detail: message,
-      life: 3000,
-    });
-  }
-
-  showError(message: string): void {
-    this.messageService.add({
-      severity: 'error',
-      summary: 'Error',
-      detail: message,
-      life: 3000,
-    });
   }
 }

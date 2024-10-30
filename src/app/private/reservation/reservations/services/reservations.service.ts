@@ -12,6 +12,7 @@ import { ApiService } from '../../../../services/api.service';
 
 import {
   CreatedReservation,
+  FinishReservation,
   Reservation,
   ReservationListResponse,
 } from '../models/reservation.model';
@@ -57,7 +58,7 @@ export class ReservationsService {
   }
 
   getOne(id: number): Observable<Reservation> {
-    return this.apiService.get(`rooms/${id}`);
+    return this.apiService.get(`reservations/${id}`);
   }
 
   // create(data: Reservation): Observable<any> {
@@ -77,7 +78,7 @@ export class ReservationsService {
     );
   }
 
-  edit(id: number, data: Reservation): Observable<void> {
+  edit(id: number, data: Reservation | FinishReservation): Observable<void> {
     return this.apiService
       .patch(`reservations/${id}`, data)
       .pipe(switchMap(() => this.callGetList()));

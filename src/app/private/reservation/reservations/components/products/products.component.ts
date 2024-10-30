@@ -34,7 +34,6 @@ export class ProductsAddComponent implements OnInit {
     this.reservationProductsService.findLeft(id).subscribe({
       next: (response: Product[]) => {
         this.sourceProducts = response;
-        console.log(response);
         this.cdr.markForCheck();
       },
       error: () => {},
@@ -43,7 +42,6 @@ export class ProductsAddComponent implements OnInit {
     this.reservationProductsService.findAll(id).subscribe({
       next: (response: any) => {
         this.targetProducts = response;
-        console.log(response);
         this.cdr.markForCheck();
       },
       error: () => {},
@@ -60,7 +58,7 @@ export class ProductsAddComponent implements OnInit {
           error: () => {},
         });
     });
-    this.updateProducts(this.reservationId);
+    // this.updateProducts(this.reservationId);
   }
 
   removeProduct(event: any): void {
@@ -73,6 +71,6 @@ export class ProductsAddComponent implements OnInit {
           error: () => {},
         });
     });
-    this.updateProducts(this.reservationId);
+    // this.updateProducts(this.reservationId);
   }
 }

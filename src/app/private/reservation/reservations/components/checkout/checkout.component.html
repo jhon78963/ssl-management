@@ -1,0 +1,97 @@
+<div class="grid grid-nogutter">
+  <div class="col-12 h-full px-4 py-4 md:px-6">
+    <span class="text-900 text-2xl font-medium block"
+      >Cliente: {{ customer }}</span
+    >
+  </div>
+  <div class="col-12 lg:col-6 h-full px-4 py-4 md:px-6">
+    @if (products && products.length > 0) {
+      <div class="pb-3 surface-border">
+        <span class="text-900 text-2xl font-medium block">Productos</span>
+      </div>
+      @for (product of products; track $index) {
+        <div
+          class="flex flex-column lg:flex-row flex-wrap lg:align-items-center py-2 surface-border">
+          <div class="flex-auto lg:ml-3">
+            <div class="flex align-items-center justify-content-between mb-3">
+              <span class="text-900 font-bold">{{ product.name }}</span>
+              <span class="text-900 font-bold">{{ product.priceString }}</span>
+            </div>
+            <div class="text-600 text-sm mb-3">{{ product.productType }}</div>
+          </div>
+        </div>
+      }
+    }
+    @if (services && services.length > 0 && products && products.length === 0) {
+      <div class="pb-3 surface-border">
+        <span class="text-900 text-2xl font-medium block">Servicios</span>
+      </div>
+      @for (service of services; track $index) {
+        <div
+          class="flex flex-column lg:flex-row flex-wrap lg:align-items-center py-2 surface-border">
+          <div class="flex-auto lg:ml-3">
+            <div class="flex align-items-center justify-content-between mb-3">
+              <span class="text-900 font-bold">{{ service.name }}</span>
+              <span class="text-900 font-bold">{{ service.priceString }}</span>
+            </div>
+          </div>
+        </div>
+      }
+    }
+  </div>
+  <div class="col-12 lg:col-6 h-full px-4 py-4 md:px-6">
+    @if (services && services.length > 0 && products && products.length > 0) {
+      <div class="pb-3 surface-border">
+        <span class="text-900 text-2xl font-medium block">Servicios</span>
+      </div>
+      @for (service of services; track $index) {
+        <div
+          class="flex flex-column lg:flex-row flex-wrap lg:align-items-center py-2 surface-border">
+          <div class="flex-auto lg:ml-3">
+            <div class="flex align-items-center justify-content-between mb-3">
+              <span class="text-900 font-bold">{{ service.name }}</span>
+              <span class="text-900 font-bold">{{ service.priceString }}</span>
+            </div>
+          </div>
+        </div>
+      }
+    }
+    <div class="pb-3 surface-border">
+      <span class="text-900 text-2xl font-medium block">Resumen</span>
+    </div>
+    <div class="py-2 px-4">
+      <div class="flex flex-column align-items-start">
+        <div
+          class="flex justify-content-between align-items-center mb-3 w-full">
+          <span class="text-900 font-medium">Locker</span>
+          <span class="text-900">S/ {{ lockerPrice }}</span>
+        </div>
+        <div
+          class="flex justify-content-between align-items-center mb-3 w-full">
+          <span class="text-900 font-medium">Productos</span>
+          <span class="text-900">S/ {{ totalProducts }}</span>
+        </div>
+        <div
+          class="flex justify-content-between align-items-center mb-3 w-full">
+          <span class="text-900 font-medium">Servicios</span>
+          <span class="text-900">S/ {{ totalServices }}</span>
+        </div>
+        <div
+          class="flex justify-content-between align-items-center mb-3 w-full">
+          <span class="text-900 font-bold">Total</span>
+          <span class="text-900 font-medium text-xl">S/ {{ total }}</span>
+        </div>
+      </div>
+    </div>
+    <div
+      class="flex flex-column lg:flex-row justify-content-center align-items-center lg:justify-content-end">
+      <button
+        pButton
+        pRipple
+        class="p-button-primary w-full lg:w-auto flex-order-1 lg:flex-order-2"
+        label="Pagar"
+        icon="pi pi-fw pi-check"
+        (click)="payment(total)"></button>
+    </div>
+  </div>
+</div>
