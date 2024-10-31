@@ -38,7 +38,11 @@
         <span
           class="font-bold text-900"
           *ngIf="!sourceServices!.includes(service)">
-          S/ {{ service.price * service.quantity }}
+          @if (service.total) {
+            S/ {{ service.total }}
+          } @else {
+            S/ {{ service.price * service.quantity }}
+          }
         </span>
         <span
           class="font-bold text-900"

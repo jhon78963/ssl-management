@@ -49,8 +49,6 @@ export class ProductsAddComponent implements OnInit {
         this.sourceProducts = response;
         this.sourceProducts.map((sourceProduct: Product) => {
           sourceProduct.quantity = sourceProduct.quantity ?? 1;
-          sourceProduct.total =
-            (sourceProduct.price ?? 0) * (sourceProduct.quantity ?? 1);
         });
         this.cdr.markForCheck();
       },
@@ -62,8 +60,6 @@ export class ProductsAddComponent implements OnInit {
         this.targetProducts = response;
         this.targetProducts.map((targetProduct: Product) => {
           targetProduct.quantity = targetProduct.quantity ?? 1;
-          targetProduct.total =
-            (targetProduct.price ?? 0) * (targetProduct.quantity ?? 1);
         });
         this.cdr.markForCheck();
       },

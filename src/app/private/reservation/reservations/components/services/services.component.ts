@@ -46,8 +46,6 @@ export class ServicesAddComponent implements OnInit {
         this.sourceServices = response;
         this.sourceServices.map((sourceService: Service) => {
           sourceService.quantity = sourceService.quantity ?? 1;
-          sourceService.total =
-            (sourceService.price ?? 0) * (sourceService.quantity ?? 1);
         });
         this.cdr.markForCheck();
       },
@@ -59,8 +57,6 @@ export class ServicesAddComponent implements OnInit {
         this.targetServices = response;
         this.targetServices.map((targetService: Service) => {
           targetService.quantity = targetService.quantity ?? 1;
-          targetService.total =
-            (targetService.price ?? 0) * (targetService.quantity ?? 1);
         });
         this.cdr.markForCheck();
       },
