@@ -9,11 +9,14 @@ import { Service } from '../models/service.model';
 export class ReservationServicesService {
   constructor(private readonly apiService: ApiService) {}
 
-  add(reservationId: number, serviceId: number): Observable<void> {
-    return this.apiService.post(
-      `services/${reservationId}/add/${serviceId}`,
-      {},
-    );
+  add(
+    reservationId: number,
+    serviceId: number,
+    quantity: number,
+  ): Observable<void> {
+    return this.apiService.post(`services/${reservationId}/add/${serviceId}`, {
+      quantity,
+    });
   }
 
   findAll(id: number): Observable<Service[]> {

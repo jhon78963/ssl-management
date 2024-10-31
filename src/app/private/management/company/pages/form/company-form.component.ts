@@ -36,7 +36,6 @@ export class CompanyFormComponent implements OnInit {
   }
 
   buttonUpdateCompany(): void {
-    console.log('click');
     if (this.form) {
       const company = new Company(this.form.value);
       this.companyService.edit(this.companyId, company).subscribe({

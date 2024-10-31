@@ -14,10 +14,14 @@
           class="flex flex-column lg:flex-row flex-wrap lg:align-items-center py-2 surface-border">
           <div class="flex-auto lg:ml-3">
             <div class="flex align-items-center justify-content-between mb-3">
-              <span class="text-900 font-bold">{{ product.name }}</span>
-              <span class="text-900 font-bold">{{ product.priceString }}</span>
+              <span class="text-900 font-bold">
+                X{{ product.quantity }} {{ product.name }}
+              </span>
+              <span class="text-900 font-bold"> S/ {{ product.total }} </span>
             </div>
-            <div class="text-600 text-sm mb-3">{{ product.productType }}</div>
+            <div class="text-600 text-sm mb-3">
+              Precio Unit. {{ product.price }}
+            </div>
           </div>
         </div>
       }
@@ -31,8 +35,13 @@
           class="flex flex-column lg:flex-row flex-wrap lg:align-items-center py-2 surface-border">
           <div class="flex-auto lg:ml-3">
             <div class="flex align-items-center justify-content-between mb-3">
-              <span class="text-900 font-bold">{{ service.name }}</span>
-              <span class="text-900 font-bold">{{ service.priceString }}</span>
+              <span class="text-900 font-bold">
+                X{{ service.quantity }} {{ service.name }}
+              </span>
+              <span class="text-900 font-bold"> S/ {{ service.total }} </span>
+            </div>
+            <div class="text-600 text-sm mb-3">
+              Precio Unit. {{ service.price }}
             </div>
           </div>
         </div>
@@ -49,8 +58,13 @@
           class="flex flex-column lg:flex-row flex-wrap lg:align-items-center py-2 surface-border">
           <div class="flex-auto lg:ml-3">
             <div class="flex align-items-center justify-content-between mb-3">
-              <span class="text-900 font-bold">{{ service.name }}</span>
-              <span class="text-900 font-bold">{{ service.priceString }}</span>
+              <span class="text-900 font-bold">
+                X{{ service.quantity }} {{ service.name }}
+              </span>
+              <span class="text-900 font-bold"> S/ {{ service.total }} </span>
+            </div>
+            <div class="text-600 text-sm mb-3">
+              Precio Unit. {{ service.price }}
             </div>
           </div>
         </div>

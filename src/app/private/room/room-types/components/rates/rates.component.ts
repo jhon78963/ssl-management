@@ -57,7 +57,6 @@ export class AddRatesComponent implements OnInit {
         error: () => {},
       });
     });
-    this.updateRates(roomId);
   }
 
   removeRate(event: any): void {
@@ -69,6 +68,5 @@ export class AddRatesComponent implements OnInit {
         error: () => {},
       });
     });
-    this.updateRates(roomId);
   }
 }

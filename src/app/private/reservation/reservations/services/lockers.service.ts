@@ -18,13 +18,12 @@ export class LockersService {
   constructor(private apiService: ApiService) {}
 
   callGetList(
-    limit: number = 10,
+    limit: number = 12,
     page: number = 1,
-    number: number = 0,
-    gender: number = 1,
-    status: string = 'AVAILABLE',
+    number: string = '',
+    status: string = 'IN_USE',
   ): Observable<void> {
-    let url = `lockers?limit=${limit}&page=${page}&gender=${gender}&status=${status}`;
+    let url = `lockers?limit=${limit}&page=${page}&status=${status}`;
     if (number) {
       url += `&search=${number}`;
     }

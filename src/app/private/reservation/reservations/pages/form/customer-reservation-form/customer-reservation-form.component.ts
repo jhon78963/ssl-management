@@ -16,7 +16,8 @@ import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { MessageService } from 'primeng/api';
 import { ReservationFormComponent } from '../../../components/reservation/reservation.component';
 import { CheckoutComponent } from '../../../components/checkout/checkout.component';
-import { showSuccess } from '../../../../../../utils/notifications';
+import { LockersService } from '../../../services/lockers.service';
+// import { showSuccess } from '../../../../../../utils/notifications';
 
 @Component({
   selector: 'app-customer-reservation-form',
@@ -70,24 +71,42 @@ export class CustomerReservationFormComponent implements OnInit {
   femaleGender: number = 2;
   femaleStatus: string = 'AVAILABLE';
 
+  lockerLimit: number = 12;
+  lockerPage: number = 1;
+  lockerNumber: string = '';
+  firstLocker: number = 0;
+  lockerStatus: string = 'IN_USE';
+
   private searchTermSubject = new Subject<string>();
   private searchFemaleTermSubject = new Subject<string>();
+  private searchLockerTermSubject = new Subject<string>();
 
   constructor(
     private readonly dialogService: DialogService,
     public messageService: MessageService,
     private readonly femaleLockersService: FemaleLockersService,
+    private readonly lockersService: LockersService,
     private readonly maleLockersService: MaleLockersService,
   ) {}
 
   ngOnInit(): void {
-    this.getMaleLockers(
-      this.limit,
-      this.page,
-      this.number,
-      this.gender,
-      this.status,
-    );
+    if (this.gender == 1) {
+      this.getMaleLockers(
+        this.limit,
+        this.page,
+        this.number,
+        this.gender,
+        this.status,
+      );
+    } else {
+      this.getFemaleLockers(
+        this.femaleLimit,
+        this.femalePage,
+        this.femaleNumber,
+        this.femaleGender,
+        this.femaleStatus,
+      );
+    }
     this.searchTermSubject.pipe(debounceTime(600)).subscribe(() => {
       this.getMaleLockers(
         this.limit,
@@ -104,6 +123,14 @@ export class CustomerReservationFormComponent implements OnInit {
         this.femaleNumber,
         this.femaleGender,
         this.femaleStatus,
+      );
+    });
+    this.searchLockerTermSubject.pipe(debounceTime(600)).subscribe(() => {
+      this.getLockers(
+        this.lockerLimit,
+        this.lockerPage,
+        this.lockerNumber,
+        this.lockerStatus,
       );
     });
   }
@@ -131,30 +158,12 @@ export class CustomerReservationFormComponent implements OnInit {
   }
 
   reservation(locker: Locker) {
-    console.log(locker);
     this.modal = this.dialogService.open(ReservationFormComponent, {
-      data: { locker },
-      header: 'Registrar',
-    });
-
-    this.modal.onClose.subscribe({
-      next: () => {},
-      error: () => {
-        this.getMaleLockers(
-          this.limit,
-          this.page,
-          this.number,
-          this.gender,
-          this.status,
-        );
-        this.getMaleLockers(
-          this.limit,
-          this.page,
-          this.number,
-          this.gender,
-          this.status,
-        );
+      data: {
+        locker,
+        create: true,
       },
+      header: 'Registrar',
     });
   }
 
@@ -162,26 +171,6 @@ export class CustomerReservationFormComponent implements OnInit {
     this.modal = this.dialogService.open(ReservationFormComponent, {
       data: { locker },
       header: 'Agregar servicios',
-    });
-
-    this.modal.onClose.subscribe({
-      next: () => {},
-      error: () => {
-        this.getMaleLockers(
-          this.limit,
-          this.page,
-          this.number,
-          this.gender,
-          this.status,
-        );
-        this.getMaleLockers(
-          this.limit,
-          this.page,
-          this.number,
-          this.gender,
-          this.status,
-        );
-      },
     });
   }
 
@@ -193,22 +182,19 @@ export class CustomerReservationFormComponent implements OnInit {
 
     this.modal.onClose.subscribe({
       next: () => {
-        showSuccess(this.messageService, 'Se registró con exitó.');
+        this.getLockers(
+          this.lockerLimit,
+          this.lockerPage,
+          this.lockerNumber,
+          this.lockerStatus,
+        );
       },
       error: () => {
-        this.getMaleLockers(
-          this.limit,
-          this.page,
-          this.number,
-          this.gender,
-          this.status,
-        );
-        this.getMaleLockers(
-          this.limit,
-          this.page,
-          this.number,
-          this.gender,
-          this.status,
+        this.getLockers(
+          this.lockerLimit,
+          this.lockerPage,
+          this.lockerNumber,
+          this.lockerStatus,
         );
       },
     });
@@ -230,12 +216,11 @@ export class CustomerReservationFormComponent implements OnInit {
       this.first = (this.page - 1) * this.limit;
       this.status = 'IN_USE';
       this.statusSelected = this.statusOptions[1];
-      this.getMaleLockers(
-        this.limit,
-        this.page,
-        this.number,
-        this.gender,
-        this.status,
+      this.getLockers(
+        this.lockerLimit,
+        this.lockerPage,
+        this.lockerNumber,
+        this.lockerStatus,
       );
     }
   }
@@ -320,12 +305,11 @@ export class CustomerReservationFormComponent implements OnInit {
       this.firstFemale = (this.femalePage - 1) * this.femaleLimit;
       this.femaleStatus = 'IN_USE';
       this.femaleStatusSelected = this.statusOptions[1];
-      this.getFemaleLockers(
-        this.femaleLimit,
-        this.femalePage,
-        this.femaleNumber,
-        this.femaleGender,
-        this.femaleStatus,
+      this.getLockers(
+        this.lockerLimit,
+        this.lockerPage,
+        this.lockerNumber,
+        this.lockerStatus,
       );
     }
   }
@@ -345,12 +329,52 @@ export class CustomerReservationFormComponent implements OnInit {
   onFemaleFilter(term: any) {
     const input = term.target.value;
     if (input == '') {
-      this.searchTermSubject.next('');
+      this.searchFemaleTermSubject.next('');
     }
     const sanitizedInput = input.replace(/\D/g, '');
     term.target.value = sanitizedInput;
     if (sanitizedInput) {
       this.searchFemaleTermSubject.next(sanitizedInput);
+    }
+  }
+
+  async getLockers(
+    limit = this.lockerLimit,
+    page = this.lockerPage,
+    number = this.lockerNumber,
+    status = this.lockerStatus,
+  ): Promise<void> {
+    this.lockersService.callGetList(limit, page, number, status).subscribe();
+  }
+
+  get lockers(): Observable<Locker[]> {
+    return this.lockersService.getList();
+  }
+
+  get lockertotal(): Observable<number> {
+    return this.lockersService.getTotal();
+  }
+
+  onLockerPageChange(event: any) {
+    this.lockerPage = event.page + 1;
+    this.firstLocker = event.first;
+    this.getLockers(
+      this.lockerLimit,
+      this.lockerPage,
+      this.lockerNumber,
+      this.lockerStatus,
+    );
+  }
+
+  onLockerFilter(term: any) {
+    const input = term.target.value;
+    if (input == '') {
+      this.searchLockerTermSubject.next('');
+    }
+    const sanitizedInput = input.replace(/\D/g, '');
+    term.target.value = sanitizedInput;
+    if (sanitizedInput) {
+      this.searchLockerTermSubject.next(sanitizedInput);
     }
   }
 }

@@ -5,11 +5,21 @@ import { DynamicDialogConfig } from 'primeng/dynamicdialog';
 import { PickListModule } from 'primeng/picklist';
 import { ReservationProductsService } from '../../services/reservation-products.service';
 import { Product } from '../../models/product.model';
+import { CommonModule } from '@angular/common';
+import { InputNumberModule } from 'primeng/inputnumber';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-add-products',
   standalone: true,
-  imports: [TableModule, ToastModule, PickListModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    InputNumberModule,
+    PickListModule,
+    TableModule,
+    ToastModule,
+  ],
   templateUrl: './products.component.html',
   styleUrl: './products.component.scss',
 })
@@ -19,6 +29,7 @@ export class ProductsAddComponent implements OnInit {
   selectedProducts: Product | undefined;
   sourceProducts: Product[] | undefined;
   targetProducts: Product[] | undefined;
+  quantity: number = 1;
 
   constructor(
     private readonly dynamicDialogConfig: DynamicDialogConfig,
@@ -34,14 +45,24 @@ export class ProductsAddComponent implements OnInit {
     this.reservationProductsService.findLeft(id).subscribe({
       next: (response: Product[]) => {
         this.sourceProducts = response;
+        this.sourceProducts.map((sourceProduct: Product) => {
+          sourceProduct.quantity = sourceProduct.quantity ?? 1;
+          sourceProduct.total =
+            (sourceProduct.price ?? 0) * (sourceProduct.quantity ?? 1);
+        });
         this.cdr.markForCheck();
       },
       error: () => {},
     });
 
     this.reservationProductsService.findAll(id).subscribe({
-      next: (response: any) => {
+      next: (response: Product[]) => {
         this.targetProducts = response;
+        this.targetProducts.map((targetProduct: Product) => {
+          targetProduct.quantity = targetProduct.quantity ?? 1;
+          targetProduct.total =
+            (targetProduct.price ?? 0) * (targetProduct.quantity ?? 1);
+        });
         this.cdr.markForCheck();
       },
       error: () => {},
@@ -52,13 +73,12 @@ export class ProductsAddComponent implements OnInit {
     const products = event.items;
     products.map((product: any) => {
       this.reservationProductsService
-        .add(this.reservationId, product.id)
+        .add(this.reservationId, product.id, product.quantity)
         .subscribe({
           next: () => {},
           error: () => {},
         });
     });
-    // this.updateProducts(this.reservationId);
   }
 
   removeProduct(event: any): void {
@@ -71,6 +91,5 @@ export class ProductsAddComponent implements OnInit {
           error: () => {},
         });
     });
-    // this.updateProducts(this.reservationId);
   }
 }

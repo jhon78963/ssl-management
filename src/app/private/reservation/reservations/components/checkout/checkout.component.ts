@@ -54,11 +54,17 @@ export class CheckoutComponent implements OnInit {
         this.services = reservation.services;
         this.totalProducts = this.products
           ?.filter(product => product.price)
-          .reduce((sum, product) => sum + product.price, 0);
+          .reduce((sum, product) => sum + product.price * product.quantity, 0);
         this.totalServices = this.services
           ?.filter(product => product.price)
-          .reduce((sum, product) => sum + product.price, 0);
+          .reduce((sum, product) => sum + product.price * product.quantity, 0);
         this.total = this.totalProducts + this.totalServices + this.lockerPrice;
+        this.products?.forEach(product => {
+          product.total = (product.price ?? 0) * (product.quantity ?? 1);
+        });
+        this.services?.forEach(service => {
+          service.total = (service.price ?? 0) * (service.quantity ?? 1);
+        });
       });
   }
 

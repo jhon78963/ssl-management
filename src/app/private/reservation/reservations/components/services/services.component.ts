@@ -5,11 +5,21 @@ import { DynamicDialogConfig } from 'primeng/dynamicdialog';
 import { PickListModule } from 'primeng/picklist';
 import { ReservationServicesService } from '../../services/reservation-services.service';
 import { Service } from '../../models/service.model';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { InputNumberModule } from 'primeng/inputnumber';
 
 @Component({
   selector: 'app-add-services',
   standalone: true,
-  imports: [TableModule, ToastModule, PickListModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    InputNumberModule,
+    PickListModule,
+    TableModule,
+    ToastModule,
+  ],
   templateUrl: './services.component.html',
   styleUrl: './services.component.scss',
 })
@@ -34,14 +44,24 @@ export class ServicesAddComponent implements OnInit {
     this.reservationServicesService.findLeft(id).subscribe({
       next: (response: Service[]) => {
         this.sourceServices = response;
+        this.sourceServices.map((sourceService: Service) => {
+          sourceService.quantity = sourceService.quantity ?? 1;
+          sourceService.total =
+            (sourceService.price ?? 0) * (sourceService.quantity ?? 1);
+        });
         this.cdr.markForCheck();
       },
       error: () => {},
     });
 
     this.reservationServicesService.findAll(id).subscribe({
-      next: (response: any) => {
+      next: (response: Service[]) => {
         this.targetServices = response;
+        this.targetServices.map((targetService: Service) => {
+          targetService.quantity = targetService.quantity ?? 1;
+          targetService.total =
+            (targetService.price ?? 0) * (targetService.quantity ?? 1);
+        });
         this.cdr.markForCheck();
       },
       error: () => {},
@@ -52,13 +72,12 @@ export class ServicesAddComponent implements OnInit {
     const services = event.items;
     services.map((service: any) => {
       this.reservationServicesService
-        .add(this.reservationId, service.id)
+        .add(this.reservationId, service.id, service.quantity)
         .subscribe({
           next: () => {},
           error: () => {},
         });
     });
-    // this.updateServices(this.reservationId);
   }
 
   removeService(event: any): void {
@@ -71,6 +90,5 @@ export class ServicesAddComponent implements OnInit {
           error: () => {},
         });
     });
-    // this.updateServices(this.reservationId);
   }
 }

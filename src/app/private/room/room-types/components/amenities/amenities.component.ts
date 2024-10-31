@@ -57,7 +57,6 @@ export class AddAmenitiesComponent implements OnInit {
         error: () => {},
       });
     });
-    this.updateAmenities(roomId);
   }
 
   removeAmenity(event: any): void {
@@ -69,6 +68,5 @@ export class AddAmenitiesComponent implements OnInit {
         error: () => {},
       });
     });
-    this.updateAmenities(roomId);
   }
 }

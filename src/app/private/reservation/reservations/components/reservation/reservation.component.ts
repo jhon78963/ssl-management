@@ -47,6 +47,7 @@ import { ProductsAddComponent } from '../products/products.component';
 })
 export class ReservationFormComponent implements OnInit {
   reservationId: number = 0;
+  isCreate: boolean = false;
 
   items: any[] = [
     { label: 'Cliente' },
@@ -82,6 +83,14 @@ export class ReservationFormComponent implements OnInit {
     if (this.dynamicDialogConfig.data.locker) {
       this.updateStepStatus(true);
       const locker = this.dynamicDialogConfig.data.locker;
+      this.isCreate = this.dynamicDialogConfig.data.create;
+      if (!this.isCreate) {
+        this.updateStepStatus(false);
+        this.items = this.items.filter(item => item.label !== 'Cliente');
+        if (this.currentIndex > 0) {
+          this.currentIndex -= 1; // Ajusta el índice si es necesario
+        }
+      }
 
       if (locker.reservationId) {
         this.reservationId = locker.reservationId;

@@ -9,11 +9,14 @@ import { Product } from '../models/product.model';
 export class ReservationProductsService {
   constructor(private readonly apiService: ApiService) {}
 
-  add(reservationId: number, productId: number): Observable<void> {
-    return this.apiService.post(
-      `products/${reservationId}/add/${productId}`,
-      {},
-    );
+  add(
+    reservationId: number,
+    productId: number,
+    quantity: number,
+  ): Observable<void> {
+    return this.apiService.post(`products/${reservationId}/add/${productId}`, {
+      quantity,
+    });
   }
 
   findAll(id: number): Observable<Product[]> {

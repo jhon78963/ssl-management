@@ -43,9 +43,7 @@ export class AppTopbarComponent {
         localStorage.removeItem('user');
         this.router.navigate(['/auth/login']);
       },
-      error: error => {
-        console.log(error);
-      },
+      error: () => {},
     });
   }
 }

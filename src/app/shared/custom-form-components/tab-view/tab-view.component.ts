@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { TabMenuModule } from 'primeng/tabmenu';
@@ -12,12 +12,8 @@ import { ToastModule } from 'primeng/toast';
   styleUrl: './tab-view.component.scss',
   providers: [MessageService, ConfirmationService],
 })
-export class TabViewComponent implements OnInit {
+export class TabViewComponent {
   @Input() tabs: MenuItem[] = [];
   activeItem: MenuItem = this.tabs[0];
   constructor() {}
-
-  ngOnInit(): void {
-    console.log(this.tabs);
-  }
 }
