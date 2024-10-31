@@ -27,9 +27,13 @@ export class ReservationProductsService {
     return this.apiService.get(`products/${id}/left`);
   }
 
-  remove(reservationId: number, productId: number): Observable<void> {
+  remove(
+    reservationId: number,
+    productId: number,
+    quantity: number,
+  ): Observable<void> {
     return this.apiService.delete(
-      `products/${reservationId}/remove/${productId}`,
+      `products/${reservationId}/remove/${productId}/quantity/${quantity}`,
     );
   }
 }

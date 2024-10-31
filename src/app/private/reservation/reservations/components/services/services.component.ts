@@ -84,7 +84,7 @@ export class ServicesAddComponent implements OnInit {
     const services = event.items;
     services.map((service: any) => {
       this.reservationServicesService
-        .remove(this.reservationId, service.id)
+        .remove(this.reservationId, service.id, service.quantity)
         .subscribe({
           next: () => {},
           error: () => {},

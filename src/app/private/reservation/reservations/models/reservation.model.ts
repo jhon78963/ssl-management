@@ -109,6 +109,21 @@ export class FinishReservation {
   }
 }
 
+export interface IConsumptionReservation {
+  id: number;
+  total: number;
+}
+
+export class ConsumptionReservation {
+  id: number;
+  total: number;
+
+  constructor(reservation: IConsumptionReservation) {
+    this.id = reservation.id;
+    this.total = reservation.total;
+  }
+}
+
 export interface Paginate {
   total: number;
   pages: number;

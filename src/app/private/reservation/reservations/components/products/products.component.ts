@@ -8,6 +8,7 @@ import { Product } from '../../models/product.model';
 import { CommonModule } from '@angular/common';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { FormsModule } from '@angular/forms';
+import { ReservationsService } from '../../services/reservations.service';
 
 @Component({
   selector: 'app-add-products',
@@ -34,6 +35,7 @@ export class ProductsAddComponent implements OnInit {
   constructor(
     private readonly dynamicDialogConfig: DynamicDialogConfig,
     private readonly reservationProductsService: ReservationProductsService,
+    private readonly reservationsService: ReservationsService,
     private cdr: ChangeDetectorRef,
   ) {}
 
@@ -85,7 +87,7 @@ export class ProductsAddComponent implements OnInit {
     const products = event.items;
     products.map((product: any) => {
       this.reservationProductsService
-        .remove(this.reservationId, product.id)
+        .remove(this.reservationId, product.id, product.quantity)
         .subscribe({
           next: () => {},
           error: () => {},
