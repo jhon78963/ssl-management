@@ -19,11 +19,18 @@ import { ReservationsService } from '../../services/reservations.service';
 import { FemaleLockersService } from '../../services/female-lockers.service';
 import { MaleLockersService } from '../../services/male-lockers.service';
 import { ReactiveFormsModule } from '@angular/forms';
+import { ToastModule } from 'primeng/toast';
 
 @Component({
   selector: 'app-massive-reservation',
   standalone: true,
-  imports: [CommonModule, FormsModule, SharedModule, ReactiveFormsModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    SharedModule,
+    ReactiveFormsModule,
+    ToastModule,
+  ],
   templateUrl: './massive-reservation.component.html',
   styleUrl: './massive-reservation.component.scss',
   providers: [MessageService, DatePipe],
