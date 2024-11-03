@@ -17,6 +17,8 @@ import { MessageService } from 'primeng/api';
 import { ReservationFormComponent } from '../../../components/reservation/reservation.component';
 import { CheckoutComponent } from '../../../components/checkout/checkout.component';
 import { LockersService } from '../../../services/lockers.service';
+import { CheckboxModule } from 'primeng/checkbox';
+import { MassiveReservationComponent } from '../../../components/massive-reservation/massive-reservation.component';
 // import { showSuccess } from '../../../../../../utils/notifications';
 
 @Component({
@@ -32,6 +34,7 @@ import { LockersService } from '../../../services/lockers.service';
     PaginatorModule,
     InputNumberModule,
     TooltipModule,
+    CheckboxModule,
   ],
   templateUrl: './customer-reservation-form.component.html',
   styleUrl: './customer-reservation-form.component.scss',
@@ -80,6 +83,8 @@ export class CustomerReservationFormComponent implements OnInit {
   private searchTermSubject = new Subject<string>();
   private searchFemaleTermSubject = new Subject<string>();
   private searchLockerTermSubject = new Subject<string>();
+
+  selectedLockers: any[] = [];
 
   constructor(
     private readonly dialogService: DialogService,
@@ -155,6 +160,16 @@ export class CustomerReservationFormComponent implements OnInit {
         this.femaleStatus,
       );
     }
+  }
+
+  massiveReservation(selectedReservation: any[]) {
+    this.modal = this.dialogService.open(MassiveReservationComponent, {
+      data: { selectedReservation },
+      header: 'Registrar',
+    });
+    // selectedReservation.map(reservation => {
+    //   console.log(reservation);
+    // });
   }
 
   reservation(locker: Locker) {
