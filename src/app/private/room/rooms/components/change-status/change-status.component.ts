@@ -30,9 +30,9 @@ import { RoomsService } from '../../services/rooms.service';
 })
 export class ChangeStatusComponent implements OnInit {
   statuses: RoomStatus[] = [
-    { label: 'Disponible', value: 'DISPONIBLE' },
-    { label: 'Ocupado', value: 'OCUPADO' },
-    { label: 'En Limpieza', value: 'EN_LIMPIEZA' },
+    { label: 'Disponible', value: 'AVAILABLE' },
+    { label: 'Ocupado', value: 'IN_USE' },
+    { label: 'En Limpieza', value: 'IN_CLEANING' },
   ];
 
   form: FormGroup = this.formBuilder.group({

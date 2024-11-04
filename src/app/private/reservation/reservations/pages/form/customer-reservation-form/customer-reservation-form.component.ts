@@ -3,7 +3,6 @@ import { debounceTime, Observable, Subject } from 'rxjs';
 import { Locker } from '../../../models/locker.model';
 import { CommonModule } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
-import { OrderListModule } from 'primeng/orderlist';
 import { InputTextModule } from 'primeng/inputtext';
 import { SelectButtonModule } from 'primeng/selectbutton';
 import { FormsModule } from '@angular/forms';
@@ -28,7 +27,6 @@ import { MassiveReservationComponent } from '../../../components/massive-reserva
     CommonModule,
     FormsModule,
     ButtonModule,
-    OrderListModule,
     InputTextModule,
     SelectButtonModule,
     PaginatorModule,
@@ -60,7 +58,6 @@ export class CustomerReservationFormComponent implements OnInit {
   rowsPerPageOptions: number[] = [12, 24, 50];
 
   first: number = 0;
-
   limit: number = 12;
   page: number = 1;
   number: string = '';
@@ -84,7 +81,7 @@ export class CustomerReservationFormComponent implements OnInit {
   private searchFemaleTermSubject = new Subject<string>();
   private searchLockerTermSubject = new Subject<string>();
 
-  selectedLockers: any[] = [];
+  selectedReservations: any[] = [];
 
   constructor(
     private readonly dialogService: DialogService,
@@ -167,9 +164,6 @@ export class CustomerReservationFormComponent implements OnInit {
       data: { selectedReservation },
       header: 'Registrar',
     });
-    // selectedReservation.map(reservation => {
-    //   console.log(reservation);
-    // });
   }
 
   reservation(locker: Locker) {

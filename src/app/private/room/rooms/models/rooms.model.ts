@@ -13,7 +13,9 @@ export interface IRoom {
   roomNumber: number;
   capacity: number;
   status: string;
+  roomStatus: string;
   roomTypeId: number;
+  roomType: string;
   images: Image[];
   amenities: IAmenity[];
   rates: IRate[];
@@ -25,7 +27,9 @@ export class Room {
   roomNumber: number;
   capacity: number;
   status: string;
+  roomStatus?: string;
   roomTypeId: number;
+  roomType?: string;
   images: Image[];
   amenities: IAmenity[];
   rates: IRate[];

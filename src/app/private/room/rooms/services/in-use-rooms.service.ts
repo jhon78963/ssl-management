@@ -15,7 +15,7 @@ import { Room, RoomListResponse } from '../models/rooms.model';
 @Injectable({
   providedIn: 'root',
 })
-export class RoomsService {
+export class InUseRoomsService {
   rooms: Room[] = [];
   rooms$: BehaviorSubject<Room[]> = new BehaviorSubject<Room[]>(this.rooms);
 
@@ -28,7 +28,7 @@ export class RoomsService {
     limit: number = 10,
     page: number = 1,
     number: string = '',
-    status: string = 'AVAILABLE',
+    status: string = 'IN_USE',
   ): Observable<void> {
     let url = `rooms?limit=${limit}&page=${page}&status=${status}`;
     if (number) {
