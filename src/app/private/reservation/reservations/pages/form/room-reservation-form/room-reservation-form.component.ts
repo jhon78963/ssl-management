@@ -158,11 +158,11 @@ export class RoomReservationFormComponent implements OnInit {
   }
 
   get inUseRooms(): Observable<Room[]> {
-    return this.roomsService.getList();
+    return this.inUseRoomsService.getList();
   }
 
   get inUseRoomTotal(): Observable<number> {
-    return this.roomsService.getTotal();
+    return this.inUseRoomsService.getTotal();
   }
 
   onInUseRoomPageChange(event: any) {
