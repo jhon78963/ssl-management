@@ -186,12 +186,7 @@ export class RoomReservationComponent implements OnInit {
                 this.reservationForm.get('name')?.setValue(null);
                 this.reservationForm.get('surname')?.setValue(null);
               },
-              error: () => {
-                // showError(
-                //   this.messageService,
-                //   'No se encontró el cliente. Ingreseló manualmente',
-                // );
-              },
+              error: () => {},
             });
           this.roomsService.changeStatus(room.id, body).subscribe();
           showSuccess(this.messageService, 'La habitación ha sido registrado.');
@@ -207,14 +202,7 @@ export class RoomReservationComponent implements OnInit {
     }
   }
 
-  buttonSaveReservation() {
-    this.saveReservation();
-    this.updateStepStatus(false);
-    this.currentIndex = 1;
-  }
-
   addCustomer(reservationId: number) {
-    console.log({ reservationId, customerId: this.customerId });
     if (reservationId == 0) {
       this.saveReservation(true);
     } else {
@@ -228,23 +216,20 @@ export class RoomReservationComponent implements OnInit {
             this.reservationForm.get('name')?.setValue(null);
             this.reservationForm.get('surname')?.setValue(null);
           },
-          error: () => {
-            // showError(
-            //   this.messageService,
-            //   'No se encontró el cliente. Ingreseló manualmente',
-            // );
-          },
+          error: () => {},
         });
     }
   }
 
   goToProducts(reservationId: number) {
     this.reservationId = reservationId;
+    this.updateStepStatus(false);
     this.currentIndex = 1;
   }
 
   goToService(reservationId: number) {
     this.reservationId = reservationId;
+    this.updateStepStatus(false);
     this.currentIndex = 2;
   }
 
