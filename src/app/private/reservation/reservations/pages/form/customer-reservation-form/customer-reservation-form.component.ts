@@ -167,7 +167,6 @@ export class CustomerReservationFormComponent implements OnInit {
   }
 
   reservation(locker: Locker) {
-    console.log(locker);
     this.modal = this.dialogService.open(ReservationFormComponent, {
       data: {
         locker,

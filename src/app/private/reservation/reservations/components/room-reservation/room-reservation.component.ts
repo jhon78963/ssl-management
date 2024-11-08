@@ -83,13 +83,6 @@ export class RoomReservationComponent implements OnInit {
       this.updateStepStatus(true);
       const room = this.dynamicDialogConfig.data.room;
       this.isCreate = this.dynamicDialogConfig.data.create;
-      if (!this.isCreate) {
-        this.updateStepStatus(false);
-        this.items = this.items.filter(item => item.label !== 'Cliente');
-        if (this.currentIndex > 0) {
-          this.currentIndex -= 1;
-        }
-      }
 
       if (room.reservationId) {
         this.reservationId = room.reservationId;

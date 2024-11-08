@@ -113,6 +113,10 @@ export class RoomReservationFormComponent implements OnInit {
 
   show(room: Room) {
     console.log(room);
+    this.modal = this.dialogService.open(RoomReservationComponent, {
+      data: { room },
+      header: 'Agregar servicios',
+    });
   }
 
   finish(room: Room) {

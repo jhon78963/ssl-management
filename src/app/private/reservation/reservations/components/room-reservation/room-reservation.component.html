@@ -5,38 +5,41 @@
 
 <span [ngSwitch]="currentIndex">
   <div *ngSwitchCase="0">
-    @if (isCreate) {
-      <form [formGroup]="reservationForm" *ngIf="isCreate" class="pt-2 mt-3">
-        <div class="p-fluid p-formgrid grid">
-          <div class="field col-12">
-            <app-input-text
-              label="DNI"
-              for="dni"
-              type="text"
-              id="dni"
-              placeholder="Ingrese dni del cliente"
-              controlName="dni"
-              (input)="searchDni($event)"
-              pattern="[0-9]*"></app-input-text>
-          </div>
-          <div class="field col-12 md:col-6">
-            <app-input-text
-              label="Nombre"
-              for="name"
-              type="text"
-              id="name"
-              placeholder="Ingrese nombre del cliente"
-              controlName="name"></app-input-text>
-          </div>
-          <div class="field col-12 md:col-6">
-            <app-input-text
-              label="Apellidos"
-              for="surname"
-              type="text"
-              id="surname"
-              placeholder="Ingrese apellidos del cliente"
-              controlName="surname"></app-input-text>
-          </div>
+    @if (!isCreate) {
+      Cliente 1 Eliminar
+    }
+    <form [formGroup]="reservationForm" class="pt-2 mt-3">
+      <div class="p-fluid p-formgrid grid">
+        <div class="field col-12">
+          <app-input-text
+            label="DNI"
+            for="dni"
+            type="text"
+            id="dni"
+            placeholder="Ingrese dni del cliente"
+            controlName="dni"
+            (input)="searchDni($event)"
+            pattern="[0-9]*"></app-input-text>
+        </div>
+        <div class="field col-12 md:col-6">
+          <app-input-text
+            label="Nombre"
+            for="name"
+            type="text"
+            id="name"
+            placeholder="Ingrese nombre del cliente"
+            controlName="name"></app-input-text>
+        </div>
+        <div class="field col-12 md:col-6">
+          <app-input-text
+            label="Apellidos"
+            for="surname"
+            type="text"
+            id="surname"
+            placeholder="Ingrese apellidos del cliente"
+            controlName="surname"></app-input-text>
+        </div>
+        <div class="flex w-full">
           <button
             type="button"
             pButton
@@ -53,36 +56,22 @@
             [disabled]="reservationId === 0"
             (click)="goToProducts(reservationId)"></button>
         </div>
-      </form>
-    } @else {
-      <app-add-products [reservationId]="reservationId"></app-add-products>
-      <button
-        type="button"
-        pButton
-        label="Siguiente"
-        class="mt-3"
-        (click)="goToService(reservationId)"></button>
-    }
+      </div>
+    </form>
   </div>
 
   <div *ngSwitchCase="1">
-    @if (isCreate) {
-      <app-add-products [reservationId]="reservationId"></app-add-products>
-      <button
-        type="button"
-        pButton
-        label="Siguiente"
-        class="mt-3"
-        (click)="goToService(reservationId)"></button>
-    } @else {
-      <app-add-services [reservationId]="reservationId"></app-add-services>
-    }
+    <app-add-products [reservationId]="reservationId"></app-add-products>
+    <button
+      type="button"
+      pButton
+      label="Siguiente"
+      class="mt-3"
+      (click)="goToService(reservationId)"></button>
   </div>
-  @if (!isCreate) {
-    <div *ngSwitchCase="2">
-      <app-add-services [reservationId]="reservationId"></app-add-services>
-    </div>
-  }
+  <div *ngSwitchCase="2">
+    <app-add-services [reservationId]="reservationId"></app-add-services>
+  </div>
 
   <p *ngSwitchDefault>default</p>
 </span>
