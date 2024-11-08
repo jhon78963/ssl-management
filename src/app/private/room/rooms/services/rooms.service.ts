@@ -55,7 +55,7 @@ export class RoomsService {
     return this.apiService.get(`rooms/${id}`);
   }
 
-  changeStatus(id: number, data: Room) {
+  changeStatus(id: number, data: any) {
     return this.apiService
       .patch(`rooms/change-status/${id}`, data)
       .pipe(switchMap(() => this.callGetList()));

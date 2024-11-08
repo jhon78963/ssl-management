@@ -25,7 +25,11 @@ export interface IRoom {
 export class Room {
   id: number;
   roomNumber: number;
+  roomName?: string;
   capacity: number;
+  pricePerCapacity?: number;
+  pricePerAdditionalPerson?: number;
+  reservationId?: number;
   status: string;
   roomStatus?: string;
   roomTypeId: number;

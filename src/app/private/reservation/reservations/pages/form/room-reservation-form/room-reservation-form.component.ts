@@ -6,12 +6,13 @@ import { InputTextModule } from 'primeng/inputtext';
 import { SelectButtonModule } from 'primeng/selectbutton';
 import { debounceTime, Observable, Subject } from 'rxjs';
 import { RoomsService } from '../../../../../room/rooms/services/rooms.service';
-import { DialogService } from 'primeng/dynamicdialog';
+import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { MessageService } from 'primeng/api';
 import { Room } from '../../../../../room/rooms/models/rooms.model';
 import { InUseRoomsService } from '../../../../../room/rooms/services/in-use-rooms.service';
 import { PaginatorModule } from 'primeng/paginator';
 import { CheckboxModule } from 'primeng/checkbox';
+import { RoomReservationComponent } from '../../../components/room-reservation/room-reservation.component';
 
 @Component({
   selector: 'app-room-reservation-form',
@@ -30,6 +31,8 @@ import { CheckboxModule } from 'primeng/checkbox';
   providers: [MessageService],
 })
 export class RoomReservationFormComponent implements OnInit {
+  modal: DynamicDialogRef | undefined;
+
   statusOptions = [
     { name: 'Disponible', value: 1 },
     { name: 'En uso', value: 2 },
@@ -97,12 +100,15 @@ export class RoomReservationFormComponent implements OnInit {
     }
   }
 
-  massiveReservation(selectedReservation: any[]) {
-    console.log(selectedReservation);
-  }
-
   reservation(room: Room) {
     console.log(room);
+    this.modal = this.dialogService.open(RoomReservationComponent, {
+      data: {
+        room,
+        create: true,
+      },
+      header: `Registrar ${room.roomName}`,
+    });
   }
 
   show(room: Room) {
