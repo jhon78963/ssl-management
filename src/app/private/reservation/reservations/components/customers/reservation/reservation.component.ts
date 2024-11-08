@@ -3,7 +3,7 @@ import { CommonModule, DatePipe } from '@angular/common';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 
 import { StepsModule } from 'primeng/steps';
-import { SharedModule } from '../../../../../shared/shared.module';
+import { SharedModule } from '../../../../../../shared/shared.module';
 import {
   FormBuilder,
   FormGroup,
@@ -11,26 +11,26 @@ import {
   Validators,
 } from '@angular/forms';
 import { debounceTime, Subject } from 'rxjs';
-import { SunatService } from '../../services/sunat.service';
-import { CustomersService } from '../../services/customers.service';
-import { CreatedCustomer, Customer } from '../../models/customer.model';
-import { DniConsultation } from '../../models/sunat.model';
-import { showError, showSuccess } from '../../../../../utils/notifications';
+import { SunatService } from '../../../services/sunat.service';
+import { CustomersService } from '../../../services/customers.service';
+import { CreatedCustomer, Customer } from '../../../models/customer.model';
+import { DniConsultation } from '../../../models/sunat.model';
+import { showError, showSuccess } from '../../../../../../utils/notifications';
 import { MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
-import { ReservationsService } from '../../services/reservations.service';
+import { ReservationsService } from '../../../services/reservations.service';
 import {
   CreatedReservation,
   CustomerReservation,
-} from '../../models/reservation.model';
-import { FemaleLockersService } from '../../services/female-lockers.service';
-import { MaleLockersService } from '../../services/male-lockers.service';
-import { StatusLocker } from '../../models/locker.model';
-import { ServicesAddComponent } from '../services/services.component';
-import { ProductsAddComponent } from '../products/products.component';
+} from '../../../models/reservation.model';
+import { FemaleLockersService } from '../../../services/female-lockers.service';
+import { MaleLockersService } from '../../../services/male-lockers.service';
+import { StatusLocker } from '../../../models/locker.model';
+import { ServicesAddComponent } from '../../services/services.component';
+import { ProductsAddComponent } from '../../products/products.component';
 
 @Component({
-  selector: 'app-reservation',
+  selector: 'app-customer-reservation',
   standalone: true,
   imports: [
     CommonModule,
@@ -45,7 +45,7 @@ import { ProductsAddComponent } from '../products/products.component';
   styleUrl: './reservation.component.scss',
   providers: [DatePipe, MessageService],
 })
-export class ReservationFormComponent implements OnInit {
+export class CustomerReservationComponent implements OnInit {
   reservationId: number = 0;
   isCreate: boolean = false;
 

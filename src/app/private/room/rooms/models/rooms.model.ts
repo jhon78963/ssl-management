@@ -16,6 +16,7 @@ export interface IRoom {
   roomStatus: string;
   roomTypeId: number;
   roomType: string;
+  customersNumber?: number;
   images: Image[];
   amenities: IAmenity[];
   rates: IRate[];
@@ -26,7 +27,8 @@ export class Room {
   id: number;
   roomNumber: number;
   roomName?: string;
-  capacity: number;
+  capacity?: number;
+  freeAge?: number;
   pricePerCapacity?: number;
   pricePerAdditionalPerson?: number;
   reservationId?: number;
@@ -41,7 +43,6 @@ export class Room {
   constructor(room: IRoom) {
     this.id = room.id;
     this.roomNumber = room.roomNumber;
-    this.capacity = room.capacity;
     this.status = room.status;
     this.roomTypeId = room.roomTypeId;
     this.images = room.images;

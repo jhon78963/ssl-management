@@ -12,7 +12,8 @@ import { Room } from '../../../../../room/rooms/models/rooms.model';
 import { InUseRoomsService } from '../../../../../room/rooms/services/in-use-rooms.service';
 import { PaginatorModule } from 'primeng/paginator';
 import { CheckboxModule } from 'primeng/checkbox';
-import { RoomReservationComponent } from '../../../components/room-reservation/room-reservation.component';
+import { RoomReservationComponent } from '../../../components/rooms/reservation/reservation.component';
+import { CheckoutComponent } from '../../../components/rooms/checkout/checkout.component';
 
 @Component({
   selector: 'app-room-reservation-form',
@@ -101,7 +102,6 @@ export class RoomReservationFormComponent implements OnInit {
   }
 
   reservation(room: Room) {
-    console.log(room);
     this.modal = this.dialogService.open(RoomReservationComponent, {
       data: {
         room,
@@ -112,15 +112,36 @@ export class RoomReservationFormComponent implements OnInit {
   }
 
   show(room: Room) {
-    console.log(room);
     this.modal = this.dialogService.open(RoomReservationComponent, {
       data: { room },
-      header: 'Agregar servicios',
+      header: `Agregar servicios ${room.roomName}`,
     });
   }
 
   finish(room: Room) {
-    console.log(room);
+    this.modal = this.dialogService.open(CheckoutComponent, {
+      data: { room },
+      header: `Checkout ${room.roomName}`,
+    });
+
+    this.modal.onClose.subscribe({
+      next: () => {
+        this.getInUseRooms(
+          this.inUseLimit,
+          this.inUsePage,
+          this.inUseNumber,
+          this.inUseStatus,
+        );
+      },
+      error: () => {
+        this.getInUseRooms(
+          this.inUseLimit,
+          this.inUsePage,
+          this.inUseNumber,
+          this.inUseStatus,
+        );
+      },
+    });
   }
 
   async getAvailableRooms(

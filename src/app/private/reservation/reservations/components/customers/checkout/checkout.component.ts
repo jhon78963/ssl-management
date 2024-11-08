@@ -5,11 +5,11 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { InputGroupModule } from 'primeng/inputgroup';
 import { ButtonModule } from 'primeng/button';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
-import { ReservationsService } from '../../services/reservations.service';
-import { FinishReservation } from '../../models/reservation.model';
-import { StatusLocker } from '../../models/locker.model';
-import { FemaleLockersService } from '../../services/female-lockers.service';
-import { MaleLockersService } from '../../services/male-lockers.service';
+import { ReservationsService } from '../../../services/reservations.service';
+import { FinishReservation } from '../../../models/reservation.model';
+import { StatusLocker } from '../../../models/locker.model';
+import { FemaleLockersService } from '../../../services/female-lockers.service';
+import { MaleLockersService } from '../../../services/male-lockers.service';
 
 @Component({
   selector: 'app-checkout',
@@ -25,8 +25,6 @@ import { MaleLockersService } from '../../services/male-lockers.service';
   styleUrl: './checkout.component.scss',
 })
 export class CheckoutComponent implements OnInit {
-  quantities: number[] = [1, 1, 1];
-  value: string = '';
   customer: string = '';
   products: any[] | undefined = [];
   services: any[] | undefined = [];
@@ -34,6 +32,7 @@ export class CheckoutComponent implements OnInit {
   totalServices: number = 0;
   lockerPrice: number = 0;
   total: number = 0;
+
   constructor(
     private readonly dynamicDialogConfig: DynamicDialogConfig,
     private readonly dynamicDialogRef: DynamicDialogRef,
@@ -49,7 +48,7 @@ export class CheckoutComponent implements OnInit {
 
     this.reservationsService
       .getOne(locker.reservationId)
-      .subscribe(reservation => {
+      .subscribe((reservation: any) => {
         this.products = reservation.products;
         this.services = reservation.services;
         this.totalProducts = this.products

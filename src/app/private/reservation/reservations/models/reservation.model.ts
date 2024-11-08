@@ -16,6 +16,7 @@ export interface IReservation {
 }
 
 export class Reservation {
+  [x: string]: any;
   id?: number;
   reservationDate?: string | null;
   total: string;

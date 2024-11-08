@@ -5,9 +5,32 @@
 
 <span [ngSwitch]="currentIndex">
   <div *ngSwitchCase="0">
-    @if (!isCreate) {
-      Cliente 1 Eliminar
-    }
+    <ul class="list-none p-0 m-0 border-1 surface-border border-round mt-3">
+      @if (customers?.length) {
+        <li
+          *ngFor="let customer of customers"
+          class="flex align-items-center px-3 mt-3 mb-3">
+          <div class="flex align-items-center justify-content-between w-full">
+            <span class="font-semibold text-900"
+              >{{ customer.dni }} - {{ customer.name }} -
+              {{ customer.surname }}</span
+            >
+            <button
+              pButton
+              pRipple
+              type="button"
+              class="p-button-rounded ml-1"
+              size="small"
+              icon="pi pi-trash"
+              pTooltip="Remover"
+              tooltipPosition="bottom"
+              (click)="customerRemoveButton(customer.id)"></button>
+          </div>
+        </li>
+      } @else {
+        <li class="text-center p-3">Sin clientes</li>
+      }
+    </ul>
     <form [formGroup]="reservationForm" class="pt-2 mt-3">
       <div class="p-fluid p-formgrid grid">
         <div class="field col-12">
@@ -40,21 +63,25 @@
             controlName="surname"></app-input-text>
         </div>
         <div class="flex w-full">
-          <button
-            type="button"
-            pButton
-            label="Agregar"
-            class="mt-3"
-            [disabled]="!isFormValid"
-            (click)="addCustomer(reservationId)"></button>
-          <button
-            type="button"
-            type="submit"
-            pButton
-            label="Siguiente"
-            class="mt-3"
-            [disabled]="reservationId === 0"
-            (click)="goToProducts(reservationId)"></button>
+          <div class="p-1 w-full">
+            <button
+              type="button"
+              pButton
+              label="Agregar"
+              class="mt-3"
+              [disabled]="!isFormValid"
+              (click)="customerAddButton(reservationId)"></button>
+          </div>
+          <div class="p-1 w-full">
+            <button
+              type="button"
+              type="submit"
+              pButton
+              label="Siguiente"
+              class="mt-3"
+              [disabled]="reservationId === 0"
+              (click)="goToProducts(reservationId)"></button>
+          </div>
         </div>
       </div>
     </form>

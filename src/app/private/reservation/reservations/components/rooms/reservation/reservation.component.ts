@@ -12,21 +12,21 @@ import { MessageService } from 'primeng/api';
 import { StepsModule } from 'primeng/steps';
 import { ToastModule } from 'primeng/toast';
 import { debounceTime, Subject } from 'rxjs';
-import { SharedModule } from '../../../../../shared/shared.module';
-import { showError, showSuccess } from '../../../../../utils/notifications';
-import { RoomsService } from '../../../../room/rooms/services/rooms.service';
-import { CreatedCustomer, Customer } from '../../models/customer.model';
+import { SharedModule } from '../../../../../../shared/shared.module';
+import { showError, showSuccess } from '../../../../../../utils/notifications';
+import { RoomsService } from '../../../../../room/rooms/services/rooms.service';
+import { CreatedCustomer, Customer } from '../../../models/customer.model';
 import {
   CreatedReservation,
   RoomReservation,
-} from '../../models/reservation.model';
-import { DniConsultation } from '../../models/sunat.model';
-import { CustomersService } from '../../services/customers.service';
-import { ReservationsService } from '../../services/reservations.service';
-import { SunatService } from '../../services/sunat.service';
-import { ProductsAddComponent } from '../products/products.component';
-import { ServicesAddComponent } from '../services/services.component';
-import { ReservationCustomersService } from '../../services/reservation-customers.service';
+} from '../../../models/reservation.model';
+import { DniConsultation } from '../../../models/sunat.model';
+import { CustomersService } from '../../../services/customers.service';
+import { ReservationsService } from '../../../services/reservations.service';
+import { SunatService } from '../../../services/sunat.service';
+import { ProductsAddComponent } from '../../products/products.component';
+import { ServicesAddComponent } from '../../services/services.component';
+import { ReservationCustomersService } from '../../../services/reservation-customers.service';
 
 @Component({
   selector: 'app-room-reservation',
@@ -40,8 +40,8 @@ import { ReservationCustomersService } from '../../services/reservation-customer
     ServicesAddComponent,
     ProductsAddComponent,
   ],
-  templateUrl: './room-reservation.component.html',
-  styleUrl: './room-reservation.component.scss',
+  templateUrl: './reservation.component.html',
+  styleUrl: './reservation.component.scss',
   providers: [DatePipe, MessageService],
 })
 export class RoomReservationComponent implements OnInit {
@@ -56,6 +56,7 @@ export class RoomReservationComponent implements OnInit {
 
   currentIndex: number = 0;
   customerId: number = 0;
+  customers: any[] | undefined = [];
 
   private dniSearchTermSubject = new Subject<string>();
 
@@ -90,6 +91,8 @@ export class RoomReservationComponent implements OnInit {
         this.reservationForm.get('name')?.setValue(room.customerName);
         this.reservationForm.get('surname')?.setValue(room.customerSurname);
         this.updateStepStatus(false);
+
+        this.getCustomers(room.reservationId);
       }
 
       this.dniSearchTermSubject.pipe(debounceTime(600)).subscribe(() => {
@@ -131,6 +134,14 @@ export class RoomReservationComponent implements OnInit {
         }
       });
     }
+  }
+
+  getCustomers(reservationId: number) {
+    this.reservationsService.getOne(reservationId).subscribe({
+      next: (reservation: any) => {
+        this.customers = reservation.customers;
+      },
+    });
   }
 
   updateStepStatus(disable: boolean = false) {
@@ -184,6 +195,7 @@ export class RoomReservationComponent implements OnInit {
           this.roomsService.changeStatus(room.id, body).subscribe();
           showSuccess(this.messageService, 'La habitación ha sido registrado.');
           this.reservationId = reservation.reservationId;
+          this.getCustomers(this.reservationId);
           if (isCustomerAdd) {
             this.reservationForm.get('dni')?.setValue(null);
             this.reservationForm.get('name')?.setValue(null);
@@ -195,15 +207,16 @@ export class RoomReservationComponent implements OnInit {
     }
   }
 
-  addCustomer(reservationId: number) {
+  customerAddButton(reservationId: number) {
     if (reservationId == 0) {
       this.saveReservation(true);
     } else {
       const room = this.dynamicDialogConfig.data.room;
       this.reservationCustomersService
-        .add(reservationId, this.customerId, room.pricePerAdditionalPerson)
+        .add(this.reservationId, this.customerId, room.pricePerAdditionalPerson)
         .subscribe({
           next: () => {
+            this.getCustomers(this.reservationId);
             showSuccess(this.messageService, 'Se agregó el cliente.');
             this.reservationForm.get('dni')?.setValue(null);
             this.reservationForm.get('name')?.setValue(null);
@@ -212,6 +225,20 @@ export class RoomReservationComponent implements OnInit {
           error: () => {},
         });
     }
+  }
+
+  customerRemoveButton(customerId: number) {
+    const room = this.dynamicDialogConfig.data.room;
+    this.reservationCustomersService
+      .remove(this.reservationId, customerId, room.pricePerAdditionalPerson)
+      .subscribe({
+        next: () => {
+          this.getCustomers(this.reservationId);
+        },
+        error: () => {
+          this.getCustomers(this.reservationId);
+        },
+      });
   }
 
   goToProducts(reservationId: number) {

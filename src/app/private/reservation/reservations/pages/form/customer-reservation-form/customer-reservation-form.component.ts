@@ -13,8 +13,8 @@ import { FemaleLockersService } from '../../../services/female-lockers.service';
 import { TooltipModule } from 'primeng/tooltip';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { MessageService } from 'primeng/api';
-import { ReservationFormComponent } from '../../../components/reservation/reservation.component';
-import { CheckoutComponent } from '../../../components/checkout/checkout.component';
+import { CustomerReservationComponent } from '../../../components/customers/reservation/reservation.component';
+import { CheckoutComponent } from '../../../components/customers/checkout/checkout.component';
 import { LockersService } from '../../../services/lockers.service';
 import { CheckboxModule } from 'primeng/checkbox';
 import { MassiveReservationComponent } from '../../../components/massive-reservation/massive-reservation.component';
@@ -167,7 +167,7 @@ export class CustomerReservationFormComponent implements OnInit {
   }
 
   reservation(locker: Locker) {
-    this.modal = this.dialogService.open(ReservationFormComponent, {
+    this.modal = this.dialogService.open(CustomerReservationComponent, {
       data: {
         locker,
         create: true,
@@ -177,16 +177,16 @@ export class CustomerReservationFormComponent implements OnInit {
   }
 
   show(locker: Locker) {
-    this.modal = this.dialogService.open(ReservationFormComponent, {
+    this.modal = this.dialogService.open(CustomerReservationComponent, {
       data: { locker },
-      header: 'Agregar servicios',
+      header: `Agregar servicios Locker N° ${locker.number}`,
     });
   }
 
   finish(locker: Locker) {
     this.modal = this.dialogService.open(CheckoutComponent, {
       data: { locker },
-      header: 'Checkout',
+      header: `Checkout Locker N° ${locker.number}`,
     });
 
     this.modal.onClose.subscribe({
