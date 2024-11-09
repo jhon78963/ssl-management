@@ -81,12 +81,12 @@ export class ReservationComponent implements OnInit, OnDestroy {
         clickable: false,
         image: false,
       },
-      {
-        field: 'button',
-        header: 'Acción',
-        clickable: false,
-        image: false,
-      },
+      // {
+      //   field: 'button',
+      //   header: 'Acción',
+      //   clickable: false,
+      //   image: false,
+      // },
     ];
 
     this.getReservations(this.limit, this.page, this.description);

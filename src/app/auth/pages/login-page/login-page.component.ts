@@ -13,8 +13,8 @@ export class LoginPageComponent {
   private authService = inject(AuthService);
 
   public myForm: FormGroup = this.fb.group({
-    username: ['jhon.livias', [Validators.required]],
-    password: ['123qwe123', [Validators.required, Validators.minLength(6)]],
+    username: [null, [Validators.required]],
+    password: [null, [Validators.required, Validators.minLength(6)]],
   });
 
   login() {
