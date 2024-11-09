@@ -10,62 +10,85 @@ export class AppMenuComponent implements OnInit {
   model: any[] = [];
   lang: any = '';
 
+  getUserData() {
+    const jsonData = localStorage.getItem('user');
+    const userData = jsonData ? JSON.parse(jsonData) : undefined;
+    return userData.role;
+  }
+
   ngOnInit(): void {
-    this.model = [
-      {
-        label: 'Administración',
-        icon: 'pi pi-home',
-        items: [
-          {
-            label: 'Roles',
-            icon: 'pi pi-fw pi-cog',
-            routerLink: ['/administration/roles'],
-          },
-          {
-            label: 'Usuarios',
-            icon: 'pi pi-fw pi-users',
-            routerLink: ['/administration/users'],
-          },
-        ],
-      },
-      {
-        label: 'Gestión',
-        icon: 'pi pi-home',
-        items: [
-          {
-            label: 'Empresa',
-            icon: 'pi pi-fw pi-cog',
-            routerLink: ['/management/company'],
-          },
-          {
-            label: 'Redes Sociales',
-            icon: 'pi pi-fw pi-users',
-            routerLink: ['/management/social-network'],
-          },
-        ],
-      },
-      {
-        label: 'Habitaciones',
-        icon: 'pi pi-home',
-        items: [
-          {
-            label: 'Habitaciones',
-            icon: 'pi pi-fw pi-cog',
-            routerLink: ['/room/rooms'],
-          },
-        ],
-      },
-      {
-        label: 'Reservaciones',
-        icon: 'pi pi-home',
-        items: [
-          {
-            label: 'Reservaciones',
-            icon: 'pi pi-fw pi-book',
-            routerLink: ['/reservation/reservations'],
-          },
-        ],
-      },
-    ];
+    const isAdmin = this.getUserData();
+    if (isAdmin == 'Admin') {
+      this.model = [
+        {
+          label: 'Administración',
+          icon: 'pi pi-home',
+          items: [
+            {
+              label: 'Roles',
+              icon: 'pi pi-fw pi-cog',
+              routerLink: ['/administration/roles'],
+            },
+            {
+              label: 'Usuarios',
+              icon: 'pi pi-fw pi-users',
+              routerLink: ['/administration/users'],
+            },
+          ],
+        },
+        {
+          label: 'Gestión',
+          icon: 'pi pi-home',
+          items: [
+            {
+              label: 'Empresa',
+              icon: 'pi pi-fw pi-cog',
+              routerLink: ['/management/company'],
+            },
+            {
+              label: 'Redes Sociales',
+              icon: 'pi pi-fw pi-users',
+              routerLink: ['/management/social-network'],
+            },
+          ],
+        },
+        {
+          label: 'Habitaciones',
+          icon: 'pi pi-home',
+          items: [
+            {
+              label: 'Habitaciones',
+              icon: 'pi pi-fw pi-cog',
+              routerLink: ['/room/rooms'],
+            },
+          ],
+        },
+        {
+          label: 'Reservaciones',
+          icon: 'pi pi-home',
+          items: [
+            {
+              label: 'Reservaciones',
+              icon: 'pi pi-fw pi-book',
+              routerLink: ['/reservation/reservations'],
+            },
+          ],
+        },
+      ];
+    } else {
+      this.model = [
+        {
+          label: 'Reservaciones',
+          icon: 'pi pi-home',
+          items: [
+            {
+              label: 'Reservaciones',
+              icon: 'pi pi-fw pi-book',
+              routerLink: ['/reservation/reservations'],
+            },
+          ],
+        },
+      ];
+    }
   }
 }
