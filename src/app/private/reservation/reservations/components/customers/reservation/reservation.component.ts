@@ -57,11 +57,12 @@ export class CustomerReservationComponent implements OnInit {
 
   currentIndex: number = 0;
   customerId: number = 0;
+  userFounded: boolean = true;
 
   private dniSearchTermSubject = new Subject<string>();
 
   reservationForm: FormGroup = this.formBuilder.group({
-    dni: [null, Validators.required],
+    dni: [null, [Validators.required]],
     name: [null, Validators.required],
     surname: [null, Validators.required],
   });
@@ -82,6 +83,7 @@ export class CustomerReservationComponent implements OnInit {
   ngOnInit(): void {
     if (this.dynamicDialogConfig.data.locker) {
       this.updateStepStatus(true);
+      this.disableFields();
       const locker = this.dynamicDialogConfig.data.locker;
       this.isCreate = this.dynamicDialogConfig.data.create;
       if (!this.isCreate) {
@@ -117,17 +119,16 @@ export class CustomerReservationComponent implements OnInit {
                   this.reservationForm.get('surname')?.setValue(person.surname);
                   this.customersService.create(person).subscribe({
                     next: (customer: CreatedCustomer) => {
-                      showSuccess(
-                        this.messageService,
-                        'Se registró el cliente.',
-                      );
                       this.customerId = customer.customerId;
                     },
-                    error: () =>
+                    error: () => {
                       showError(
                         this.messageService,
                         'No se encontró el cliente. Ingreseló manualmente',
-                      ),
+                      );
+                      this.userFounded = false;
+                      this.enableFields();
+                    },
                   });
                 },
               });
@@ -139,6 +140,22 @@ export class CustomerReservationComponent implements OnInit {
         }
       });
     }
+  }
+
+  enableFields(allFields: boolean = true) {
+    if (!allFields) {
+      this.reservationForm.get('dni')?.enable();
+    }
+    this.reservationForm.get('name')?.enable();
+    this.reservationForm.get('surname')?.enable();
+  }
+
+  disableFields(allFields: boolean = true) {
+    if (!allFields) {
+      this.reservationForm.get('dni')?.disable();
+    }
+    this.reservationForm.get('name')?.disable();
+    this.reservationForm.get('surname')?.disable();
   }
 
   updateStepStatus(disable: boolean = false) {
@@ -155,6 +172,30 @@ export class CustomerReservationComponent implements OnInit {
   }
 
   buttonSaveReservation() {
+    if (!this.userFounded) {
+      const person: DniConsultation = this.reservationForm.value;
+      this.customersService.create(person).subscribe({
+        next: (customer: CreatedCustomer) => {
+          this.customerId = customer.customerId;
+          this.userFounded = true;
+          this.disableFields(false);
+          this.createReservation();
+        },
+        error: () => {
+          showError(
+            this.messageService,
+            'No se encontró el cliente. Ingreseló manualmente',
+          );
+          this.userFounded = false;
+          this.enableFields(false);
+        },
+      });
+    } else {
+      this.createReservation();
+    }
+  }
+
+  createReservation() {
     const currentDate = new Date();
     const reservationDate = this.datePipe.transform(
       currentDate,
@@ -182,10 +223,6 @@ export class CustomerReservationComponent implements OnInit {
             const locker = new StatusLocker(body);
             this.femaleLockersService.changeStatus(locker.id, body).subscribe();
           }
-          showSuccess(
-            this.messageService,
-            'El locker ha sido registrado. Puedes agregar productos o servicios, o cerrar esta ventana.',
-          );
           this.reservationId = reservation.reservationId;
           this.updateStepStatus(false);
           this.currentIndex = 1;
@@ -205,6 +242,11 @@ export class CustomerReservationComponent implements OnInit {
   }
 
   get isFormValid(): boolean {
-    return this.reservationForm.valid;
+    const dni = this.reservationForm.get('dni')?.value;
+    if (dni && dni.length == 8) {
+      return this.reservationForm.valid;
+    } else {
+      return false;
+    }
   }
 }

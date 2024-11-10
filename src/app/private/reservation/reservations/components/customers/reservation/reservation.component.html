@@ -73,7 +73,7 @@
       <app-add-services [reservationId]="reservationId"></app-add-services>
     }
   </div>
-  @if (!isCreate) {
+  @if (isCreate) {
     <div *ngSwitchCase="2">
       <app-add-services [reservationId]="reservationId"></app-add-services>
     </div>
