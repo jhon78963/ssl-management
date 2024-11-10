@@ -28,9 +28,12 @@ export class RoomsService {
     limit: number = 10,
     page: number = 1,
     number: string = '',
-    status: string = 'AVAILABLE',
+    status: string = '',
   ): Observable<void> {
-    let url = `rooms?limit=${limit}&page=${page}&status=${status}`;
+    let url = `rooms?limit=${limit}&page=${page}`;
+    if (status) {
+      url += `&status=${status}`;
+    }
     if (number) {
       url += `&search=${number}`;
     }
