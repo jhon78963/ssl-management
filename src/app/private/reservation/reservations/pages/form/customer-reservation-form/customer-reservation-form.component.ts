@@ -93,30 +93,17 @@ export class CustomerReservationFormComponent implements OnInit {
 
   ngOnInit(): void {
     if (this.gender == 1) {
-      this.getMaleLockers(
-        this.limit,
-        this.page,
-        this.number,
-        this.gender,
-        this.status,
-      );
+      this.getMaleLockers(this.limit, this.page, this.number, this.gender);
     } else {
       this.getFemaleLockers(
         this.femaleLimit,
         this.femalePage,
         this.femaleNumber,
         this.femaleGender,
-        this.femaleStatus,
       );
     }
     this.searchTermSubject.pipe(debounceTime(600)).subscribe(() => {
-      this.getMaleLockers(
-        this.limit,
-        this.page,
-        this.number,
-        this.gender,
-        this.status,
-      );
+      this.getMaleLockers(this.limit, this.page, this.number, this.gender);
     });
     this.searchFemaleTermSubject.pipe(debounceTime(600)).subscribe(() => {
       this.getFemaleLockers(
@@ -124,15 +111,6 @@ export class CustomerReservationFormComponent implements OnInit {
         this.femalePage,
         this.femaleNumber,
         this.femaleGender,
-        this.femaleStatus,
-      );
-    });
-    this.searchLockerTermSubject.pipe(debounceTime(600)).subscribe(() => {
-      this.getLockers(
-        this.lockerLimit,
-        this.lockerPage,
-        this.lockerNumber,
-        this.lockerStatus,
       );
     });
   }
@@ -140,13 +118,7 @@ export class CustomerReservationFormComponent implements OnInit {
   genderChange(event: any) {
     if (event.value?.value == 1) {
       this.first = (this.page - 1) * this.limit;
-      this.getMaleLockers(
-        this.limit,
-        this.page,
-        this.number,
-        this.gender,
-        this.status,
-      );
+      this.getMaleLockers(this.limit, this.page, this.number, this.gender);
     } else {
       this.firstFemale = (this.femalePage - 1) * this.femaleLimit;
       this.getFemaleLockers(
@@ -154,12 +126,12 @@ export class CustomerReservationFormComponent implements OnInit {
         this.femalePage,
         this.femaleNumber,
         this.femaleGender,
-        this.femaleStatus,
       );
     }
   }
 
   massiveReservation(selectedReservation: any[]) {
+    console.log(selectedReservation);
     this.modal = this.dialogService.open(MassiveReservationComponent, {
       data: { selectedReservation },
       header: 'Registrar',
@@ -167,9 +139,22 @@ export class CustomerReservationFormComponent implements OnInit {
   }
 
   reservation(locker: Locker) {
+    let pagination = {};
+    if (locker.genderId == 1) {
+      pagination = {
+        limit: this.limit,
+        page: this.page,
+      };
+    } else {
+      pagination = {
+        limit: this.femaleLimit,
+        page: this.femalePage,
+      };
+    }
     this.modal = this.dialogService.open(CustomerReservationComponent, {
       data: {
         locker,
+        pagination,
         create: true,
       },
       header: `Registrar Locker N° ${locker.number}`,
@@ -184,66 +169,31 @@ export class CustomerReservationFormComponent implements OnInit {
   }
 
   finish(locker: Locker) {
+    let pagination = {};
+    if (locker.genderId == 1) {
+      pagination = {
+        limit: this.limit,
+        page: this.page,
+      };
+    } else {
+      pagination = {
+        limit: this.femaleLimit,
+        page: this.femalePage,
+      };
+    }
     this.modal = this.dialogService.open(CheckoutComponent, {
-      data: { locker },
+      data: {
+        locker,
+        pagination,
+      },
       header: `Checkout Locker N° ${locker.number}`,
     });
-
-    this.modal.onClose.subscribe({
-      next: () => {
-        this.getLockers(
-          this.lockerLimit,
-          this.lockerPage,
-          this.lockerNumber,
-          this.lockerStatus,
-        );
-      },
-      error: () => {
-        this.getLockers(
-          this.lockerLimit,
-          this.lockerPage,
-          this.lockerNumber,
-          this.lockerStatus,
-        );
-      },
-    });
-  }
-
-  statusChange(event: any) {
-    if (event.value?.value == 1) {
-      this.first = (this.page - 1) * this.limit;
-      this.status = 'AVAILABLE';
-      this.statusSelected = this.statusOptions[0];
-      this.getMaleLockers(
-        this.limit,
-        this.page,
-        this.number,
-        this.gender,
-        this.status,
-      );
-    } else {
-      this.first = (this.page - 1) * this.limit;
-      this.status = 'IN_USE';
-      this.statusSelected = this.statusOptions[1];
-      this.getLockers(
-        this.lockerLimit,
-        this.lockerPage,
-        this.lockerNumber,
-        this.lockerStatus,
-      );
-    }
   }
 
   onMaleLockerPageChange(event: any) {
     this.page = event.page + 1;
     this.first = event.first;
-    this.getMaleLockers(
-      this.limit,
-      this.page,
-      this.number,
-      this.gender,
-      this.status,
-    );
+    this.getMaleLockers(this.limit, this.page, this.number, this.gender);
   }
 
   onFilter(term: any) {
@@ -263,10 +213,9 @@ export class CustomerReservationFormComponent implements OnInit {
     page = this.page,
     number = this.number,
     gender = this.gender,
-    status = this.status,
   ): Promise<void> {
     this.maleLockersService
-      .callGetList(limit, page, number, gender, status)
+      .callGetList(limit, page, number, gender)
       .subscribe();
   }
 
@@ -283,10 +232,9 @@ export class CustomerReservationFormComponent implements OnInit {
     page = this.femalePage,
     number = this.femaleNumber,
     gender = this.femaleGender,
-    status = this.femaleStatus,
   ): Promise<void> {
     this.femaleLockersService
-      .callGetList(limit, page, number, gender, status)
+      .callGetList(limit, page, number, gender)
       .subscribe();
   }
 
@@ -298,31 +246,6 @@ export class CustomerReservationFormComponent implements OnInit {
     return this.femaleLockersService.getTotal();
   }
 
-  femaleStatusChange(event: any) {
-    if (event.value?.value == 1) {
-      this.first = (this.femalePage - 1) * this.femaleLimit;
-      this.femaleStatus = 'AVAILABLE';
-      this.femaleStatusSelected = this.statusOptions[0];
-      this.getFemaleLockers(
-        this.femaleLimit,
-        this.femalePage,
-        this.femaleNumber,
-        this.femaleGender,
-        this.femaleStatus,
-      );
-    } else {
-      this.firstFemale = (this.femalePage - 1) * this.femaleLimit;
-      this.femaleStatus = 'IN_USE';
-      this.femaleStatusSelected = this.statusOptions[1];
-      this.getLockers(
-        this.lockerLimit,
-        this.lockerPage,
-        this.lockerNumber,
-        this.lockerStatus,
-      );
-    }
-  }
-
   onFemaleLockerPageChange(event: any) {
     this.femalePage = event.page + 1;
     this.firstFemale = event.first;
@@ -331,7 +254,6 @@ export class CustomerReservationFormComponent implements OnInit {
       this.femalePage,
       this.femaleNumber,
       this.femaleGender,
-      this.femaleStatus,
     );
   }
 
@@ -344,46 +266,6 @@ export class CustomerReservationFormComponent implements OnInit {
     term.target.value = sanitizedInput;
     if (sanitizedInput) {
       this.searchFemaleTermSubject.next(sanitizedInput);
-    }
-  }
-
-  async getLockers(
-    limit = this.lockerLimit,
-    page = this.lockerPage,
-    number = this.lockerNumber,
-    status = this.lockerStatus,
-  ): Promise<void> {
-    this.lockersService.callGetList(limit, page, number, status).subscribe();
-  }
-
-  get lockers(): Observable<Locker[]> {
-    return this.lockersService.getList();
-  }
-
-  get lockertotal(): Observable<number> {
-    return this.lockersService.getTotal();
-  }
-
-  onLockerPageChange(event: any) {
-    this.lockerPage = event.page + 1;
-    this.firstLocker = event.first;
-    this.getLockers(
-      this.lockerLimit,
-      this.lockerPage,
-      this.lockerNumber,
-      this.lockerStatus,
-    );
-  }
-
-  onLockerFilter(term: any) {
-    const input = term.target.value;
-    if (input == '') {
-      this.searchLockerTermSubject.next('');
-    }
-    const sanitizedInput = input.replace(/\D/g, '');
-    term.target.value = sanitizedInput;
-    if (sanitizedInput) {
-      this.searchLockerTermSubject.next(sanitizedInput);
     }
   }
 }

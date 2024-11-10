@@ -32,9 +32,8 @@ export class FemaleLockersService {
     page: number = 1,
     number: string = '',
     gender: number = 2,
-    status: string = 'AVAILABLE',
   ): Observable<void> {
-    let url = `lockers?limit=${limit}&page=${page}&gender=${gender}&status=${status}`;
+    let url = `lockers?limit=${limit}&page=${page}&gender=${gender}`;
     if (number) {
       url += `&search=${number}`;
     }
@@ -55,7 +54,15 @@ export class FemaleLockersService {
     return this.total$.asObservable();
   }
 
-  changeStatus(id: number, data: StatusLocker) {
+  changeStatus(id: number, data: StatusLocker, pagination: any) {
+    return this.apiService
+      .patch(`lockers/change-status/${id}`, data)
+      .pipe(
+        switchMap(() => this.callGetList(pagination.limit, pagination.page)),
+      );
+  }
+
+  changeMassiveStatus(id: number, data: StatusLocker) {
     return this.apiService
       .patch(`lockers/change-status/${id}`, data)
       .pipe(switchMap(() => this.callGetList()));

@@ -1,167 +1,76 @@
-<div *ngIf="statusSelected.value === 1; else inUseSection">
-  <div
-    class="flex flex-column md:flex-row md:justify-content-between gap-2 mt-3 mb-2">
-    <p-selectButton
-      [options]="statusOptions"
-      [(ngModel)]="statusSelected"
-      (onChange)="statusChange($event)"
-      optionLabel="name">
-    </p-selectButton>
-    <div class="flex justify-content-between">
-      <span class="p-input-icon-left mr-2">
-        <i class="pi pi-search"></i>
-        <input
-          type="search"
-          pInputText
-          placeholder="Buscar por número"
-          [(ngModel)]="number"
-          (input)="onAvailableRoomFilter($event)"
-          pattern="[0-9]*" />
-      </span>
-    </div>
-  </div>
-  <div class="grid">
-    <div *ngFor="let room of availableRooms | async" class="col-12 md:col-3">
-      <div
-        class="border-round m-2 p-2"
-        style="border: 1px solid var(--surface-d)">
-        <div class="text-center">
-          <h5 class="mb-1">Habitación N° {{ room.roomNumber }}</h5>
-          <h6 class="mt-0 mb-3">{{ room.roomType }}</h6>
-          <span
-            [ngClass]="
-              room.status === 'AVAILABLE'
-                ? 'product-badge status-instock'
-                : 'product-badge status-lowstock'
-            ">
-            {{ room.roomStatus }}
-          </span>
-          <div class="my-5">
-            <button
-              *ngIf="room.status === 'AVAILABLE'"
-              pButton
-              pRipple
-              pTooltip="Alquilar"
-              tooltipPosition="bottom"
-              icon="pi pi-book"
-              class="mr-2 p-button-rounded p-button-warning"
-              (click)="reservation(room)"></button>
-            <button
-              *ngIf="room.status !== 'AVAILABLE'"
-              pButton
-              pRipple
-              pTooltip="Ver"
-              tooltipPosition="bottom"
-              icon="pi pi-eye"
-              class="mr-2 p-button-rounded p-button-success"
-              (click)="show(room)"></button>
-            <button
-              *ngIf="room.status !== 'AVAILABLE'"
-              pButton
-              pRipple
-              pTooltip="Finalizar"
-              tooltipPosition="bottom"
-              icon="pi pi-times"
-              class="p-button-rounded p-button-info"
-              (click)="finish(room)"></button>
-          </div>
+<div class="flex justify-content-center mt-3 mb-2">
+  <span class="p-input-icon-left mr-2">
+    <i class="pi pi-search"></i>
+    <input
+      type="search"
+      pInputText
+      placeholder="Buscar por número"
+      [(ngModel)]="number"
+      (input)="onAvailableRoomFilter($event)"
+      pattern="[0-9]*" />
+  </span>
+</div>
+<div class="grid">
+  <div *ngFor="let room of availableRooms | async" class="col-12 md:col-3">
+    <div
+      class="border-round m-2 p-2"
+      style="border: 1px solid var(--surface-d)"
+      [ngClass]="
+        room.status === 'AVAILABLE' ? 'available-status' : 'in-use-status'
+      ">
+      <div class="text-center">
+        <h5 class="mb-1">Habitación N° {{ room.roomNumber }}</h5>
+        <h6 class="mt-0 mb-3">{{ room.roomType }}</h6>
+        <span
+          [ngClass]="
+            room.status === 'AVAILABLE'
+              ? 'product-badge available-status'
+              : 'product-badge in-use-status'
+          ">
+          {{ room.roomStatus }}
+        </span>
+        <div class="my-5">
+          <button
+            *ngIf="room.status === 'AVAILABLE'"
+            pButton
+            pRipple
+            pTooltip="Alquilar"
+            tooltipPosition="bottom"
+            icon="pi pi-book"
+            class="mr-2 p-button-rounded p-button-warning"
+            (click)="reservation(room)"></button>
+          <button
+            *ngIf="room.status !== 'AVAILABLE'"
+            pButton
+            pRipple
+            pTooltip="Ver"
+            tooltipPosition="bottom"
+            icon="pi pi-eye"
+            class="mr-2 p-button-rounded p-button-warning"
+            (click)="show(room)"></button>
+          <button
+            *ngIf="room.status !== 'AVAILABLE'"
+            pButton
+            pRipple
+            pTooltip="Finalizar"
+            tooltipPosition="bottom"
+            icon="pi pi-times"
+            class="p-button-rounded p-button-secondary"
+            (click)="finish(room)"></button>
         </div>
       </div>
     </div>
-  </div>
-  <div class="flex-auto">
-    <p-paginator
-      [rows]="limit"
-      [first]="first"
-      [totalRecords]="(availableRoomTotal | async) ?? 0"
-      [rowsPerPageOptions]="rowsPerPageOptions"
-      (onPageChange)="onAvailableRoomPageChange($event)"
-      [showCurrentPageReport]="true"
-      currentPageReportTemplate="{first} - {last} of {totalRecords}"
-      class="paginator-custom">
-    </p-paginator>
   </div>
 </div>
-
-<ng-template #inUseSection>
-  <div
-    class="flex flex-column md:flex-row md:justify-content-between gap-2 mt-3 mb-2">
-    <p-selectButton
-      [options]="statusOptions"
-      [(ngModel)]="statusSelected"
-      (onChange)="statusChange($event)"
-      optionLabel="name">
-    </p-selectButton>
-    <span class="p-input-icon-left">
-      <i class="pi pi-search"></i>
-      <input
-        type="search"
-        pInputText
-        placeholder="Buscar por número"
-        [(ngModel)]="inUseNumber"
-        (input)="onInUseRoomFilter($event)"
-        pattern="[0-9]*" />
-    </span>
-  </div>
-  <div class="grid">
-    <div *ngFor="let room of inUseRooms | async" class="col-12 md:col-3">
-      <div
-        class="border-round m-2 p-2"
-        style="border: 1px solid var(--surface-d)">
-        <div class="text-center">
-          <h5 class="mb-1">Habitación N° {{ room.roomNumber }}</h5>
-          <h6 class="mt-0 mb-3">{{ room.roomType }}</h6>
-          <span
-            [ngClass]="
-              room.status === 'AVAILABLE'
-                ? 'product-badge status-instock'
-                : 'product-badge status-lowstock'
-            ">
-            {{ room.roomStatus }}
-          </span>
-          <div class="my-5">
-            <button
-              *ngIf="room.status === 'AVAILABLE'"
-              pButton
-              pRipple
-              pTooltip="Alquilar"
-              tooltipPosition="bottom"
-              icon="pi pi-book"
-              class="mr-2 p-button-rounded p-button-warning"
-              (click)="reservation(room)"></button>
-            <button
-              *ngIf="room.status !== 'AVAILABLE'"
-              pButton
-              pRipple
-              pTooltip="Ver"
-              tooltipPosition="bottom"
-              icon="pi pi-eye"
-              class="mr-2 p-button-rounded p-button-success"
-              (click)="show(room)"></button>
-            <button
-              *ngIf="room.status !== 'AVAILABLE'"
-              pButton
-              pRipple
-              pTooltip="Finalizar"
-              tooltipPosition="bottom"
-              icon="pi pi-times"
-              class="p-button-rounded p-button-info"
-              (click)="finish(room)"></button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="flex-auto">
-    <p-paginator
-      [rows]="inUseLimit"
-      [first]="inUseFirst"
-      [totalRecords]="(inUseRoomTotal | async) ?? 0"
-      [rowsPerPageOptions]="rowsPerPageOptions"
-      (onPageChange)="onInUseRoomPageChange($event)"
-      [showCurrentPageReport]="true"
-      currentPageReportTemplate="{first} - {last} of {totalRecords}"
-      class="paginator-custom">
-    </p-paginator>
-  </div>
-</ng-template>
+<div class="flex-auto">
+  <p-paginator
+    [rows]="limit"
+    [first]="first"
+    [totalRecords]="(availableRoomTotal | async) ?? 0"
+    [rowsPerPageOptions]="rowsPerPageOptions"
+    (onPageChange)="onAvailableRoomPageChange($event)"
+    [showCurrentPageReport]="true"
+    currentPageReportTemplate="{first} - {last} of {totalRecords}"
+    class="paginator-custom">
+  </p-paginator>
+</div>

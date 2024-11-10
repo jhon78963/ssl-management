@@ -210,16 +210,21 @@ export class CustomerReservationComponent implements OnInit {
           };
           if (locker.genderId == 1) {
             const locker = new StatusLocker(body);
-            this.maleLockersService.changeStatus(locker.id, body).subscribe();
+            const pagination = this.dynamicDialogConfig.data.pagination;
+            this.maleLockersService
+              .changeStatus(locker.id, body, pagination)
+              .subscribe();
           } else {
             const locker = new StatusLocker(body);
-            this.femaleLockersService.changeStatus(locker.id, body).subscribe();
+            const pagination = this.dynamicDialogConfig.data.pagination;
+            this.femaleLockersService
+              .changeStatus(locker.id, body, pagination)
+              .subscribe();
           }
           this.reservationId = reservation.reservationId;
           this.userFounded = false;
           this.updateStepStatus(false);
           this.currentIndex = 1;
-          // this.dynamicDialogRef.close();
         },
         error: () => {},
       });

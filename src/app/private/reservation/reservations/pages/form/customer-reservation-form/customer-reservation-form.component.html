@@ -1,251 +1,89 @@
-<div *ngIf="statusSelected.value === 1; else inUseSection">
-  <div
-    class="flex flex-column md:flex-row md:justify-content-between gap-2 mt-3 mb-2">
-    <p-selectButton
-      [options]="statusOptions"
-      [(ngModel)]="statusSelected"
-      (onChange)="statusChange($event)"
-      optionLabel="name">
-    </p-selectButton>
-    <div class="flex justify-content-between">
-      <span class="p-input-icon-left mr-2">
-        <i class="pi pi-search"></i>
-        <input
-          type="search"
-          pInputText
-          placeholder="Buscar por número"
-          [(ngModel)]="number"
-          (input)="onFilter($event)"
-          pattern="[0-9]*" />
-      </span>
-      <button
-        pButton
-        pRipple
-        pTooltip="Alquilar"
-        tooltipPosition="bottom"
-        icon="pi pi-book"
-        class="mr-2 p-button-rounded p-button-warning"
-        (click)="massiveReservation(selectedReservations)"
-        [disabled]="selectedReservations.length === 0"></button>
-    </div>
-    <p-selectButton
-      [options]="genderOptions"
-      [(ngModel)]="genderSelected"
-      (onChange)="genderChange($event)"
-      optionLabel="name">
-    </p-selectButton>
-  </div>
-  <div *ngIf="genderSelected.value === 1; else femaleSection">
-    <div class="grid">
-      <div *ngFor="let locker of maleLockers | async" class="col-12 md:col-3">
-        <div
-          class="border-round m-2 p-2"
-          style="border: 1px solid var(--surface-d)">
-          <div class="text-start">
-            <p-checkbox
-              [(ngModel)]="selectedReservations"
-              [value]="locker"
-              inputId="locker" />
-          </div>
-          <div class="text-center">
-            <h5 class="mb-1">Locker N° {{ locker.number }}</h5>
-            <h6 class="mt-0 mb-3">{{ locker.gender }}</h6>
-            <span
-              [ngClass]="
-                locker.status === 'Disponible'
-                  ? 'product-badge status-instock'
-                  : 'product-badge status-lowstock'
-              ">
-              {{ locker.status }}
-            </span>
-            <div class="my-5">
-              <button
-                *ngIf="locker.status === 'Disponible'"
-                pButton
-                pRipple
-                pTooltip="Alquilar"
-                tooltipPosition="bottom"
-                icon="pi pi-book"
-                class="mr-2 p-button-rounded p-button-warning"
-                (click)="reservation(locker)"></button>
-              <button
-                *ngIf="locker.status !== 'Disponible'"
-                pButton
-                pRipple
-                pTooltip="Ver"
-                tooltipPosition="bottom"
-                icon="pi pi-eye"
-                class="mr-2 p-button-rounded p-button-success"
-                (click)="show(locker)"></button>
-              <button
-                *ngIf="locker.status !== 'Disponible'"
-                pButton
-                pRipple
-                pTooltip="Finalizar"
-                tooltipPosition="bottom"
-                icon="pi pi-times"
-                class="p-button-rounded p-button-info"
-                (click)="finish(locker)"></button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="flex-auto">
-      <p-paginator
-        [rows]="limit"
-        [first]="first"
-        [totalRecords]="(maleLockertotal | async) ?? 0"
-        [rowsPerPageOptions]="rowsPerPageOptions"
-        (onPageChange)="onMaleLockerPageChange($event)"
-        [showCurrentPageReport]="true"
-        currentPageReportTemplate="{first} - {last} of {totalRecords}"
-        class="paginator-custom">
-      </p-paginator>
-    </div>
-  </div>
-
-  <ng-template #femaleSection>
-    <div class="grid">
-      <div *ngFor="let locker of femaleLockers | async" class="col-12 md:col-3">
-        <div
-          class="border-round m-2 p-2"
-          style="border: 1px solid var(--surface-d)">
-          <div class="text-start">
-            <p-checkbox
-              [(ngModel)]="selectedReservations"
-              [value]="locker"
-              inputId="locker" />
-          </div>
-          <div class="text-center">
-            <h5 class="mb-1">Locker N° {{ locker.number }}</h5>
-            <h6 class="mt-0 mb-3">{{ locker.gender }}</h6>
-            <span
-              [ngClass]="
-                locker.status === 'Disponible'
-                  ? 'product-badge status-instock'
-                  : 'product-badge status-lowstock'
-              ">
-              {{ locker.status }}
-            </span>
-            <div class="my-5">
-              <button
-                *ngIf="locker.status === 'Disponible'"
-                pButton
-                pRipple
-                pTooltip="Alquilar"
-                tooltipPosition="bottom"
-                icon="pi pi-book"
-                class="mr-2 p-button-rounded p-button-warning"
-                (click)="reservation(locker)"></button>
-              <button
-                *ngIf="locker.status !== 'Disponible'"
-                pButton
-                pRipple
-                pTooltip="Ver"
-                tooltipPosition="bottom"
-                icon="pi pi-eye"
-                class="mr-2 p-button-rounded p-button-success"
-                (click)="show(locker)"></button>
-              <button
-                *ngIf="locker.status !== 'Disponible'"
-                pButton
-                pRipple
-                pTooltip="Finalizar"
-                tooltipPosition="bottom"
-                icon="pi pi-times"
-                class="p-button-rounded p-button-info"
-                (click)="finish(locker)"></button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="flex-auto">
-      <p-paginator
-        [rows]="femaleLimit"
-        [first]="firstFemale"
-        [totalRecords]="(femaleLockertotal | async) ?? 0"
-        [rowsPerPageOptions]="rowsPerPageOptions"
-        (onPageChange)="onFemaleLockerPageChange($event)"
-        [showCurrentPageReport]="true"
-        currentPageReportTemplate="{first} - {last} of {totalRecords}"
-        class="paginator-custom">
-      </p-paginator>
-    </div>
-  </ng-template>
-</div>
-
-<ng-template #inUseSection>
-  <div
-    class="flex flex-column md:flex-row md:justify-content-between gap-2 mt-3 mb-2">
-    <p-selectButton
-      [options]="statusOptions"
-      [(ngModel)]="statusSelected"
-      (onChange)="statusChange($event)"
-      optionLabel="name">
-    </p-selectButton>
-    <span class="p-input-icon-left">
+<div
+  class="flex flex-column md:flex-row md:justify-content-between gap-2 mt-3 mb-2">
+  <div class="flex justify-content-between">
+    <span class="p-input-icon-left mr-2">
       <i class="pi pi-search"></i>
       <input
         type="search"
         pInputText
         placeholder="Buscar por número"
-        [(ngModel)]="lockerNumber"
-        (input)="onLockerFilter($event)"
+        [(ngModel)]="number"
+        (input)="onFilter($event)"
         pattern="[0-9]*" />
     </span>
-    <p-selectButton
-      [options]="genderOptions"
-      [disabled]="true"
-      optionLabel="name">
-    </p-selectButton>
   </div>
+  <button
+    pButton
+    pRipple
+    pTooltip="Alquilar"
+    tooltipPosition="bottom"
+    icon="pi pi-book"
+    class="mr-2 p-button-rounded p-button-warning"
+    (click)="massiveReservation(selectedReservations)"
+    [disabled]="selectedReservations.length === 0"></button>
+  <p-selectButton
+    [options]="genderOptions"
+    [(ngModel)]="genderSelected"
+    (onChange)="genderChange($event)"
+    optionLabel="name">
+  </p-selectButton>
+</div>
+<div *ngIf="genderSelected.value === 1; else femaleSection">
   <div class="grid">
-    <div *ngFor="let locker of lockers | async" class="col-12 md:col-3">
+    <div *ngFor="let locker of maleLockers | async" class="col-12 md:col-3">
       <div
-        class="border-round m-2 text-center p-2"
-        style="border: 1px solid var(--surface-d)">
-        <h5 class="mb-1">Locker N° {{ locker.number }}</h5>
-        <h6 class="mt-0 mb-3">{{ locker.gender }}</h6>
-        <span
-          [ngClass]="
-            locker.status === 'Disponible'
-              ? 'product-badge status-instock'
-              : 'product-badge status-lowstock'
-          ">
-          {{ locker.status }}
-        </span>
-        <div class="my-5">
-          <button
-            *ngIf="locker.status === 'Disponible'"
-            pButton
-            pRipple
-            pTooltip="Alquilar"
-            tooltipPosition="bottom"
-            icon="pi pi-book"
-            class="mr-2 p-button-rounded p-button-warning"
-            (click)="reservation(locker)"></button>
-          <button
-            *ngIf="locker.status !== 'Disponible'"
-            pButton
-            pRipple
-            pTooltip="Ver"
-            tooltipPosition="bottom"
-            icon="pi pi-eye"
-            class="mr-2 p-button-rounded p-button-success"
-            (click)="show(locker)"></button>
-          <button
-            *ngIf="locker.status !== 'Disponible'"
-            pButton
-            pRipple
-            pTooltip="Finalizar"
-            tooltipPosition="bottom"
-            icon="pi pi-times"
-            class="p-button-rounded p-button-info"
-            (click)="finish(locker)"></button>
+        class="border-round m-2 p-2 border-status"
+        style="border: 1px solid var(--surface-d)"
+        [ngClass]="
+          locker.status === 'Disponible' ? 'available-status' : 'in-use-status'
+        ">
+        <div class="text-start">
+          <p-checkbox
+            *ngIf="locker.status !== 'Ocupado'"
+            [(ngModel)]="selectedReservations"
+            [value]="locker"
+            inputId="locker" />
+        </div>
+        <div class="text-center">
+          <h5 class="mb-1">Locker N° {{ locker.number }}</h5>
+          <h6 class="mt-0 mb-3">{{ locker.gender }}</h6>
+          <span
+            [ngClass]="
+              locker.status === 'Disponible'
+                ? 'product-badge available-status'
+                : 'product-badge in-use-status'
+            ">
+            {{ locker.status }}
+          </span>
+          <div class="my-5">
+            <button
+              *ngIf="locker.status === 'Disponible'"
+              pButton
+              pRipple
+              pTooltip="Alquilar"
+              tooltipPosition="bottom"
+              icon="pi pi-book"
+              class="mr-2 p-button-rounded p-button-warning"
+              (click)="reservation(locker)"></button>
+            <button
+              *ngIf="locker.status !== 'Disponible'"
+              pButton
+              pRipple
+              pTooltip="Ver"
+              tooltipPosition="bottom"
+              icon="pi pi-eye"
+              class="mr-2 p-button-rounded p-button-warning"
+              (click)="show(locker)"></button>
+            <button
+              *ngIf="locker.status !== 'Disponible'"
+              pButton
+              pRipple
+              pTooltip="Finalizar"
+              tooltipPosition="bottom"
+              icon="pi pi-times"
+              class="p-button-rounded p-button-secondary"
+              (click)="finish(locker)"></button>
+          </div>
         </div>
       </div>
     </div>
@@ -255,9 +93,84 @@
     <p-paginator
       [rows]="limit"
       [first]="first"
-      [totalRecords]="(lockertotal | async) ?? 0"
+      [totalRecords]="(maleLockertotal | async) ?? 0"
       [rowsPerPageOptions]="rowsPerPageOptions"
-      (onPageChange)="onLockerPageChange($event)"
+      (onPageChange)="onMaleLockerPageChange($event)"
+      [showCurrentPageReport]="true"
+      currentPageReportTemplate="{first} - {last} of {totalRecords}"
+      class="paginator-custom">
+    </p-paginator>
+  </div>
+</div>
+
+<ng-template #femaleSection>
+  <div class="grid">
+    <div *ngFor="let locker of femaleLockers | async" class="col-12 md:col-3">
+      <div
+        class="border-round m-2 p-2"
+        style="border: 1px solid var(--surface-d)"
+        [ngClass]="
+          locker.status === 'Disponible' ? 'available-status' : 'in-use-status'
+        ">
+        <div class="text-start">
+          <p-checkbox
+            *ngIf="locker.status !== 'Ocupado'"
+            [(ngModel)]="selectedReservations"
+            [value]="locker"
+            inputId="locker" />
+        </div>
+        <div class="text-center">
+          <h5 class="mb-1">Locker N° {{ locker.number }}</h5>
+          <h6 class="mt-0 mb-3">{{ locker.gender }}</h6>
+          <span
+            [ngClass]="
+              locker.status === 'Disponible'
+                ? 'product-badge available-status'
+                : 'product-badge in-use-status'
+            ">
+            {{ locker.status }}
+          </span>
+          <div class="my-5">
+            <button
+              *ngIf="locker.status === 'Disponible'"
+              pButton
+              pRipple
+              pTooltip="Alquilar"
+              tooltipPosition="bottom"
+              icon="pi pi-book"
+              class="mr-2 p-button-rounded p-button-warning"
+              (click)="reservation(locker)"></button>
+            <button
+              *ngIf="locker.status !== 'Disponible'"
+              pButton
+              pRipple
+              pTooltip="Ver"
+              tooltipPosition="bottom"
+              icon="pi pi-eye"
+              class="mr-2 p-button-rounded p-button-warning"
+              (click)="show(locker)"></button>
+            <button
+              *ngIf="locker.status !== 'Disponible'"
+              pButton
+              pRipple
+              pTooltip="Finalizar"
+              tooltipPosition="bottom"
+              icon="pi pi-times"
+              class="p-button-rounded p-button-secondary"
+              (click)="finish(locker)"></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="flex-auto">
+    <p-paginator
+      [rows]="femaleLimit"
+      [first]="firstFemale"
+      [totalRecords]="(femaleLockertotal | async) ?? 0"
+      [rowsPerPageOptions]="rowsPerPageOptions"
+      (onPageChange)="onFemaleLockerPageChange($event)"
       [showCurrentPageReport]="true"
       currentPageReportTemplate="{first} - {last} of {totalRecords}"
       class="paginator-custom">

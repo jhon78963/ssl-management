@@ -190,22 +190,21 @@ export class MassiveReservationComponent implements OnInit {
           };
           if (locker.genderId == 1) {
             const locker = new StatusLocker(body);
-            this.maleLockersService.changeStatus(locker.id, body).subscribe();
+            this.maleLockersService
+              .changeMassiveStatus(locker.id, body)
+              .subscribe();
           } else {
             const locker = new StatusLocker(body);
-            this.femaleLockersService.changeStatus(locker.id, body).subscribe();
+            this.femaleLockersService
+              .changeMassiveStatus(locker.id, body)
+              .subscribe();
           }
           showSuccess(this.messageService, 'El locker ha sido registrado.');
           this.reservationId = reservation.reservationId;
           this.isRegistered[index] = true;
-          // this.dynamicDialogRef.close();
         },
         error: () => {},
       });
     }
   }
-
-  // get isFormValid(): boolean {
-  //   return this.reservationForm.valid;
-  // }
 }
