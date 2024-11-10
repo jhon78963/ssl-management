@@ -113,7 +113,6 @@ export class RoomReservationComponent implements OnInit {
                     next: (customer: CreatedCustomer) => {
                       this.customerId = customer.customerId;
                       this.userFounded = false;
-                      console.log(this.userFounded);
                     },
                     error: () => {
                       showError(
@@ -121,7 +120,6 @@ export class RoomReservationComponent implements OnInit {
                         'No se encontró el cliente. Ingreseló manualmente',
                       );
                       this.userFounded = false;
-                      console.log(this.userFounded);
                       this.customerId = 0;
                       this.enableFields();
                     },
@@ -256,7 +254,6 @@ export class RoomReservationComponent implements OnInit {
     if (reservationId == 0) {
       this.saveReservation(true);
     } else {
-      console.log(this.customerId);
       if (this.customerId == 0) {
         const person: DniConsultation = this.reservationForm.value;
         this.customersService.create(person).subscribe({
