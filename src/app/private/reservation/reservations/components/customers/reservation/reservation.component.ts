@@ -1,33 +1,33 @@
-import { Component, OnInit } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
-import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
+import { Component, OnInit } from '@angular/core';
+import { DynamicDialogConfig } from 'primeng/dynamicdialog';
 
-import { StepsModule } from 'primeng/steps';
-import { SharedModule } from '../../../../../../shared/shared.module';
 import {
   FormBuilder,
   FormGroup,
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { debounceTime, Subject } from 'rxjs';
-import { SunatService } from '../../../services/sunat.service';
-import { CustomersService } from '../../../services/customers.service';
-import { CreatedCustomer, Customer } from '../../../models/customer.model';
-import { DniConsultation } from '../../../models/sunat.model';
-import { showError, showSuccess } from '../../../../../../utils/notifications';
 import { MessageService } from 'primeng/api';
+import { StepsModule } from 'primeng/steps';
 import { ToastModule } from 'primeng/toast';
-import { ReservationsService } from '../../../services/reservations.service';
+import { debounceTime, Subject } from 'rxjs';
+import { SharedModule } from '../../../../../../shared/shared.module';
+import { showError } from '../../../../../../utils/notifications';
+import { CreatedCustomer, Customer } from '../../../models/customer.model';
+import { StatusLocker } from '../../../models/locker.model';
 import {
   CreatedReservation,
   CustomerReservation,
 } from '../../../models/reservation.model';
+import { DniConsultation } from '../../../models/sunat.model';
+import { CustomersService } from '../../../services/customers.service';
 import { FemaleLockersService } from '../../../services/female-lockers.service';
 import { MaleLockersService } from '../../../services/male-lockers.service';
-import { StatusLocker } from '../../../models/locker.model';
-import { ServicesAddComponent } from '../../services/services.component';
+import { ReservationsService } from '../../../services/reservations.service';
+import { SunatService } from '../../../services/sunat.service';
 import { ProductsAddComponent } from '../../products/products.component';
+import { ServicesAddComponent } from '../../services/services.component';
 
 @Component({
   selector: 'app-customer-reservation',
@@ -63,15 +63,14 @@ export class CustomerReservationComponent implements OnInit {
 
   reservationForm: FormGroup = this.formBuilder.group({
     dni: [null, [Validators.required]],
-    name: [null, Validators.required],
-    surname: [null, Validators.required],
+    name: [{ value: null, disabled: true }, Validators.required],
+    surname: [{ value: null, disabled: true }, Validators.required],
   });
 
   constructor(
     private readonly dynamicDialogConfig: DynamicDialogConfig,
     private readonly formBuilder: FormBuilder,
     private readonly messageService: MessageService,
-    private readonly dynamicDialogRef: DynamicDialogRef,
     private readonly customersService: CustomersService,
     private readonly femaleLockersService: FemaleLockersService,
     private readonly maleLockersService: MaleLockersService,
@@ -83,16 +82,8 @@ export class CustomerReservationComponent implements OnInit {
   ngOnInit(): void {
     if (this.dynamicDialogConfig.data.locker) {
       this.updateStepStatus(true);
-      this.disableFields();
       const locker = this.dynamicDialogConfig.data.locker;
       this.isCreate = this.dynamicDialogConfig.data.create;
-      if (!this.isCreate) {
-        this.updateStepStatus(false);
-        this.items = this.items.filter(item => item.label !== 'Cliente');
-        if (this.currentIndex > 0) {
-          this.currentIndex -= 1;
-        }
-      }
 
       if (locker.reservationId) {
         this.reservationId = locker.reservationId;
@@ -110,7 +101,6 @@ export class CustomerReservationComponent implements OnInit {
               this.reservationForm.get('name')?.setValue(customer.name);
               this.reservationForm.get('surname')?.setValue(customer.surname);
               this.customerId = customer.id;
-              showSuccess(this.messageService, 'Se encontró el cliente.');
             },
             error: () => {
               this.sunatService.getPerson(dni).subscribe({
@@ -127,6 +117,7 @@ export class CustomerReservationComponent implements OnInit {
                         'No se encontró el cliente. Ingreseló manualmente',
                       );
                       this.userFounded = false;
+                      this.customerId = 0;
                       this.enableFields();
                     },
                   });
@@ -187,7 +178,8 @@ export class CustomerReservationComponent implements OnInit {
             'No se encontró el cliente. Ingreseló manualmente',
           );
           this.userFounded = false;
-          this.enableFields(false);
+          this.customerId = 0;
+          this.enableFields();
         },
       });
     } else {
@@ -224,6 +216,7 @@ export class CustomerReservationComponent implements OnInit {
             this.femaleLockersService.changeStatus(locker.id, body).subscribe();
           }
           this.reservationId = reservation.reservationId;
+          this.userFounded = false;
           this.updateStepStatus(false);
           this.currentIndex = 1;
           // this.dynamicDialogRef.close();

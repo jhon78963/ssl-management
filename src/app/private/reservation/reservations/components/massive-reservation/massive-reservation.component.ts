@@ -40,6 +40,7 @@ export class MassiveReservationComponent implements OnInit {
   customerId: number = 0;
   reservationId: number = 0;
   isRegistered: boolean[] = [];
+  userFounded: boolean = true;
 
   constructor(
     private readonly dynamicDialogConfig: DynamicDialogConfig,
@@ -63,8 +64,8 @@ export class MassiveReservationComponent implements OnInit {
     this.lockers.forEach(() => {
       const form = this.formBuilder.group({
         dni: [''],
-        name: [''],
-        surname: [''],
+        name: [{ value: '', disabled: true }],
+        surname: [{ value: '', disabled: true }],
       });
       this.reservationForms.push(form);
       this.isRegistered.push(false);
@@ -79,7 +80,6 @@ export class MassiveReservationComponent implements OnInit {
               form.get('name')?.setValue(customer.name);
               form.get('surname')?.setValue(customer.surname);
               this.customerId = customer.id;
-              showSuccess(this.messageService, 'Se encontró el cliente.');
             },
             error: () => {
               this.sunatService.getPerson(dni).subscribe({
@@ -88,17 +88,16 @@ export class MassiveReservationComponent implements OnInit {
                   form.get('surname')?.setValue(person.surname);
                   this.customersService.create(person).subscribe({
                     next: (customer: CreatedCustomer) => {
-                      showSuccess(
-                        this.messageService,
-                        'Se registró el cliente.',
-                      );
                       this.customerId = customer.customerId;
                     },
-                    error: () =>
+                    error: () => {
                       showError(
                         this.messageService,
                         'No se encontró el cliente. Ingréselo manualmente.',
-                      ),
+                      );
+                      this.userFounded = false;
+                      this.enableFields(index);
+                    },
                   });
                 },
               });
@@ -127,7 +126,49 @@ export class MassiveReservationComponent implements OnInit {
     return 'col-12 md:col-4'; // Para 3 o más elementos
   }
 
+  enableFields(index: number, allFields: boolean = true) {
+    const form = this.reservationForms[index];
+    if (!allFields) {
+      form.get('dni')?.enable();
+    }
+    form.get('name')?.enable();
+    form.get('surname')?.enable();
+  }
+
+  disableFields(index: number, allFields: boolean = true) {
+    const form = this.reservationForms[index];
+    if (!allFields) {
+      form.get('dni')?.disable();
+    }
+    form.get('name')?.disable();
+    form.get('surname')?.disable();
+  }
+
   buttonSaveReservation(locker: any, index: number) {
+    if (!this.userFounded) {
+      const person: DniConsultation = this.reservationForms[index].value;
+      this.customersService.create(person).subscribe({
+        next: (customer: CreatedCustomer) => {
+          this.customerId = customer.customerId;
+          this.userFounded = true;
+          this.disableFields(index, false);
+          this.createReservation(locker, index);
+        },
+        error: () => {
+          showError(
+            this.messageService,
+            'No se encontró el cliente. Ingreseló manualmente',
+          );
+          this.userFounded = false;
+          this.enableFields(index);
+        },
+      });
+    } else {
+      this.createReservation(locker, index);
+    }
+  }
+
+  createReservation(locker: any, index: number) {
     const currentDate = new Date();
     const reservationDate = this.datePipe.transform(
       currentDate,
@@ -154,10 +195,7 @@ export class MassiveReservationComponent implements OnInit {
             const locker = new StatusLocker(body);
             this.femaleLockersService.changeStatus(locker.id, body).subscribe();
           }
-          showSuccess(
-            this.messageService,
-            'El locker ha sido registrado. Puedes agregar productos o servicios, o cerrar esta ventana.',
-          );
+          showSuccess(this.messageService, 'El locker ha sido registrado.');
           this.reservationId = reservation.reservationId;
           this.isRegistered[index] = true;
           // this.dynamicDialogRef.close();

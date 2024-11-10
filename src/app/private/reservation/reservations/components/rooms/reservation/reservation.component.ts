@@ -1,6 +1,6 @@
 import { CommonModule, DatePipe } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
+import { DynamicDialogConfig } from 'primeng/dynamicdialog';
 
 import {
   FormBuilder,
@@ -22,11 +22,11 @@ import {
 } from '../../../models/reservation.model';
 import { DniConsultation } from '../../../models/sunat.model';
 import { CustomersService } from '../../../services/customers.service';
+import { ReservationCustomersService } from '../../../services/reservation-customers.service';
 import { ReservationsService } from '../../../services/reservations.service';
 import { SunatService } from '../../../services/sunat.service';
 import { ProductsAddComponent } from '../../products/products.component';
 import { ServicesAddComponent } from '../../services/services.component';
-import { ReservationCustomersService } from '../../../services/reservation-customers.service';
 
 @Component({
   selector: 'app-room-reservation',
@@ -57,20 +57,20 @@ export class RoomReservationComponent implements OnInit {
   currentIndex: number = 0;
   customerId: number = 0;
   customers: any[] | undefined = [];
+  userFounded: boolean = true;
 
   private dniSearchTermSubject = new Subject<string>();
 
   reservationForm: FormGroup = this.formBuilder.group({
     dni: [null, Validators.required],
-    name: [null, Validators.required],
-    surname: [null, Validators.required],
+    name: [{ value: null, disabled: true }, Validators.required],
+    surname: [{ value: null, disabled: true }, Validators.required],
   });
 
   constructor(
     private readonly dynamicDialogConfig: DynamicDialogConfig,
     private readonly formBuilder: FormBuilder,
     private readonly messageService: MessageService,
-    private readonly dynamicDialogRef: DynamicDialogRef,
     private readonly customersService: CustomersService,
     private readonly roomsService: RoomsService,
     private readonly reservationsService: ReservationsService,
@@ -103,7 +103,6 @@ export class RoomReservationComponent implements OnInit {
               this.reservationForm.get('name')?.setValue(customer.name);
               this.reservationForm.get('surname')?.setValue(customer.surname);
               this.customerId = customer.id;
-              showSuccess(this.messageService, 'Se encontró el cliente.');
             },
             error: () => {
               this.sunatService.getPerson(dni).subscribe({
@@ -112,17 +111,20 @@ export class RoomReservationComponent implements OnInit {
                   this.reservationForm.get('surname')?.setValue(person.surname);
                   this.customersService.create(person).subscribe({
                     next: (customer: CreatedCustomer) => {
-                      showSuccess(
-                        this.messageService,
-                        'Se registró el cliente.',
-                      );
                       this.customerId = customer.customerId;
+                      this.userFounded = false;
+                      console.log(this.userFounded);
                     },
-                    error: () =>
+                    error: () => {
                       showError(
                         this.messageService,
                         'No se encontró el cliente. Ingreseló manualmente',
-                      ),
+                      );
+                      this.userFounded = false;
+                      console.log(this.userFounded);
+                      this.customerId = 0;
+                      this.enableFields();
+                    },
                   });
                 },
               });
@@ -134,6 +136,22 @@ export class RoomReservationComponent implements OnInit {
         }
       });
     }
+  }
+
+  enableFields(allFields: boolean = true) {
+    if (!allFields) {
+      this.reservationForm.get('dni')?.enable();
+    }
+    this.reservationForm.get('name')?.enable();
+    this.reservationForm.get('surname')?.enable();
+  }
+
+  disableFields(allFields: boolean = true) {
+    if (!allFields) {
+      this.reservationForm.get('dni')?.disable();
+    }
+    this.reservationForm.get('name')?.disable();
+    this.reservationForm.get('surname')?.disable();
   }
 
   getCustomers(reservationId: number) {
@@ -158,6 +176,31 @@ export class RoomReservationComponent implements OnInit {
   }
 
   saveReservation(isCustomerAdd: boolean = false) {
+    if (!this.userFounded) {
+      const person: DniConsultation = this.reservationForm.value;
+      this.customersService.create(person).subscribe({
+        next: (customer: CreatedCustomer) => {
+          this.customerId = customer.customerId;
+          this.userFounded = true;
+          this.disableFields();
+          this.createReservation(isCustomerAdd);
+        },
+        error: () => {
+          showError(
+            this.messageService,
+            'No se encontró el cliente. Ingreseló manualmente',
+          );
+          this.userFounded = false;
+          this.customerId = 0;
+          this.enableFields();
+        },
+      });
+    } else {
+      this.createReservation(isCustomerAdd);
+    }
+  }
+
+  createReservation(isCustomerAdd: boolean = false) {
     const currentDate = new Date();
     const reservationDate = this.datePipe.transform(
       currentDate,
@@ -185,7 +228,6 @@ export class RoomReservationComponent implements OnInit {
             )
             .subscribe({
               next: () => {
-                showSuccess(this.messageService, 'Se agregó el cliente.');
                 this.reservationForm.get('dni')?.setValue(null);
                 this.reservationForm.get('name')?.setValue(null);
                 this.reservationForm.get('surname')?.setValue(null);
@@ -193,7 +235,8 @@ export class RoomReservationComponent implements OnInit {
               error: () => {},
             });
           this.roomsService.changeStatus(room.id, body).subscribe();
-          showSuccess(this.messageService, 'La habitación ha sido registrado.');
+          // showSuccess(this.messageService, 'La habitación ha sido registrado.');
+          this.userFounded = false;
           this.reservationId = reservation.reservationId;
           this.getCustomers(this.reservationId);
           if (isCustomerAdd) {
@@ -202,7 +245,9 @@ export class RoomReservationComponent implements OnInit {
             this.reservationForm.get('surname')?.setValue(null);
           }
         },
-        error: () => {},
+        error: () => {
+          this.userFounded = false;
+        },
       });
     }
   }
@@ -211,20 +256,46 @@ export class RoomReservationComponent implements OnInit {
     if (reservationId == 0) {
       this.saveReservation(true);
     } else {
-      const room = this.dynamicDialogConfig.data.room;
-      this.reservationCustomersService
-        .add(this.reservationId, this.customerId, room.pricePerAdditionalPerson)
-        .subscribe({
-          next: () => {
-            this.getCustomers(this.reservationId);
-            showSuccess(this.messageService, 'Se agregó el cliente.');
-            this.reservationForm.get('dni')?.setValue(null);
-            this.reservationForm.get('name')?.setValue(null);
-            this.reservationForm.get('surname')?.setValue(null);
+      console.log(this.customerId);
+      if (this.customerId == 0) {
+        const person: DniConsultation = this.reservationForm.value;
+        this.customersService.create(person).subscribe({
+          next: (customer: CreatedCustomer) => {
+            this.customerId = customer.customerId;
+            this.userFounded = true;
+            this.customerAddCreate();
+            this.disableFields();
           },
-          error: () => {},
+          error: () => {
+            showError(
+              this.messageService,
+              'No se encontró el cliente. Ingreseló manualmente',
+            );
+            this.userFounded = false;
+            this.customerId = 0;
+            this.enableFields();
+          },
         });
+      } else {
+        this.customerAddCreate();
+      }
     }
+  }
+
+  customerAddCreate() {
+    const room = this.dynamicDialogConfig.data.room;
+    this.reservationCustomersService
+      .add(this.reservationId, this.customerId, room.pricePerAdditionalPerson)
+      .subscribe({
+        next: () => {
+          this.getCustomers(this.reservationId);
+          showSuccess(this.messageService, 'Se agregó el cliente.');
+          this.reservationForm.get('dni')?.setValue(null);
+          this.reservationForm.get('name')?.setValue(null);
+          this.reservationForm.get('surname')?.setValue(null);
+        },
+        error: () => {},
+      });
   }
 
   customerRemoveButton(customerId: number) {
