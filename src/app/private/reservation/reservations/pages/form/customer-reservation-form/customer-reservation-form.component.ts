@@ -1,23 +1,23 @@
-import { Component, OnInit } from '@angular/core';
-import { debounceTime, Observable, Subject } from 'rxjs';
-import { Locker } from '../../../models/locker.model';
 import { CommonModule } from '@angular/common';
-import { ButtonModule } from 'primeng/button';
-import { InputTextModule } from 'primeng/inputtext';
-import { SelectButtonModule } from 'primeng/selectbutton';
+import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { PaginatorModule } from 'primeng/paginator';
-import { InputNumberModule } from 'primeng/inputnumber';
-import { MaleLockersService } from '../../../services/male-lockers.service';
-import { FemaleLockersService } from '../../../services/female-lockers.service';
-import { TooltipModule } from 'primeng/tooltip';
-import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
+import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { MessageService } from 'primeng/api';
-import { CustomerReservationComponent } from '../../../components/customers/reservation/reservation.component';
-import { CheckoutComponent } from '../../../components/customers/checkout/checkout.component';
-import { LockersService } from '../../../services/lockers.service';
+import { ButtonModule } from 'primeng/button';
 import { CheckboxModule } from 'primeng/checkbox';
+import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
+import { InputNumberModule } from 'primeng/inputnumber';
+import { InputTextModule } from 'primeng/inputtext';
+import { PaginatorModule } from 'primeng/paginator';
+import { SelectButtonModule } from 'primeng/selectbutton';
+import { TooltipModule } from 'primeng/tooltip';
+import { debounceTime, Observable, Subject } from 'rxjs';
+import { CheckoutComponent } from '../../../components/customers/checkout/checkout.component';
+import { CustomerReservationComponent } from '../../../components/customers/reservation/reservation.component';
 import { MassiveReservationComponent } from '../../../components/massive-reservation/massive-reservation.component';
+import { Locker } from '../../../models/locker.model';
+import { FemaleLockersService } from '../../../services/female-lockers.service';
+import { MaleLockersService } from '../../../services/male-lockers.service';
 // import { showSuccess } from '../../../../../../utils/notifications';
 
 @Component({
@@ -33,6 +33,7 @@ import { MassiveReservationComponent } from '../../../components/massive-reserva
     InputNumberModule,
     TooltipModule,
     CheckboxModule,
+    InfiniteScrollModule,
   ],
   templateUrl: './customer-reservation-form.component.html',
   styleUrl: './customer-reservation-form.component.scss',
@@ -79,7 +80,9 @@ export class CustomerReservationFormComponent implements OnInit {
 
   private searchTermSubject = new Subject<string>();
   private searchFemaleTermSubject = new Subject<string>();
-  private searchLockerTermSubject = new Subject<string>();
+
+  loading: boolean = false;
+  loadedLockers: Locker[] = [];
 
   selectedReservations: any[] = [];
 
@@ -87,21 +90,24 @@ export class CustomerReservationFormComponent implements OnInit {
     private readonly dialogService: DialogService,
     public messageService: MessageService,
     private readonly femaleLockersService: FemaleLockersService,
-    private readonly lockersService: LockersService,
     private readonly maleLockersService: MaleLockersService,
   ) {}
 
   ngOnInit(): void {
-    if (this.gender == 1) {
-      this.getMaleLockers(this.limit, this.page, this.number, this.gender);
-    } else {
-      this.getFemaleLockers(
-        this.femaleLimit,
-        this.femalePage,
-        this.femaleNumber,
-        this.femaleGender,
-      );
-    }
+    this.loadMoreLockers();
+    this.maleLockers.subscribe(lockers => {
+      this.loadedLockers = lockers;
+    });
+    // if (this.gender == 1) {
+    //   this.getMaleLockers(this.limit, this.page, this.number, this.gender);
+    // } else {
+    //   this.getFemaleLockers(
+    //     this.femaleLimit,
+    //     this.femalePage,
+    //     this.femaleNumber,
+    //     this.femaleGender,
+    //   );
+    // }
     this.searchTermSubject.pipe(debounceTime(600)).subscribe(() => {
       this.getMaleLockers(this.limit, this.page, this.number, this.gender);
     });
@@ -112,6 +118,24 @@ export class CustomerReservationFormComponent implements OnInit {
         this.femaleNumber,
         this.femaleGender,
       );
+    });
+  }
+
+  loadMoreLockers(): void {
+    if (this.loading) return; // Evita llamadas duplicadas
+    this.loading = true;
+
+    // Llama a callGetList y actualiza loadedLockers
+    this.maleLockersService.callGetList(this.limit, this.page).subscribe({
+      next: (newLockers: any) => {
+        this.loadedLockers = [...this.loadedLockers, ...newLockers]; // Añade lockers nuevos
+        this.page += 1; // Incrementa el número de página
+        this.loading = false;
+      },
+      error: (error: any) => {
+        console.error('Error al cargar más lockers', error);
+        this.loading = false;
+      },
     });
   }
 
@@ -131,7 +155,6 @@ export class CustomerReservationFormComponent implements OnInit {
   }
 
   massiveReservation(selectedReservation: any[]) {
-    console.log(selectedReservation);
     this.modal = this.dialogService.open(MassiveReservationComponent, {
       data: { selectedReservation },
       header: 'Registrar',
@@ -158,6 +181,15 @@ export class CustomerReservationFormComponent implements OnInit {
         create: true,
       },
       header: `Registrar Locker N° ${locker.number}`,
+    });
+
+    this.modal.onClose.subscribe({
+      next: () => {
+        this.loadMoreLockers();
+        this.maleLockers.subscribe(lockers => {
+          this.loadedLockers = [...this.loadedLockers, ...lockers];
+        });
+      },
     });
   }
 
@@ -187,6 +219,15 @@ export class CustomerReservationFormComponent implements OnInit {
         pagination,
       },
       header: `Checkout Locker N° ${locker.number}`,
+    });
+
+    this.modal.onClose.subscribe({
+      next: () => {
+        this.loadMoreLockers();
+        this.maleLockers.subscribe(lockers => {
+          this.loadedLockers = [...this.loadedLockers, ...lockers];
+        });
+      },
     });
   }
 

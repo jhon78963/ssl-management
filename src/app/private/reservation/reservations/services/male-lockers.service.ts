@@ -27,12 +27,32 @@ export class MaleLockersService {
 
   constructor(private apiService: ApiService) {}
 
+  // callGetList(
+  //   limit: number = 12,
+  //   page: number = 1,
+  //   number: string = '',
+  //   gender: number = 1,
+  // ): Observable<void> {
+  //   let url = `lockers?limit=${limit}&page=${page}&gender=${gender}`;
+  //   if (number) {
+  //     url += `&search=${number}`;
+  //   }
+  //   return this.apiService.get<LockerListResponse>(url).pipe(
+  //     debounceTime(600),
+  //     map((response: LockerListResponse) => {
+  //       console.log(response);
+  //       this.updateLockers(response.data);
+  //       this.updateTotalLockers(response.paginate.total);
+  //     }),
+  //   );
+  // }
+
   callGetList(
     limit: number = 10,
     page: number = 1,
     number: string = '',
     gender: number = 1,
-  ): Observable<void> {
+  ): Observable<Locker[]> {
     let url = `lockers?limit=${limit}&page=${page}&gender=${gender}`;
     if (number) {
       url += `&search=${number}`;
@@ -40,8 +60,11 @@ export class MaleLockersService {
     return this.apiService.get<LockerListResponse>(url).pipe(
       debounceTime(600),
       map((response: LockerListResponse) => {
-        this.updateLockers(response.data);
+        console.log(response);
+        // Acumula los lockers existentes con los nuevos
+        this.updateLockers([...this.lockers, ...response.data]);
         this.updateTotalLockers(response.paginate.total);
+        return this.lockers; // Retorna la lista acumulada
       }),
     );
   }
@@ -58,7 +81,9 @@ export class MaleLockersService {
     return this.apiService
       .patch(`lockers/change-status/${id}`, data)
       .pipe(
-        switchMap(() => this.callGetList(pagination.limit, pagination.page)),
+        switchMap(() =>
+          this.callGetList(pagination.limit, pagination.page - 1),
+        ),
       );
   }
 
