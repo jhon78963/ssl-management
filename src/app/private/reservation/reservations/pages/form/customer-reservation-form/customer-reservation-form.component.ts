@@ -58,28 +58,21 @@ export class CustomerReservationFormComponent implements OnInit {
   rowsPerPageOptions: number[] = [12, 24, 50];
 
   first: number = 0;
-  limit: number = 12;
+  limit: number = 100;
   page: number = 1;
   number: string = '';
   gender: number = 1;
   status: string = 'AVAILABLE';
 
-  femaleLimit: number = 12;
+  femaleLimit: number = 100;
   femalePage: number = 1;
   femaleNumber: string = '';
   firstFemale: number = 0;
   femaleGender: number = 2;
   femaleStatus: string = 'AVAILABLE';
 
-  lockerLimit: number = 12;
-  lockerPage: number = 1;
-  lockerNumber: string = '';
-  firstLocker: number = 0;
-  lockerStatus: string = 'IN_USE';
-
   private searchTermSubject = new Subject<string>();
   private searchFemaleTermSubject = new Subject<string>();
-  private searchLockerTermSubject = new Subject<string>();
 
   selectedReservations: any[] = [];
 
@@ -131,7 +124,6 @@ export class CustomerReservationFormComponent implements OnInit {
   }
 
   massiveReservation(selectedReservation: any[]) {
-    console.log(selectedReservation);
     this.modal = this.dialogService.open(MassiveReservationComponent, {
       data: { selectedReservation },
       header: 'Registrar',
@@ -190,24 +182,6 @@ export class CustomerReservationFormComponent implements OnInit {
     });
   }
 
-  onMaleLockerPageChange(event: any) {
-    this.page = event.page + 1;
-    this.first = event.first;
-    this.getMaleLockers(this.limit, this.page, this.number, this.gender);
-  }
-
-  onFilter(term: any) {
-    const input = term.target.value;
-    if (input == '') {
-      this.searchTermSubject.next('');
-    }
-    const sanitizedInput = input.replace(/\D/g, '');
-    term.target.value = sanitizedInput;
-    if (sanitizedInput) {
-      this.searchTermSubject.next(sanitizedInput);
-    }
-  }
-
   async getMaleLockers(
     limit = this.limit,
     page = this.page,
@@ -225,6 +199,35 @@ export class CustomerReservationFormComponent implements OnInit {
 
   get maleLockertotal(): Observable<number> {
     return this.maleLockersService.getTotal();
+  }
+
+  onMaleLockerPageChange(event: any) {
+    this.page = event.page + 1;
+    this.first = event.first;
+    this.getMaleLockers(this.limit, this.page, this.number, this.gender);
+  }
+
+  onFilter(term: any) {
+    const input = term.target.value;
+    if (this.gender == 1) {
+      if (input == '') {
+        this.searchTermSubject.next('');
+      }
+      const sanitizedInput = input.replace(/\D/g, '');
+      term.target.value = sanitizedInput;
+      if (sanitizedInput) {
+        this.searchTermSubject.next(sanitizedInput);
+      }
+    } else {
+      if (input == '') {
+        this.searchFemaleTermSubject.next('');
+      }
+      const sanitizedInput = input.replace(/\D/g, '');
+      term.target.value = sanitizedInput;
+      if (sanitizedInput) {
+        this.searchFemaleTermSubject.next(sanitizedInput);
+      }
+    }
   }
 
   async getFemaleLockers(

@@ -28,7 +28,7 @@ export class FemaleLockersService {
   constructor(private apiService: ApiService) {}
 
   callGetList(
-    limit: number = 10,
+    limit: number = 12,
     page: number = 1,
     number: string = '',
     gender: number = 2,
