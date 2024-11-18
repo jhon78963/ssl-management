@@ -10,7 +10,7 @@ export interface RoomStatus {
 
 export interface IRoom {
   id: number;
-  roomNumber: number;
+  number: number;
   capacity: number;
   status: string;
   roomStatus: string;
@@ -25,7 +25,7 @@ export interface IRoom {
 
 export class Room {
   id: number;
-  roomNumber: number;
+  number: number;
   roomName?: string;
   capacity?: number;
   freeAge?: number;
@@ -42,7 +42,7 @@ export class Room {
   reviews: IReview[];
   constructor(room: IRoom) {
     this.id = room.id;
-    this.roomNumber = room.roomNumber;
+    this.number = room.number;
     this.status = room.status;
     this.roomTypeId = room.roomTypeId;
     this.images = room.images;
