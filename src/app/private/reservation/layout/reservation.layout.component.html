@@ -1,6 +1,12 @@
-<div class="card">
+<!-- <div class="card">
   <p-tabMenu [model]="tabs" [activeItem]="activeItem" />
   <router-outlet />
 </div>
 <p-toast />
-<p-confirmDialog></p-confirmDialog>
+<p-confirmDialog></p-confirmDialog> -->
+<div class="card">
+  @for (facilty of facilities | async; track $index) {
+    {{ facilty.number }}
+  }
+</div>
+<p-confirmDialog />
