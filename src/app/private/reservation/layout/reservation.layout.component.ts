@@ -37,6 +37,7 @@ export class ReservationLayoutComponent implements OnInit {
     },
   ];
   activeItem: MenuItem = this.tabs[0];
+  selectedReservations: any[] = [];
   constructor(private readonly facilitiesService: FacilitiesService) {}
 
   ngOnInit(): void {
@@ -49,5 +50,10 @@ export class ReservationLayoutComponent implements OnInit {
 
   get facilities(): Observable<Facility[]> {
     return this.facilitiesService.getList();
+  }
+
+  reservation(facility: any) {
+    this.selectedReservations.push(facility);
+    console.log(this.selectedReservations);
   }
 }
