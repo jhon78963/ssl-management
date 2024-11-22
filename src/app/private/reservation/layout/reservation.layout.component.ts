@@ -37,7 +37,7 @@ export class ReservationLayoutComponent implements OnInit {
     },
   ];
   activeItem: MenuItem = this.tabs[0];
-  selectedReservations: any[] = [];
+  selectedFacilities: any[] = [];
   constructor(private readonly facilitiesService: FacilitiesService) {}
 
   ngOnInit(): void {
@@ -52,8 +52,42 @@ export class ReservationLayoutComponent implements OnInit {
     return this.facilitiesService.getList();
   }
 
+  isSelected(facility: any): boolean {
+    return this.selectedFacilities.some(
+      reservation => reservation.number === facility.number,
+    );
+  }
+
+  clearSelections(): void {
+    this.selectedFacilities = [];
+  }
+
+  getButtonClass(facility: any): string {
+    if (facility.status === 'AVAILABLE') {
+      return this.isSelected(facility)
+        ? 'p-button-primary'
+        : 'p-button-success';
+    } else if (facility.status === 'IN_USE') {
+      return 'p-button-danger';
+    } else if (facility.status === 'IN_CLEANING') {
+      return 'p-button-secondary';
+    }
+    return 'p-button-warning';
+  }
+
   reservation(facility: any) {
-    this.selectedReservations.push(facility);
-    console.log(this.selectedReservations);
+    if (facility.status !== 'AVAILABLE') {
+      return;
+    }
+
+    const index = this.selectedFacilities.findIndex(
+      reservation => reservation.number === facility.number,
+    );
+
+    index === -1
+      ? this.selectedFacilities.push(facility)
+      : this.selectedFacilities.splice(index, 1);
+
+    console.log('Reservas actuales:', this.selectedFacilities);
   }
 }
