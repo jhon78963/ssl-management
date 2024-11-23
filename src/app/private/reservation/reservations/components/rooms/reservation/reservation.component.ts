@@ -110,8 +110,8 @@ export class RoomReservationComponent implements OnInit {
                   this.reservationForm.get('name')?.setValue(person.name);
                   this.reservationForm.get('surname')?.setValue(person.surname);
                   this.customersService.create(person).subscribe({
-                    next: (customer: CreatedCustomer) => {
-                      this.customerId = customer.customerId;
+                    next: (response: CreatedCustomer) => {
+                      this.customerId = response.customer.id;
                       this.userFounded = false;
                     },
                     error: () => {
@@ -177,8 +177,8 @@ export class RoomReservationComponent implements OnInit {
     if (!this.userFounded) {
       const person: DniConsultation = this.reservationForm.value;
       this.customersService.create(person).subscribe({
-        next: (customer: CreatedCustomer) => {
-          this.customerId = customer.customerId;
+        next: (response: CreatedCustomer) => {
+          this.customerId = response.customer.id;
           this.userFounded = true;
           this.disableFields();
           this.createReservation(isCustomerAdd);
@@ -257,8 +257,8 @@ export class RoomReservationComponent implements OnInit {
       if (this.customerId == 0) {
         const person: DniConsultation = this.reservationForm.value;
         this.customersService.create(person).subscribe({
-          next: (customer: CreatedCustomer) => {
-            this.customerId = customer.customerId;
+          next: (response: CreatedCustomer) => {
+            this.customerId = response.customer.id;
             this.userFounded = true;
             this.customerAddCreate();
             this.disableFields();

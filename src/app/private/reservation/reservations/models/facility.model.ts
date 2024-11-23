@@ -1,8 +1,14 @@
+export enum FacilityType {
+  LOCKER = 'locker',
+  ROOM = 'room',
+}
+
 export interface Facility {
   id: number;
   number: string;
   status: string;
   price: number;
+  type: string;
 }
 
 export interface Paginate {

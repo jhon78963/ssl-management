@@ -87,8 +87,8 @@ export class MassiveReservationComponent implements OnInit {
                   form.get('name')?.setValue(person.name);
                   form.get('surname')?.setValue(person.surname);
                   this.customersService.create(person).subscribe({
-                    next: (customer: CreatedCustomer) => {
-                      this.customerId = customer.customerId;
+                    next: (response: CreatedCustomer) => {
+                      this.customerId = response.customer.id;
                     },
                     error: () => {
                       showError(
@@ -148,8 +148,8 @@ export class MassiveReservationComponent implements OnInit {
     if (!this.userFounded) {
       const person: DniConsultation = this.reservationForms[index].value;
       this.customersService.create(person).subscribe({
-        next: (customer: CreatedCustomer) => {
-          this.customerId = customer.customerId;
+        next: (response: CreatedCustomer) => {
+          this.customerId = response.customer.id;
           this.userFounded = true;
           this.disableFields(index, false);
           this.createReservation(locker, index);

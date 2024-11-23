@@ -11,5 +11,5 @@ export interface Customer {
 
 export interface CreatedCustomer {
   message: string;
-  customerId: number;
+  customer: Customer;
 }

@@ -1,6 +1,6 @@
 import { CommonModule, DatePipe } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { DynamicDialogConfig } from 'primeng/dynamicdialog';
+import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 
 import {
   FormBuilder,
@@ -26,8 +26,6 @@ import { FemaleLockersService } from '../../../services/female-lockers.service';
 import { MaleLockersService } from '../../../services/male-lockers.service';
 import { ReservationsService } from '../../../services/reservations.service';
 import { SunatService } from '../../../services/sunat.service';
-import { ProductsAddComponent } from '../../products/products.component';
-import { ServicesAddComponent } from '../../services/services.component';
 
 @Component({
   selector: 'app-customer-reservation',
@@ -38,8 +36,6 @@ import { ServicesAddComponent } from '../../services/services.component';
     SharedModule,
     StepsModule,
     ToastModule,
-    ServicesAddComponent,
-    ProductsAddComponent,
   ],
   templateUrl: './reservation.component.html',
   styleUrl: './reservation.component.scss',
@@ -57,6 +53,7 @@ export class CustomerReservationComponent implements OnInit {
 
   currentIndex: number = 0;
   customerId: number = 0;
+  customer: Customer | null | undefined;
   userFounded: boolean = true;
 
   private dniSearchTermSubject = new Subject<string>();
@@ -77,68 +74,50 @@ export class CustomerReservationComponent implements OnInit {
     private readonly reservationsService: ReservationsService,
     private readonly sunatService: SunatService,
     private readonly datePipe: DatePipe,
+    private readonly dynamicDialogRef: DynamicDialogRef,
   ) {}
 
   ngOnInit(): void {
-    if (this.dynamicDialogConfig.data.locker) {
-      this.updateStepStatus(true);
-      const locker = this.dynamicDialogConfig.data.locker;
-      this.isCreate = this.dynamicDialogConfig.data.create;
-
-      if (!this.isCreate) {
-        this.updateStepStatus(false);
-        this.items = this.items.filter(item => item.label !== 'Cliente');
-        if (this.currentIndex > 0) {
-          this.currentIndex -= 1;
-        }
+    this.dniSearchTermSubject.pipe(debounceTime(600)).subscribe(() => {
+      const dni = this.reservationForm.get('dni')?.value;
+      if (dni.length == 8) {
+        this.customersService.getByDni(dni).subscribe({
+          next: (customer: Customer) => {
+            this.reservationForm.get('name')?.setValue(customer.name);
+            this.reservationForm.get('surname')?.setValue(customer.surname);
+            this.customerId = customer.id;
+            this.customer = customer;
+          },
+          error: () => {
+            this.sunatService.getPerson(dni).subscribe({
+              next: (person: DniConsultation) => {
+                this.reservationForm.get('name')?.setValue(person.name);
+                this.reservationForm.get('surname')?.setValue(person.surname);
+                this.customersService.create(person).subscribe({
+                  next: (response: CreatedCustomer) => {
+                    this.customerId = response.customer.id;
+                    this.customer = response.customer;
+                  },
+                  error: () => {
+                    showError(
+                      this.messageService,
+                      'No se encontró el cliente. Ingreseló manualmente',
+                    );
+                    this.userFounded = false;
+                    this.customerId = 0;
+                    this.customer = null;
+                    this.enableFields();
+                  },
+                });
+              },
+            });
+          },
+        });
+      } else {
+        this.reservationForm.get('name')?.setValue(null);
+        this.reservationForm.get('surname')?.setValue(null);
       }
-
-      if (locker.reservationId) {
-        this.reservationId = locker.reservationId;
-        this.reservationForm.get('dni')?.setValue(locker.customerDni);
-        this.reservationForm.get('name')?.setValue(locker.customerName);
-        this.reservationForm.get('surname')?.setValue(locker.customerSurname);
-        this.updateStepStatus(false);
-      }
-
-      this.dniSearchTermSubject.pipe(debounceTime(600)).subscribe(() => {
-        const dni = this.reservationForm.get('dni')?.value;
-        if (dni.length == 8) {
-          this.customersService.getByDni(dni).subscribe({
-            next: (customer: Customer) => {
-              this.reservationForm.get('name')?.setValue(customer.name);
-              this.reservationForm.get('surname')?.setValue(customer.surname);
-              this.customerId = customer.id;
-            },
-            error: () => {
-              this.sunatService.getPerson(dni).subscribe({
-                next: (person: DniConsultation) => {
-                  this.reservationForm.get('name')?.setValue(person.name);
-                  this.reservationForm.get('surname')?.setValue(person.surname);
-                  this.customersService.create(person).subscribe({
-                    next: (customer: CreatedCustomer) => {
-                      this.customerId = customer.customerId;
-                    },
-                    error: () => {
-                      showError(
-                        this.messageService,
-                        'No se encontró el cliente. Ingreseló manualmente',
-                      );
-                      this.userFounded = false;
-                      this.customerId = 0;
-                      this.enableFields();
-                    },
-                  });
-                },
-              });
-            },
-          });
-        } else {
-          this.reservationForm.get('name')?.setValue(null);
-          this.reservationForm.get('surname')?.setValue(null);
-        }
-      });
-    }
+    });
   }
 
   enableFields(allFields: boolean = true) {
@@ -174,11 +153,16 @@ export class CustomerReservationComponent implements OnInit {
     if (!this.userFounded) {
       const person: DniConsultation = this.reservationForm.value;
       this.customersService.create(person).subscribe({
-        next: (customer: CreatedCustomer) => {
-          this.customerId = customer.customerId;
+        next: (response: CreatedCustomer) => {
+          this.customerId = response.customer.id;
+          this.customer = response.customer;
           this.userFounded = true;
           this.disableFields(false);
-          this.createReservation();
+          this.dynamicDialogRef.close({
+            success: true,
+            customer: this.customer,
+          });
+          // this.createReservation();
         },
         error: () => {
           showError(
@@ -187,11 +171,13 @@ export class CustomerReservationComponent implements OnInit {
           );
           this.userFounded = false;
           this.customerId = 0;
+          this.customer = null;
           this.enableFields();
         },
       });
     } else {
-      this.createReservation();
+      this.dynamicDialogRef.close({ success: true, customer: this.customer });
+      //this.createReservation();
     }
   }
 
