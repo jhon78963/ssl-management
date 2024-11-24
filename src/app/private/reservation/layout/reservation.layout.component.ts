@@ -1,10 +1,5 @@
 import { CommonModule, DatePipe } from '@angular/common';
-import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  OnInit,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
@@ -22,11 +17,13 @@ import { Facility, FacilityType } from '../reservations/models/facility.model';
 import { StatusLocker } from '../reservations/models/locker.model';
 import {
   CustomerReservation,
+  Reservation,
   RoomReservation,
 } from '../reservations/models/reservation.model';
-import { FacilitiesService } from '../reservations/services/facilities.service';
-import { ReservationsService } from '../reservations/services/reservations.service';
 import { ButtonClassPipe } from '../reservations/pipes/button-class.pipe';
+import { FacilitiesService } from '../reservations/services/facilities.service';
+import { ReservationLockersService } from '../reservations/services/reservation-lockers.service';
+import { ReservationsService } from '../reservations/services/reservations.service';
 
 @Component({
   selector: 'app-reservation.layout',
@@ -53,12 +50,12 @@ export class ReservationLayoutComponent implements OnInit {
   total: number = 0;
   customer: Customer | null | undefined;
   constructor(
-    private cdRef: ChangeDetectorRef,
     private readonly datePipe: DatePipe,
     private readonly dialogService: DialogService,
     private readonly facilitiesService: FacilitiesService,
     private readonly messageService: MessageService,
     private readonly reservationsService: ReservationsService,
+    private readonly reservationLockersService: ReservationLockersService,
   ) {}
 
   ngOnInit(): void {
@@ -80,6 +77,14 @@ export class ReservationLayoutComponent implements OnInit {
   clearSelections(): void {
     this.selectedFacilities = [];
     this.total = 0;
+  }
+
+  showFacility(facility: any) {
+    this.reservationsService.getOne(facility.reservationId).subscribe({
+      next: reservation => {
+        console.log(reservation);
+      },
+    });
   }
 
   addFacility(facility: any): void {
@@ -118,15 +123,61 @@ export class ReservationLayoutComponent implements OnInit {
     customer: Customer | null | undefined,
     selectedFacilities: any,
   ) {
-    const reservationRequests = selectedFacilities.map((facility: any) =>
-      this.createReservation(customer!.id, facility),
+    const currentDate = new Date();
+    const reservationDate = this.datePipe.transform(
+      currentDate,
+      'yyyy-MM-dd HH:mm:ss',
     );
 
-    forkJoin(reservationRequests).subscribe({
-      next: () => {
-        this.clearReservation();
+    const reservationData = {
+      reservationDate: reservationDate,
+      total: 0,
+      customerId: customer!.id,
+      reservationTypeId: 1,
+    };
+    const reservation = new Reservation(reservationData);
+    this.reservationsService.create(reservation).subscribe({
+      next: (response: any) => {
+        const reservationRequests = selectedFacilities.map((facility: any) => {
+          const config = this.getFacilityConfig(facility);
+          if (!config) {
+            return of(null);
+          }
+          return this.reservationLockersService
+            .add(
+              response.reservationId,
+              reservationData.customerId,
+              facility.price,
+            )
+            .pipe(
+              switchMap(() => {
+                const body: any = {
+                  id: facility.id,
+                  status: 'IN_USE',
+                };
+                const facilitClass = new StatusLocker(body);
+                return config.changeStatusMethod(facilitClass.id, body);
+              }),
+            );
+        });
+        forkJoin(reservationRequests).subscribe({
+          next: (reservation: any) => {
+            console.log(reservation);
+            this.clearReservation();
+          },
+        });
       },
     });
+    // const reservationRequests = selectedFacilities.map((facility: any) =>
+    //   this.createReservation(customer!.id, facility),
+    // );
+    // console.log(reservationRequests);
+    // forkJoin(reservationRequests).subscribe({
+    //   next: (reservation: any) => {
+    //     console.log(reservation);
+    //     this.clearReservation();
+    //   },
+    // });
   }
 
   clearReservation() {

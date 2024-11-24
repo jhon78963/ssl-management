@@ -1,7 +1,7 @@
 export interface IReservation {
   id?: number;
   reservationDate?: string | null;
-  total: string;
+  total: number;
   reservationTypeId?: number;
   status?: string;
   products?: any[];
@@ -19,7 +19,7 @@ export class Reservation {
   [x: string]: any;
   id?: number;
   reservationDate?: string | null;
-  total: string;
+  total: number;
   reservationTypeId?: number;
   status?: string;
   products?: any[];
@@ -47,7 +47,7 @@ export class Reservation {
 export class RoomReservation {
   id?: number;
   reservationDate?: string | null;
-  total: string;
+  total: number;
   reservationTypeId: number;
   roomId?: number;
   customers?: any[];
@@ -69,7 +69,7 @@ export class RoomReservation {
 export class CustomerReservation {
   id?: number;
   reservationDate?: string | null;
-  total: string;
+  total: number;
   customerId?: number;
   lockerId?: number;
   products?: any[];

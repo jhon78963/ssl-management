@@ -53,7 +53,11 @@
     pRipple
     class="mr-1 mt-1 p-width p-button-rounded"
     [label]="facility.number"
-    (click)="addFacility(facility)"
+    (click)="
+      facility.status === 'AVAILABLE'
+        ? addFacility(facility)
+        : showFacility(facility)
+    "
     [ngClass]="facility | buttonClass: isSelected(facility)"></button>
 }
 

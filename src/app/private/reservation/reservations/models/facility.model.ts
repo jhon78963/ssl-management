@@ -9,6 +9,7 @@ export interface Facility {
   status: string;
   price: number;
   type: string;
+  reservation?: number;
 }
 
 export interface Paginate {
