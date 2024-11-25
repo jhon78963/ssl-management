@@ -8,16 +8,14 @@ import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { TabMenuModule } from 'primeng/tabmenu';
 import { TabViewModule } from 'primeng/tabview';
 import { ToastModule } from 'primeng/toast';
-import { forkJoin, Observable, of, switchMap } from 'rxjs';
+import { forkJoin, Observable, switchMap } from 'rxjs';
 import { SharedModule } from '../../../shared/shared.module';
 import { showSuccess } from '../../../utils/notifications';
 import { CustomerReservationComponent } from '../reservations/components/customers/reservation/reservation.component';
 import { Customer } from '../reservations/models/customer.model';
 import { Facility, FacilityType } from '../reservations/models/facility.model';
-import { StatusLocker } from '../reservations/models/locker.model';
 import {
-  CustomerReservation,
-  Reservation,
+  LockerReservation,
   RoomReservation,
 } from '../reservations/models/reservation.model';
 import { ButtonClassPipe } from '../reservations/pipes/button-class.pipe';
@@ -80,11 +78,12 @@ export class ReservationLayoutComponent implements OnInit {
   }
 
   showFacility(facility: any) {
-    this.reservationsService.getOne(facility.reservationId).subscribe({
-      next: reservation => {
-        console.log(reservation);
-      },
-    });
+    console.log(facility);
+    // this.reservationsService.getOne(facility.reservationId).subscribe({
+    //   next: reservation => {
+    //     console.log(reservation);
+    //   },
+    // });
   }
 
   addFacility(facility: any): void {
@@ -123,61 +122,21 @@ export class ReservationLayoutComponent implements OnInit {
     customer: Customer | null | undefined,
     selectedFacilities: any,
   ) {
-    const currentDate = new Date();
-    const reservationDate = this.datePipe.transform(
-      currentDate,
-      'yyyy-MM-dd HH:mm:ss',
-    );
-
-    const reservationData = {
-      reservationDate: reservationDate,
-      total: 0,
-      customerId: customer!.id,
-      reservationTypeId: 1,
-    };
-    const reservation = new Reservation(reservationData);
-    this.reservationsService.create(reservation).subscribe({
-      next: (response: any) => {
-        const reservationRequests = selectedFacilities.map((facility: any) => {
-          const config = this.getFacilityConfig(facility);
-          if (!config) {
-            return of(null);
-          }
-          return this.reservationLockersService
-            .add(
-              response.reservationId,
-              reservationData.customerId,
-              facility.price,
-            )
-            .pipe(
-              switchMap(() => {
-                const body: any = {
-                  id: facility.id,
-                  status: 'IN_USE',
-                };
-                const facilitClass = new StatusLocker(body);
-                return config.changeStatusMethod(facilitClass.id, body);
-              }),
-            );
-        });
-        forkJoin(reservationRequests).subscribe({
-          next: (reservation: any) => {
-            console.log(reservation);
-            this.clearReservation();
-          },
-        });
-      },
+    const selectedRooms: any[] = [];
+    const selectedLockers: any[] = [];
+    selectedFacilities.forEach((facility: any) => {
+      if (facility.type == FacilityType.ROOM) {
+        selectedRooms.push(facility);
+      } else {
+        selectedLockers.push(facility);
+      }
     });
-    // const reservationRequests = selectedFacilities.map((facility: any) =>
-    //   this.createReservation(customer!.id, facility),
-    // );
-    // console.log(reservationRequests);
-    // forkJoin(reservationRequests).subscribe({
-    //   next: (reservation: any) => {
-    //     console.log(reservation);
-    //     this.clearReservation();
-    //   },
-    // });
+    if (selectedRooms.length > 0) {
+      this.createRoomReservation(customer, selectedRooms);
+    }
+    if (selectedLockers.length > 0) {
+      this.createLockerReservation(customer, selectedLockers);
+    }
   }
 
   clearReservation() {
@@ -187,149 +146,89 @@ export class ReservationLayoutComponent implements OnInit {
     this.customer = null;
   }
 
-  createReservation(customerId: number, facility: any): Observable<any> {
-    if (!facility) {
-      return of(null);
-    }
-
+  createLockerReservation(
+    customer: Customer | null | undefined,
+    selectedFacilities: any[],
+  ) {
     const currentDate = new Date();
     const reservationDate = this.datePipe.transform(
       currentDate,
       'yyyy-MM-dd HH:mm:ss',
     );
 
-    const config = this.getFacilityConfig(facility);
-    if (!config) {
-      return of(null);
-    }
+    let total = 0;
+    selectedFacilities.map((facility: any) => {
+      total += facility.price;
+    });
 
     const reservationData = {
-      reservationDate,
-      total: facility.price,
-      customerId,
-      [config.idField]: facility.id,
+      reservationDate: reservationDate,
+      total: total,
+      customerId: customer!.id,
+      reservationTypeId: 1,
     };
+    const reservation = new LockerReservation(reservationData);
+    this.reservationsService.create(reservation).subscribe({
+      next: (response: any) => {
+        const reservationRequests = selectedFacilities.map((facility: any) => {
+          return this.reservationLockersService
+            .add(response.reservationId, facility.id, facility.price)
+            .pipe(
+              switchMap(() => {
+                const body: any = {
+                  id: facility.id,
+                  status: 'IN_USE',
+                };
+                return this.facilitiesService.changeLockerStatus(
+                  facility.id,
+                  body,
+                );
+              }),
+            );
+        });
+        forkJoin(reservationRequests).subscribe({
+          next: () => {
+            this.clearReservation();
+          },
+        });
+      },
+    });
+  }
 
-    return this.reservationsService
-      .create(new config.reservationClass(reservationData))
-      .pipe(
+  createRoomReservation(
+    customer: Customer | null | undefined,
+    selectedFacilities: any[],
+  ) {
+    const reservationRequests = selectedFacilities.map((facility: any) => {
+      const currentDate = new Date();
+      const reservationDate = this.datePipe.transform(
+        currentDate,
+        'yyyy-MM-dd HH:mm:ss',
+      );
+      const reservationData = {
+        reservationDate: reservationDate,
+        total: facility.price,
+        customerId: customer!.id,
+        roomId: facility.id,
+      };
+      const reservation = new RoomReservation(reservationData);
+      return this.reservationsService.create(reservation).pipe(
         switchMap(() => {
-          const body: any = {
-            id: facility.id,
+          const body = {
+            id: reservationData.roomId,
             status: 'IN_USE',
           };
-          const facilitClass = new StatusLocker(body);
-          return config.changeStatusMethod(facilitClass.id, body);
+          return this.facilitiesService.changeRoomStatus(
+            reservationData.roomId,
+            body,
+          );
         }),
       );
+    });
+    forkJoin(reservationRequests).subscribe({
+      next: () => {
+        this.clearReservation();
+      },
+    });
   }
-
-  getFacilityConfig(facility: any): {
-    idField: string;
-    reservationClass: any;
-    changeStatusMethod: (id: number, body: any) => Observable<any>;
-  } | null {
-    if (facility.type === FacilityType.LOCKER) {
-      return {
-        idField: 'lockerId',
-        reservationClass: CustomerReservation,
-        changeStatusMethod: (id, locker) =>
-          this.facilitiesService.changeLockerStatus(id, locker),
-      };
-    } else if (facility.type === FacilityType.ROOM) {
-      return {
-        idField: 'roomId',
-        reservationClass: RoomReservation,
-        changeStatusMethod: (id, room) =>
-          this.facilitiesService.changeRoomStatus(id, room),
-      };
-    } else {
-      console.error(`Unknown facility type: ${facility.type}`);
-      return null; // Devuelve null en lugar de undefined
-    }
-  }
-
-  // createReservation(customerId: number, locker: any) {
-  //   if (!locker) {
-  //     return of(null);
-  //   }
-  //   const currentDate = new Date();
-  //   const reservationDate = this.datePipe.transform(
-  //     currentDate,
-  //     'yyyy-MM-dd HH:mm:ss',
-  //   );
-  //   const reservationData = {
-  //     reservationDate: reservationDate,
-  //     total: locker.price,
-  //     customerId: customerId,
-  //     lockerId: locker.id,
-  //   };
-  //   const reservation = new CustomerReservation(reservationData);
-  //   return this.reservationsService.create(reservation).pipe(
-  //     switchMap(() => {
-  //       const body: any = {
-  //         id: reservationData.lockerId,
-  //         status: 'IN_USE',
-  //       };
-  //       const locker = new StatusLocker(body);
-  //       return this.facilitiesService.changeLockerStatus(locker.id, body);
-  //     }),
-  //   );
-  // }
-
-  // createLockerReservation(customerId: number, locker: any) {
-  //   if (!locker) {
-  //     return of(null);
-  //   }
-  //   const currentDate = new Date();
-  //   const reservationDate = this.datePipe.transform(
-  //     currentDate,
-  //     'yyyy-MM-dd HH:mm:ss',
-  //   );
-  //   const reservationData = {
-  //     reservationDate: reservationDate,
-  //     total: locker.price,
-  //     customerId: customerId,
-  //     lockerId: locker.id,
-  //   };
-  //   const reservation = new CustomerReservation(reservationData);
-  //   return this.reservationsService.create(reservation).pipe(
-  //     switchMap(() => {
-  //       const body: any = {
-  //         id: reservationData.lockerId,
-  //         status: 'IN_USE',
-  //       };
-  //       const locker = new StatusLocker(body);
-  //       return this.facilitiesService.changeLockerStatus(locker.id, body);
-  //     }),
-  //   );
-  // }
-
-  // createRoomReservation(customerId: number, room: any) {
-  //   if (!room) {
-  //     return of(null);
-  //   }
-  //   const currentDate = new Date();
-  //   const reservationDate = this.datePipe.transform(
-  //     currentDate,
-  //     'yyyy-MM-dd HH:mm:ss',
-  //   );
-  //   const reservationData = {
-  //     reservationDate: reservationDate,
-  //     total: room.price,
-  //     customerId: customerId,
-  //     roomId: room.id,
-  //   };
-  //   const reservation = new RoomReservation(reservationData);
-  //   return this.reservationsService.create(reservation).pipe(
-  //     switchMap(() => {
-  //       const body: any = {
-  //         id: reservationData.roomId,
-  //         status: 'IN_USE',
-  //       };
-  //       const locker = new StatusLocker(body);
-  //       return this.facilitiesService.changeLockerStatus(locker.id, body);
-  //     }),
-  //   );
-  // }
 }

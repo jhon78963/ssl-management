@@ -66,12 +66,11 @@ export class RoomReservation {
   }
 }
 
-export class CustomerReservation {
+export class LockerReservation {
   id?: number;
   reservationDate?: string | null;
   total: number;
   customerId?: number;
-  lockerId?: number;
   products?: any[];
   services?: any[];
   reservationTypeId: number;
@@ -80,7 +79,6 @@ export class CustomerReservation {
     this.reservationDate = reservation.reservationDate;
     this.total = reservation.total;
     this.customerId = reservation.customerId;
-    this.lockerId = reservation.lockerId;
     this.products = reservation.products;
     this.services = reservation.services;
     this.reservationTypeId = 1;

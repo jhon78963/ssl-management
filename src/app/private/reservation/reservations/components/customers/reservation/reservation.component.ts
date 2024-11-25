@@ -18,7 +18,7 @@ import { CreatedCustomer, Customer } from '../../../models/customer.model';
 import { StatusLocker } from '../../../models/locker.model';
 import {
   CreatedReservation,
-  CustomerReservation,
+  Reservation,
 } from '../../../models/reservation.model';
 import { DniConsultation } from '../../../models/sunat.model';
 import { CustomersService } from '../../../services/customers.service';
@@ -195,7 +195,7 @@ export class CustomerReservationComponent implements OnInit {
       lockerId: locker.id,
     };
     if (locker.reservationId == null) {
-      const reservation = new CustomerReservation(reservationData);
+      const reservation = new Reservation(reservationData);
       this.reservationsService.create(reservation).subscribe({
         next: (reservation: CreatedReservation) => {
           const body = {

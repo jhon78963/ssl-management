@@ -12,7 +12,7 @@ import { DniConsultation } from '../../models/sunat.model';
 import { SunatService } from '../../services/sunat.service';
 import {
   CreatedReservation,
-  CustomerReservation,
+  Reservation,
 } from '../../models/reservation.model';
 import { StatusLocker } from '../../models/locker.model';
 import { ReservationsService } from '../../services/reservations.service';
@@ -181,7 +181,7 @@ export class MassiveReservationComponent implements OnInit {
       lockerId: locker.id,
     };
     if (locker.reservationId == null) {
-      const reservation = new CustomerReservation(reservationData);
+      const reservation = new Reservation(reservationData);
       this.reservationsService.create(reservation).subscribe({
         next: (reservation: CreatedReservation) => {
           const body = {
