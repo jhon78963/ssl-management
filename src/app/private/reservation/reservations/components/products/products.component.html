@@ -1,73 +1,62 @@
-<p-toast />
-<div class="mt-3">
-  <p-pickList
-    [source]="sourceProducts"
-    [target]="targetProducts"
-    sourceHeader="Disponibles"
-    targetHeader="Seleccionados"
-    [dragdrop]="true"
-    [responsive]="false"
-    [sourceStyle]="{ height: '30rem', width: '30rem' }"
-    [targetStyle]="{ height: '30rem', width: '30rem' }"
-    [showSourceControls]="false"
-    [showTargetControls]="false"
-    (onMoveToTarget)="addProduct($event)"
-    (onMoveToSource)="removeProduct($event)"
-    filterBy="name"
-    sourceFilterPlaceholder="Buscar por nombre"
-    targetFilterPlaceholder="Buscar por nombre"
-    breakpoint="1400px">
-    <ng-template let-product pTemplate="item">
-      <div class="flex flex-wrap p-2 align-items-center gap-3">
-        <div class="flex-1 flex flex-column gap-2">
-          <span class="font-bold" *ngIf="!sourceProducts!.includes(product)">
-            X{{ product.quantity }} {{ product.name }}
-          </span>
-          <span class="font-bold" *ngIf="sourceProducts!.includes(product)">
-            {{ product.name }}
-          </span>
-          <div
-            class="flex align-items-center gap-2"
-            *ngIf="!sourceProducts!.includes(product)">
-            <i class="pi pi-tag text-sm"></i>
-            <span> Precio Unit. {{ product.price }} </span>
+<div class="mb-3 flex justify-content-center">
+  <span class="p-input-icon-left p-input-icon-right mb-2 w-full">
+    <span class="search-icon">
+      <i class="pi pi-search"></i>
+    </span>
+    <input
+      pinputtext=""
+      type="text"
+      placeholder="Buscar por nombre"
+      class="p-inputtext w-full"
+      [(ngModel)]="nameQuery"
+      (input)="onSearchTermChange($event)" />
+    <span class="clear-icon" *ngIf="nameQuery" (click)="clearFilter()">
+      <i class="pi pi-times" style="font-size: 12px"></i>
+    </span>
+  </span>
+</div>
+
+@if ((products | async)!.length > 0) {
+  @for (product of products | async; track $index) {
+    <div
+      class="flex flex-column lg:flex-row flex-wrap lg:align-items-center py-2 surface-border">
+      <div class="flex-auto lg:ml-3">
+        <div class="flex align-items-center justify-content-between">
+          <div class="flex align-items-center">
+            <span class="text-900 font-bold mr-2">
+              X{{ product.quantity }} {{ product.name }}
+            </span>
+            <p-checkbox
+              [(ngModel)]="product.isPaid"
+              (onChange)="changeStatus(product)"
+              [binary]="true"
+              inputId="binary"
+              [inputId]="'binary-' + $index"
+              class="mr-1" />
+            <label [for]="'binary-' + $index">Pagado</label>
           </div>
-          <div
-            class="flex align-items-center gap-2"
-            *ngIf="sourceProducts!.includes(product)">
-            <i class="pi pi-tag text-sm"></i>
-            <span> {{ product.productType }} </span>
+
+          <div class="flex align-items-center justify-content-between gap-2">
+            <button
+              pButton
+              pRipple
+              icon="pi pi-minus"
+              class="p-button-warning"
+              (click)="subProduct(product)"
+              [disabled]="product.quantity < 1"></button>
+            <span class="text-900 font-bold"> S/ {{ product.total }}</span>
+            <button
+              pButton
+              pRipple
+              icon="pi pi-plus"
+              class="p-button-warning"
+              (click)="addProduct(product)"></button>
           </div>
         </div>
-        <span
-          class="font-bold text-900"
-          *ngIf="!sourceProducts!.includes(product)">
-          @if (product.total) {
-            S/ {{ product.total }}
-          } @else {
-            S/ {{ product.price * product.quantity }}
-          }
-        </span>
-        <span
-          class="font-bold text-900"
-          *ngIf="sourceProducts!.includes(product)">
-          S/ {{ product.price * product.quantity }}
-        </span>
-        <ng-container *ngIf="sourceProducts!.includes(product)">
-          <p-inputNumber
-            [showButtons]="true"
-            buttonLayout="horizontal"
-            spinnerMode="horizontal"
-            [min]="1"
-            inputStyleClass="w-2rem text-center py-2 px-1 border-transparent outline-none shadow-none"
-            [(ngModel)]="product.quantity"
-            class="border-1 surface-border border-round"
-            decrementButtonClass="p-button-text text-600 hover:text-primary py-1 px-1"
-            incrementButtonClass="p-button-text text-600 hover:text-primary py-1 px-1"
-            incrementButtonIcon="pi pi-plus"
-            decrementButtonIcon="pi pi-minus"></p-inputNumber>
-        </ng-container>
+        <div style="text-align: start !important">
+          <div class="text-600 text-sm">Precio Unit. {{ product.price }}</div>
+        </div>
       </div>
-    </ng-template>
-  </p-pickList>
-</div>
+    </div>
+  }
+}

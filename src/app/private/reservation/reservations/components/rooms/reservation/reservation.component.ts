@@ -25,7 +25,7 @@ import { CustomersService } from '../../../services/customers.service';
 import { ReservationCustomersService } from '../../../services/reservation-customers.service';
 import { ReservationsService } from '../../../services/reservations.service';
 import { SunatService } from '../../../services/sunat.service';
-import { ProductsAddComponent } from '../../products/products.component';
+import { ProductsAddComponent } from '../../products_legacy/products.component';
 import { ServicesAddComponent } from '../../services/services.component';
 
 @Component({

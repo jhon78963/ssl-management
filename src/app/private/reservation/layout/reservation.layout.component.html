@@ -15,8 +15,9 @@
         <button
           pButton
           pRipple
-          label="Agregar productos"
-          class="p-button-info mr-1"></button>
+          [label]="showProductsForm ? 'Ocultar productos' : 'Agregar products'"
+          class="p-button-info mr-1"
+          (click)="addProducts()"></button>
         <button
           pButton
           pRipple
@@ -29,15 +30,34 @@
           label="Pagar"
           class="ml-1"
           (click)="
-            buttonSaveReservation(customer, selectedFacilities)
+            buttonSaveReservation(
+              customer,
+              selectedFacilities,
+              selectedProducts
+            )
           "></button>
       </div>
 
       <div class="card">
-        <p>Productos</p>
-        <p>Cliente</p>
-        <p *ngIf="customer">{{ customer.name }} {{ customer.surname }}</p>
-        <p>Nota</p>
+        <p class="m-0 p-0">Productos</p>
+        <div *ngIf="showProductsForm">
+          <app-products (productChanges)="getProducts($event)" />
+        </div>
+        <div *ngIf="selectedProducts.length > 0">
+          @for (product of selectedProducts; track $index) {
+            <p
+              class="m-0 p-0"
+              [ngClass]="product.isPaid ? 'paid-status' : 'unpaid-status'">
+              X{{ product.quantity }} {{ product.name }} - S/
+              {{ product.price }}
+            </p>
+          }
+        </div>
+        <p class="m-0 p-0">Cliente</p>
+        <p class="m-0 p-0" *ngIf="customer">
+          {{ customer.name }} {{ customer.surname }}
+        </p>
+        <p class="m-0 p-0">Nota</p>
       </div>
     </div>
     <div class="col-12 md:col-3">

@@ -1,5 +1,10 @@
 import { CommonModule, DatePipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  OnInit,
+} from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
@@ -22,6 +27,10 @@ import { ButtonClassPipe } from '../reservations/pipes/button-class.pipe';
 import { FacilitiesService } from '../reservations/services/facilities.service';
 import { ReservationLockersService } from '../reservations/services/reservation-lockers.service';
 import { ReservationsService } from '../reservations/services/reservations.service';
+import { ProductsComponent } from '../reservations/components/products/products.component';
+import { Product } from '../reservations/models/product.model';
+import { ReservationProductsService } from '../reservations/services/reservation-products.service';
+import { ReservationServicesService } from '../reservations/services/reservation-services.service';
 
 @Component({
   selector: 'app-reservation.layout',
@@ -36,6 +45,7 @@ import { ReservationsService } from '../reservations/services/reservations.servi
     SharedModule,
     ReactiveFormsModule,
     ButtonClassPipe,
+    ProductsComponent,
   ],
   templateUrl: './reservation.layout.component.html',
   styleUrl: './reservation.layout.component.scss',
@@ -45,15 +55,20 @@ import { ReservationsService } from '../reservations/services/reservations.servi
 export class ReservationLayoutComponent implements OnInit {
   modal: DynamicDialogRef | undefined;
   selectedFacilities: any[] = [];
+  selectedProducts: Product[] = [];
   total: number = 0;
   customer: Customer | null | undefined;
+  showProductsForm: boolean = false;
   constructor(
+    private cdr: ChangeDetectorRef,
     private readonly datePipe: DatePipe,
     private readonly dialogService: DialogService,
     private readonly facilitiesService: FacilitiesService,
     private readonly messageService: MessageService,
-    private readonly reservationsService: ReservationsService,
     private readonly reservationLockersService: ReservationLockersService,
+    private readonly reservationProductsService: ReservationProductsService,
+    private readonly reservationServicesService: ReservationServicesService,
+    private readonly reservationsService: ReservationsService,
   ) {}
 
   ngOnInit(): void {
@@ -74,19 +89,27 @@ export class ReservationLayoutComponent implements OnInit {
 
   clearSelections(): void {
     this.selectedFacilities = [];
+    this.selectedProducts = [];
     this.total = 0;
+    this.customer = null;
+    this.showProductsForm = false;
   }
 
   showFacility(facility: any) {
-    console.log(facility);
-    // this.reservationsService.getOne(facility.reservationId).subscribe({
-    //   next: reservation => {
-    //     console.log(reservation);
-    //   },
-    // });
+    this.reservationsService.getOne(facility.reservationId).subscribe({
+      next: (reservation: any) => {
+        this.selectedFacilities = reservation.facilities;
+        this.total = reservation.total;
+        this.customer = reservation.customer;
+        this.cdr.detectChanges();
+      },
+    });
   }
 
   addFacility(facility: any): void {
+    this.selectedFacilities.some(facility => facility.status === 'IN_USE') &&
+      this.clearSelections();
+
     const isSelected = this.isSelected(facility);
     const index = this.selectedFacilities.findIndex(
       reservation => reservation.number === facility.number,
@@ -118,9 +141,35 @@ export class ReservationLayoutComponent implements OnInit {
     });
   }
 
+  addProducts() {
+    this.showProductsForm = !this.showProductsForm;
+  }
+
+  getProducts(product: any) {
+    const index = this.selectedProducts.findIndex(
+      p => p.id === product.id && p.type === product.type,
+    );
+    if (product.quantity === 0) {
+      if (index !== -1) {
+        this.selectedProducts.splice(index, 1); // Remove the product
+        this.total -= product.price;
+      }
+    } else {
+      if (index !== -1) {
+        this.selectedProducts[index].quantity = product.quantity;
+        this.selectedProducts[index].total = product.total;
+      } else {
+        this.selectedProducts.push(product);
+        this.total += product.price;
+      }
+    }
+    console.log(product);
+  }
+
   buttonSaveReservation(
     customer: Customer | null | undefined,
     selectedFacilities: any,
+    selectedProducts: any,
   ) {
     const selectedRooms: any[] = [];
     const selectedLockers: any[] = [];
@@ -131,24 +180,24 @@ export class ReservationLayoutComponent implements OnInit {
         selectedLockers.push(facility);
       }
     });
+    this.cdr.detectChanges();
     if (selectedRooms.length > 0) {
-      this.createRoomReservation(customer, selectedRooms);
+      this.createRoomReservation(customer, selectedRooms, selectedProducts);
     }
     if (selectedLockers.length > 0) {
-      this.createLockerReservation(customer, selectedLockers);
+      this.createLockerReservation(customer, selectedLockers, selectedProducts);
     }
   }
 
   clearReservation() {
     this.getFacilities();
-    this.selectedFacilities = [];
-    this.total = 0;
-    this.customer = null;
+    this.clearSelections();
   }
 
   createLockerReservation(
     customer: Customer | null | undefined,
     selectedFacilities: any[],
+    selectedProducts: any[],
   ) {
     const currentDate = new Date();
     const reservationDate = this.datePipe.transform(
@@ -175,6 +224,17 @@ export class ReservationLayoutComponent implements OnInit {
             .add(response.reservationId, facility.id, facility.price)
             .pipe(
               switchMap(() => {
+                selectedProducts.forEach((product: any) => {
+                  if (product.type == 'product') {
+                    this.reservationProductsService
+                      .add(response.reservationId, product.id, product.quantity)
+                      .subscribe();
+                  } else {
+                    this.reservationServicesService
+                      .add(response.reservationId, product.id, product.quantity)
+                      .subscribe();
+                  }
+                });
                 const body: any = {
                   id: facility.id,
                   status: 'IN_USE',
@@ -198,6 +258,7 @@ export class ReservationLayoutComponent implements OnInit {
   createRoomReservation(
     customer: Customer | null | undefined,
     selectedFacilities: any[],
+    selectedProducts: any[],
   ) {
     const reservationRequests = selectedFacilities.map((facility: any) => {
       const currentDate = new Date();
@@ -213,7 +274,20 @@ export class ReservationLayoutComponent implements OnInit {
       };
       const reservation = new RoomReservation(reservationData);
       return this.reservationsService.create(reservation).pipe(
-        switchMap(() => {
+        switchMap((response: any) => {
+          console.log(response);
+          selectedProducts.forEach((product: any) => {
+            if (product.type == 'product') {
+              this.reservationProductsService
+                .add(response.reservationId, product.id, product.quantity)
+                .subscribe();
+            } else {
+              this.reservationServicesService
+                .add(response.reservationId, product.id, product.quantity)
+                .subscribe();
+            }
+          });
+
           const body = {
             id: reservationData.roomId,
             status: 'IN_USE',

@@ -1,93 +1,70 @@
-import { ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
-import { TableModule } from 'primeng/table';
-import { ToastModule } from 'primeng/toast';
-import { DynamicDialogConfig } from 'primeng/dynamicdialog';
-import { PickListModule } from 'primeng/picklist';
-import { ReservationProductsService } from '../../services/reservation-products.service';
-import { Product } from '../../models/product.model';
 import { CommonModule } from '@angular/common';
-import { InputNumberModule } from 'primeng/inputnumber';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ReservationsService } from '../../services/reservations.service';
+import { ButtonModule } from 'primeng/button';
+import { CheckboxModule } from 'primeng/checkbox';
+import { TooltipModule } from 'primeng/tooltip';
+import { debounceTime, Observable, Subject } from 'rxjs';
+import { Product } from '../../models/product.model';
+import { ProductsService } from '../../services/products.service';
 
 @Component({
-  selector: 'app-add-products',
+  selector: 'app-products',
   standalone: true,
   imports: [
     CommonModule,
     FormsModule,
-    InputNumberModule,
-    PickListModule,
-    TableModule,
-    ToastModule,
+    ButtonModule,
+    TooltipModule,
+    CheckboxModule,
   ],
   templateUrl: './products.component.html',
   styleUrl: './products.component.scss',
 })
-export class ProductsAddComponent implements OnInit {
-  @Input() reservationId: number = 0;
-  leftProducts: Product[] = [];
-  selectedProducts: Product | undefined;
-  sourceProducts: Product[] | undefined;
-  targetProducts: Product[] | undefined;
-  quantity: number = 1;
+export class ProductsComponent implements OnInit {
+  @Output() productChanges = new EventEmitter<Product>();
+  nameQuery: string = '';
+  checked: boolean = false;
+  private nameSearchTermSubject = new Subject<string>();
 
-  constructor(
-    private readonly dynamicDialogConfig: DynamicDialogConfig,
-    private readonly reservationProductsService: ReservationProductsService,
-    private readonly reservationsService: ReservationsService,
-    private cdr: ChangeDetectorRef,
-  ) {}
-
+  constructor(private readonly productsService: ProductsService) {}
   ngOnInit(): void {
-    this.updateProducts(this.reservationId);
-  }
-
-  updateProducts(id: number): void {
-    this.reservationProductsService.findLeft(id).subscribe({
-      next: (response: Product[]) => {
-        this.sourceProducts = response;
-        this.sourceProducts.map((sourceProduct: Product) => {
-          sourceProduct.quantity = sourceProduct.quantity ?? 1;
-        });
-        this.cdr.markForCheck();
-      },
-      error: () => {},
-    });
-
-    this.reservationProductsService.findAll(id).subscribe({
-      next: (response: Product[]) => {
-        this.targetProducts = response;
-        this.targetProducts.map((targetProduct: Product) => {
-          targetProduct.quantity = targetProduct.quantity ?? 1;
-        });
-        this.cdr.markForCheck();
-      },
-      error: () => {},
+    this.getProducts();
+    this.nameSearchTermSubject.pipe(debounceTime(600)).subscribe(() => {
+      this.getProducts(this.nameQuery);
     });
   }
 
-  addProduct(event: any): void {
-    const products = event.items;
-    products.map((product: any) => {
-      this.reservationProductsService
-        .add(this.reservationId, product.id, product.quantity)
-        .subscribe({
-          next: () => {},
-          error: () => {},
-        });
-    });
+  async getProducts(name: string = this.nameQuery): Promise<void> {
+    this.productsService.callGetList(name).subscribe();
   }
 
-  removeProduct(event: any): void {
-    const products = event.items;
-    products.map((product: any) => {
-      this.reservationProductsService
-        .remove(this.reservationId, product.id, product.quantity)
-        .subscribe({
-          next: () => {},
-          error: () => {},
-        });
-    });
+  get products(): Observable<Product[]> {
+    return this.productsService.getList();
+  }
+
+  clearFilter() {
+    this.nameQuery = '';
+    this.onSearchTermChange('');
+  }
+
+  onSearchTermChange(term: any) {
+    this.nameSearchTermSubject.next(term);
+  }
+
+  addProduct(product: Product) {
+    ++product.quantity;
+    product.total = product.quantity * product.price;
+    this.productChanges.emit(product);
+  }
+
+  subProduct(product: Product) {
+    product.quantity--;
+    product.total = product.quantity * product.price;
+    this.productChanges.emit(product);
+  }
+
+  changeStatus(product: Product) {
+    this.productChanges.emit(product);
   }
 }

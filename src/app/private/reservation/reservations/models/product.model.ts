@@ -6,5 +6,8 @@ export interface Product {
   price: number;
   priceString?: string;
   quantity: number;
+  quantityPivote: number;
   total: number;
+  isPaid: boolean;
+  type: string;
 }

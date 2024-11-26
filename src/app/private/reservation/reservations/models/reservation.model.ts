@@ -50,6 +50,7 @@ export class RoomReservation {
   total: number;
   reservationTypeId: number;
   roomId?: number;
+  customerId?: number;
   customers?: any[];
   products?: any[];
   services?: any[];
@@ -61,7 +62,7 @@ export class RoomReservation {
     this.products = reservation.products;
     this.services = reservation.services;
     this.roomId = reservation.roomId;
-    this.customers = reservation.customers;
+    this.customerId = reservation.customerId;
     this.reservationTypeId = 2;
   }
 }
