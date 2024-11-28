@@ -10,4 +10,6 @@ export interface Product {
   total: number;
   isPaid: boolean;
   type: string;
+  isAdd: boolean;
+  isChecked: boolean;
 }

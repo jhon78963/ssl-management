@@ -141,29 +141,62 @@ export class ReservationLayoutComponent implements OnInit {
     });
   }
 
-  addProducts() {
+  showProducts() {
     this.showProductsForm = !this.showProductsForm;
   }
 
+  isExists(product: Product): boolean {
+    return this.selectedProducts.includes(product);
+  }
+
   getProducts(product: any) {
-    const index = this.selectedProducts.findIndex(
-      p => p.id === product.id && p.type === product.type,
-    );
-    if (product.quantity === 0) {
-      if (index !== -1) {
-        this.selectedProducts.splice(index, 1); // Remove the product
-        this.total -= product.price;
-      }
-    } else {
-      if (index !== -1) {
-        this.selectedProducts[index].quantity = product.quantity;
-        this.selectedProducts[index].total = product.total;
+    const isExists = this.isExists(product);
+    if (!product.isChecked) {
+      if (isExists) {
+        const index = this.selectedProducts.findIndex(
+          productInList =>
+            productInList.name === product.name &&
+            productInList.isPaid == product.isPaid,
+        );
+
+        if (product.isAdd) {
+          this.selectedProducts[index].quantity += 1;
+          this.selectedProducts[index].total += product.price;
+          this.total += product.price;
+        } else {
+          this.selectedProducts[index].quantity -= 1;
+          this.selectedProducts[index].total -= product.price;
+          this.total -= product.price;
+          if (this.selectedProducts[index].quantity == 0) {
+            this.selectedProducts.splice(index, 1);
+          }
+        }
       } else {
+        ++product.quantity;
+        product.total = product.quantity * product.price;
         this.selectedProducts.push(product);
         this.total += product.price;
+        console.log(product);
       }
     }
-    console.log(product);
+
+    // const index = this.selectedProducts.findIndex(
+    //   p => p.id === product.id && p.type === product.type,
+    // );
+    // if (product.quantity === 0) {
+    //   if (index !== -1) {
+    //     this.selectedProducts.splice(index, 1); // Remove the product
+    //     this.total -= product.price;
+    //   }
+    // } else {
+    //   if (index !== -1) {
+    //     this.selectedProducts[index].quantity = product.quantity;
+    //     this.selectedProducts[index].total = product.total;
+    //   } else {
+    //     this.selectedProducts.push(product);
+    //     this.total += product.price;
+    //   }
+    // }
   }
 
   buttonSaveReservation(

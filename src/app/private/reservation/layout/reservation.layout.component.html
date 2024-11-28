@@ -17,7 +17,7 @@
           pRipple
           [label]="showProductsForm ? 'Ocultar productos' : 'Agregar products'"
           class="p-button-info mr-1"
-          (click)="addProducts()"></button>
+          (click)="showProducts()"></button>
         <button
           pButton
           pRipple
@@ -41,7 +41,9 @@
       <div class="card">
         <p class="m-0 p-0">Productos</p>
         <div *ngIf="showProductsForm">
-          <app-products (productChanges)="getProducts($event)" />
+          <app-products
+            [selectedProducts]="selectedProducts"
+            (productChanges)="getProducts($event)" />
         </div>
         <div *ngIf="selectedProducts.length > 0">
           @for (product of selectedProducts; track $index) {

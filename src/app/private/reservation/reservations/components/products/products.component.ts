@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { CheckboxModule } from 'primeng/checkbox';
@@ -22,6 +22,7 @@ import { ProductsService } from '../../services/products.service';
   styleUrl: './products.component.scss',
 })
 export class ProductsComponent implements OnInit {
+  @Input() selectedProducts: any[] = [];
   @Output() productChanges = new EventEmitter<Product>();
   nameQuery: string = '';
   checked: boolean = false;
@@ -53,18 +54,23 @@ export class ProductsComponent implements OnInit {
   }
 
   addProduct(product: Product) {
-    ++product.quantity;
-    product.total = product.quantity * product.price;
+    // ++product.quantity;
+    // product.total = product.quantity * product.price;
+    product.isAdd = true;
+    product.isChecked = false;
     this.productChanges.emit(product);
   }
 
   subProduct(product: Product) {
-    product.quantity--;
-    product.total = product.quantity * product.price;
+    // product.quantity--;
+    // product.total = product.quantity * product.price;
+    product.isAdd = false;
+    product.isChecked = false;
     this.productChanges.emit(product);
   }
 
   changeStatus(product: Product) {
+    product.isChecked = true;
     this.productChanges.emit(product);
   }
 }
