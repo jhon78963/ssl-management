@@ -59,6 +59,7 @@ export class ReservationLayoutComponent implements OnInit {
   total: number = 0;
   customer: Customer | null | undefined;
   showProductsForm: boolean = false;
+  reservationId: number | null | undefined = null;
   constructor(
     private cdr: ChangeDetectorRef,
     private readonly datePipe: DatePipe,
@@ -93,6 +94,7 @@ export class ReservationLayoutComponent implements OnInit {
     this.total = 0;
     this.customer = null;
     this.showProductsForm = false;
+    this.reservationId = null;
   }
 
   showFacility(facility: any) {
@@ -101,6 +103,8 @@ export class ReservationLayoutComponent implements OnInit {
         this.selectedFacilities = reservation.facilities;
         this.total = reservation.total;
         this.customer = reservation.customer;
+        this.selectedProducts = reservation.products;
+        this.reservationId = reservation.id;
         this.cdr.detectChanges();
       },
     });
@@ -176,31 +180,13 @@ export class ReservationLayoutComponent implements OnInit {
         product.total = product.quantity * product.price;
         this.selectedProducts.push(product);
         this.total += product.price;
-        console.log(product);
       }
     }
-
-    // const index = this.selectedProducts.findIndex(
-    //   p => p.id === product.id && p.type === product.type,
-    // );
-    // if (product.quantity === 0) {
-    //   if (index !== -1) {
-    //     this.selectedProducts.splice(index, 1); // Remove the product
-    //     this.total -= product.price;
-    //   }
-    // } else {
-    //   if (index !== -1) {
-    //     this.selectedProducts[index].quantity = product.quantity;
-    //     this.selectedProducts[index].total = product.total;
-    //   } else {
-    //     this.selectedProducts.push(product);
-    //     this.total += product.price;
-    //   }
-    // }
   }
 
   buttonSaveReservation(
     customer: Customer | null | undefined,
+    reservationId: number | null | undefined,
     selectedFacilities: any,
     selectedProducts: any,
   ) {
@@ -260,11 +246,21 @@ export class ReservationLayoutComponent implements OnInit {
                 selectedProducts.forEach((product: any) => {
                   if (product.type == 'product') {
                     this.reservationProductsService
-                      .add(response.reservationId, product.id, product.quantity)
+                      .add(
+                        response.reservationId,
+                        product.id,
+                        product.quantity,
+                        product.isPaid,
+                      )
                       .subscribe();
                   } else {
                     this.reservationServicesService
-                      .add(response.reservationId, product.id, product.quantity)
+                      .add(
+                        response.reservationId,
+                        product.id,
+                        product.quantity,
+                        product.isPaid,
+                      )
                       .subscribe();
                   }
                 });
@@ -312,11 +308,21 @@ export class ReservationLayoutComponent implements OnInit {
           selectedProducts.forEach((product: any) => {
             if (product.type == 'product') {
               this.reservationProductsService
-                .add(response.reservationId, product.id, product.quantity)
+                .add(
+                  response.reservationId,
+                  product.id,
+                  product.quantity,
+                  product.isPaid,
+                )
                 .subscribe();
             } else {
               this.reservationServicesService
-                .add(response.reservationId, product.id, product.quantity)
+                .add(
+                  response.reservationId,
+                  product.id,
+                  product.quantity,
+                  product.isPaid,
+                )
                 .subscribe();
             }
           });

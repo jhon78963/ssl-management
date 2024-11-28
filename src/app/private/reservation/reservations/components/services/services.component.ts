@@ -1,13 +1,12 @@
-import { ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
-import { TableModule } from 'primeng/table';
-import { ToastModule } from 'primeng/toast';
-import { DynamicDialogConfig } from 'primeng/dynamicdialog';
-import { PickListModule } from 'primeng/picklist';
-import { ReservationServicesService } from '../../services/reservation-services.service';
-import { Service } from '../../models/service.model';
 import { CommonModule } from '@angular/common';
+import { ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { InputNumberModule } from 'primeng/inputnumber';
+import { PickListModule } from 'primeng/picklist';
+import { TableModule } from 'primeng/table';
+import { ToastModule } from 'primeng/toast';
+import { Service } from '../../models/service.model';
+import { ReservationServicesService } from '../../services/reservation-services.service';
 
 @Component({
   selector: 'app-add-services',
@@ -31,7 +30,6 @@ export class ServicesAddComponent implements OnInit {
   targetServices: Service[] | undefined;
 
   constructor(
-    private readonly dynamicDialogConfig: DynamicDialogConfig,
     private readonly reservationServicesService: ReservationServicesService,
     private cdr: ChangeDetectorRef,
   ) {}

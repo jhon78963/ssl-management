@@ -1,14 +1,12 @@
+import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { InputNumberModule } from 'primeng/inputnumber';
+import { PickListModule } from 'primeng/picklist';
 import { TableModule } from 'primeng/table';
 import { ToastModule } from 'primeng/toast';
-import { DynamicDialogConfig } from 'primeng/dynamicdialog';
-import { PickListModule } from 'primeng/picklist';
-import { ReservationProductsService } from '../../services/reservation-products.service';
 import { Product } from '../../models/product.model';
-import { CommonModule } from '@angular/common';
-import { InputNumberModule } from 'primeng/inputnumber';
-import { FormsModule } from '@angular/forms';
-import { ReservationsService } from '../../services/reservations.service';
+import { ReservationProductsService } from '../../services/reservation-products.service';
 
 @Component({
   selector: 'app-add-products',
@@ -33,9 +31,7 @@ export class ProductsAddComponent implements OnInit {
   quantity: number = 1;
 
   constructor(
-    private readonly dynamicDialogConfig: DynamicDialogConfig,
     private readonly reservationProductsService: ReservationProductsService,
-    private readonly reservationsService: ReservationsService,
     private cdr: ChangeDetectorRef,
   ) {}
 

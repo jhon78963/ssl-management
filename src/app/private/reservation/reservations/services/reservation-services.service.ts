@@ -13,9 +13,11 @@ export class ReservationServicesService {
     reservationId: number,
     serviceId: number,
     quantity: number,
+    isPaid: boolean = false,
   ): Observable<void> {
     return this.apiService.post(`services/${reservationId}/add/${serviceId}`, {
       quantity,
+      isPaid,
     });
   }
 

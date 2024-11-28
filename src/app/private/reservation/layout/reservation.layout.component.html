@@ -27,11 +27,12 @@
         <button
           pButton
           pRipple
-          label="Pagar"
+          [label]="reservationId ? 'Pagar todo' : 'Pagar'"
           class="ml-1"
           (click)="
             buttonSaveReservation(
               customer,
+              reservationId,
               selectedFacilities,
               selectedProducts
             )
@@ -51,7 +52,7 @@
               class="m-0 p-0"
               [ngClass]="product.isPaid ? 'paid-status' : 'unpaid-status'">
               X{{ product.quantity }} {{ product.name }} - S/
-              {{ product.price }}
+              {{ product.total }}
             </p>
           }
         </div>
