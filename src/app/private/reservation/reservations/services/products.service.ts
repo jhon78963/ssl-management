@@ -7,8 +7,8 @@ import { ApiService } from '../../../../services/api.service';
   providedIn: 'root',
 })
 export class ProductsService {
-  products: Product[] = [];
-  products$: BehaviorSubject<Product[]> = new BehaviorSubject<Product[]>(
+  products: any[] = [];
+  products$: BehaviorSubject<any[]> = new BehaviorSubject<Product[]>(
     this.products,
   );
 

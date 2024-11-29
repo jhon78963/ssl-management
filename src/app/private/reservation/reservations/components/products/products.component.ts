@@ -25,7 +25,6 @@ export class ProductsComponent implements OnInit {
   @Input() selectedProducts: any[] = [];
   @Output() productChanges = new EventEmitter<Product>();
   nameQuery: string = '';
-  checked: boolean = false;
   private nameSearchTermSubject = new Subject<string>();
 
   constructor(private readonly productsService: ProductsService) {}
@@ -54,23 +53,12 @@ export class ProductsComponent implements OnInit {
   }
 
   addProduct(product: Product) {
-    // ++product.quantity;
-    // product.total = product.quantity * product.price;
     product.isAdd = true;
-    product.isChecked = false;
     this.productChanges.emit(product);
   }
 
   subProduct(product: Product) {
-    // product.quantity--;
-    // product.total = product.quantity * product.price;
     product.isAdd = false;
-    product.isChecked = false;
-    this.productChanges.emit(product);
-  }
-
-  changeStatus(product: Product) {
-    product.isChecked = true;
     this.productChanges.emit(product);
   }
 }

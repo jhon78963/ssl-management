@@ -13,24 +13,19 @@ import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { TabMenuModule } from 'primeng/tabmenu';
 import { TabViewModule } from 'primeng/tabview';
 import { ToastModule } from 'primeng/toast';
-import { forkJoin, Observable, switchMap } from 'rxjs';
+import { Observable } from 'rxjs';
 import { SharedModule } from '../../../shared/shared.module';
 import { showSuccess } from '../../../utils/notifications';
 import { CustomerReservationComponent } from '../reservations/components/customers/reservation/reservation.component';
+import { ProductsComponent } from '../reservations/components/products/products.component';
+import { ReservationComponent } from '../reservations/components/reservation/reservation.component';
 import { Customer } from '../reservations/models/customer.model';
-import { Facility, FacilityType } from '../reservations/models/facility.model';
-import {
-  LockerReservation,
-  RoomReservation,
-} from '../reservations/models/reservation.model';
+import { Facility } from '../reservations/models/facility.model';
+import { Product } from '../reservations/models/product.model';
 import { ButtonClassPipe } from '../reservations/pipes/button-class.pipe';
 import { FacilitiesService } from '../reservations/services/facilities.service';
-import { ReservationLockersService } from '../reservations/services/reservation-lockers.service';
 import { ReservationsService } from '../reservations/services/reservations.service';
-import { ProductsComponent } from '../reservations/components/products/products.component';
-import { Product } from '../reservations/models/product.model';
-import { ReservationProductsService } from '../reservations/services/reservation-products.service';
-import { ReservationServicesService } from '../reservations/services/reservation-services.service';
+import { Service } from '../reservations/models/service.model';
 
 @Component({
   selector: 'app-reservation.layout',
@@ -56,19 +51,16 @@ export class ReservationLayoutComponent implements OnInit {
   modal: DynamicDialogRef | undefined;
   selectedFacilities: any[] = [];
   selectedProducts: Product[] = [];
+  selectedServices: Service[] = [];
   total: number = 0;
   customer: Customer | null | undefined;
   showProductsForm: boolean = false;
   reservationId: number | null | undefined = null;
   constructor(
     private cdr: ChangeDetectorRef,
-    private readonly datePipe: DatePipe,
     private readonly dialogService: DialogService,
     private readonly facilitiesService: FacilitiesService,
     private readonly messageService: MessageService,
-    private readonly reservationLockersService: ReservationLockersService,
-    private readonly reservationProductsService: ReservationProductsService,
-    private readonly reservationServicesService: ReservationServicesService,
     private readonly reservationsService: ReservationsService,
   ) {}
 
@@ -104,6 +96,10 @@ export class ReservationLayoutComponent implements OnInit {
         this.total = reservation.total;
         this.customer = reservation.customer;
         this.selectedProducts = reservation.products;
+        this.selectedServices = reservation.services;
+        this.selectedServices.forEach((service: any) => {
+          this.selectedProducts.push(service);
+        });
         this.reservationId = reservation.id;
         this.cdr.detectChanges();
       },
@@ -136,8 +132,8 @@ export class ReservationLayoutComponent implements OnInit {
     this.modal.onClose.subscribe({
       next: value => {
         if (value && value?.success) {
-          showSuccess(this.messageService, 'Cliente agregado.');
           this.customer = value.customer;
+          this.cdr.detectChanges();
         } else {
           null;
         }
@@ -154,33 +150,31 @@ export class ReservationLayoutComponent implements OnInit {
   }
 
   getProducts(product: any) {
-    const isExists = this.isExists(product);
-    if (!product.isChecked) {
-      if (isExists) {
-        const index = this.selectedProducts.findIndex(
-          productInList =>
-            productInList.name === product.name &&
-            productInList.isPaid == product.isPaid,
-        );
+    const index = this.selectedProducts.findIndex(
+      productInList =>
+        productInList.id === product.id &&
+        productInList.type == product.type &&
+        productInList.isPaid == product.isPaid,
+    );
 
-        if (product.isAdd) {
-          this.selectedProducts[index].quantity += 1;
-          this.selectedProducts[index].total += product.price;
-          this.total += product.price;
-        } else {
-          this.selectedProducts[index].quantity -= 1;
-          this.selectedProducts[index].total -= product.price;
-          this.total -= product.price;
-          if (this.selectedProducts[index].quantity == 0) {
-            this.selectedProducts.splice(index, 1);
-          }
-        }
-      } else {
-        ++product.quantity;
-        product.total = product.quantity * product.price;
-        this.selectedProducts.push(product);
+    if (index !== -1) {
+      if (product.isAdd) {
+        this.selectedProducts[index].quantity += 1;
+        this.selectedProducts[index].total += product.price;
         this.total += product.price;
+      } else {
+        this.selectedProducts[index].quantity -= 1;
+        this.selectedProducts[index].total -= product.price;
+        this.total -= product.price;
+        if (this.selectedProducts[index].quantity == 0) {
+          this.selectedProducts.splice(index, 1);
+        }
       }
+    } else {
+      ++product.quantity;
+      product.total = product.quantity * product.price;
+      this.selectedProducts.push(product);
+      this.total += product.price;
     }
   }
 
@@ -189,23 +183,45 @@ export class ReservationLayoutComponent implements OnInit {
     reservationId: number | null | undefined,
     selectedFacilities: any,
     selectedProducts: any,
+    selectedServices: any,
   ) {
-    const selectedRooms: any[] = [];
-    const selectedLockers: any[] = [];
-    selectedFacilities.forEach((facility: any) => {
-      if (facility.type == FacilityType.ROOM) {
-        selectedRooms.push(facility);
-      } else {
-        selectedLockers.push(facility);
-      }
+    this.modal = this.dialogService.open(ReservationComponent, {
+      header: reservationId ? 'Pago total' : 'Pago',
+      data: {
+        customer,
+        reservationId,
+        facilities: selectedFacilities,
+        products: selectedProducts,
+        services: selectedServices,
+      },
     });
-    this.cdr.detectChanges();
-    if (selectedRooms.length > 0) {
-      this.createRoomReservation(customer, selectedRooms, selectedProducts);
-    }
-    if (selectedLockers.length > 0) {
-      this.createLockerReservation(customer, selectedLockers, selectedProducts);
-    }
+
+    this.modal.onClose.subscribe({
+      next: value => {
+        if (value && value?.success) {
+          showSuccess(this.messageService, 'Reservación registrada.');
+          this.clearReservation();
+        } else {
+          null;
+        }
+      },
+    });
+    // const selectedRooms: any[] = [];
+    // const selectedLockers: any[] = [];
+    // selectedFacilities.forEach((facility: any) => {
+    //   if (facility.type == FacilityType.ROOM) {
+    //     selectedRooms.push(facility);
+    //   } else {
+    //     selectedLockers.push(facility);
+    //   }
+    // });
+    // this.cdr.detectChanges();
+    // if (selectedRooms.length > 0) {
+    //   this.createRoomReservation(customer, selectedRooms, selectedProducts);
+    // }
+    // if (selectedLockers.length > 0) {
+    //   this.createLockerReservation(customer, selectedLockers, selectedProducts);
+    // }
   }
 
   clearReservation() {
@@ -213,135 +229,135 @@ export class ReservationLayoutComponent implements OnInit {
     this.clearSelections();
   }
 
-  createLockerReservation(
-    customer: Customer | null | undefined,
-    selectedFacilities: any[],
-    selectedProducts: any[],
-  ) {
-    const currentDate = new Date();
-    const reservationDate = this.datePipe.transform(
-      currentDate,
-      'yyyy-MM-dd HH:mm:ss',
-    );
+  // createLockerReservation(
+  //   customer: Customer | null | undefined,
+  //   selectedFacilities: any[],
+  //   selectedProducts: any[],
+  // ) {
+  //   const currentDate = new Date();
+  //   const reservationDate = this.datePipe.transform(
+  //     currentDate,
+  //     'yyyy-MM-dd HH:mm:ss',
+  //   );
 
-    let total = 0;
-    selectedFacilities.map((facility: any) => {
-      total += facility.price;
-    });
+  //   let total = 0;
+  //   selectedFacilities.map((facility: any) => {
+  //     total += facility.price;
+  //   });
 
-    const reservationData = {
-      reservationDate: reservationDate,
-      total: total,
-      customerId: customer!.id,
-      reservationTypeId: 1,
-    };
-    const reservation = new LockerReservation(reservationData);
-    this.reservationsService.create(reservation).subscribe({
-      next: (response: any) => {
-        const reservationRequests = selectedFacilities.map((facility: any) => {
-          return this.reservationLockersService
-            .add(response.reservationId, facility.id, facility.price)
-            .pipe(
-              switchMap(() => {
-                selectedProducts.forEach((product: any) => {
-                  if (product.type == 'product') {
-                    this.reservationProductsService
-                      .add(
-                        response.reservationId,
-                        product.id,
-                        product.quantity,
-                        product.isPaid,
-                      )
-                      .subscribe();
-                  } else {
-                    this.reservationServicesService
-                      .add(
-                        response.reservationId,
-                        product.id,
-                        product.quantity,
-                        product.isPaid,
-                      )
-                      .subscribe();
-                  }
-                });
-                const body: any = {
-                  id: facility.id,
-                  status: 'IN_USE',
-                };
-                return this.facilitiesService.changeLockerStatus(
-                  facility.id,
-                  body,
-                );
-              }),
-            );
-        });
-        forkJoin(reservationRequests).subscribe({
-          next: () => {
-            this.clearReservation();
-          },
-        });
-      },
-    });
-  }
+  //   const reservationData = {
+  //     reservationDate: reservationDate,
+  //     total: total,
+  //     customerId: customer!.id,
+  //     reservationTypeId: 1,
+  //   };
+  //   const reservation = new LockerReservation(reservationData);
+  //   this.reservationsService.create(reservation).subscribe({
+  //     next: (response: any) => {
+  //       const reservationRequests = selectedFacilities.map((facility: any) => {
+  //         return this.reservationLockersService
+  //           .add(response.reservationId, facility.id, facility.price)
+  //           .pipe(
+  //             switchMap(() => {
+  //               selectedProducts.forEach((product: any) => {
+  //                 if (product.type == 'product') {
+  //                   this.reservationProductsService
+  //                     .add(
+  //                       response.reservationId,
+  //                       product.id,
+  //                       product.quantity,
+  //                       product.isPaid,
+  //                     )
+  //                     .subscribe();
+  //                 } else {
+  //                   this.reservationServicesService
+  //                     .add(
+  //                       response.reservationId,
+  //                       product.id,
+  //                       product.quantity,
+  //                       product.isPaid,
+  //                     )
+  //                     .subscribe();
+  //                 }
+  //               });
+  //               const body: any = {
+  //                 id: facility.id,
+  //                 status: 'IN_USE',
+  //               };
+  //               return this.facilitiesService.changeLockerStatus(
+  //                 facility.id,
+  //                 body,
+  //               );
+  //             }),
+  //           );
+  //       });
+  //       forkJoin(reservationRequests).subscribe({
+  //         next: () => {
+  //           this.clearReservation();
+  //         },
+  //       });
+  //     },
+  //   });
+  // }
 
-  createRoomReservation(
-    customer: Customer | null | undefined,
-    selectedFacilities: any[],
-    selectedProducts: any[],
-  ) {
-    const reservationRequests = selectedFacilities.map((facility: any) => {
-      const currentDate = new Date();
-      const reservationDate = this.datePipe.transform(
-        currentDate,
-        'yyyy-MM-dd HH:mm:ss',
-      );
-      const reservationData = {
-        reservationDate: reservationDate,
-        total: facility.price,
-        customerId: customer!.id,
-        roomId: facility.id,
-      };
-      const reservation = new RoomReservation(reservationData);
-      return this.reservationsService.create(reservation).pipe(
-        switchMap((response: any) => {
-          console.log(response);
-          selectedProducts.forEach((product: any) => {
-            if (product.type == 'product') {
-              this.reservationProductsService
-                .add(
-                  response.reservationId,
-                  product.id,
-                  product.quantity,
-                  product.isPaid,
-                )
-                .subscribe();
-            } else {
-              this.reservationServicesService
-                .add(
-                  response.reservationId,
-                  product.id,
-                  product.quantity,
-                  product.isPaid,
-                )
-                .subscribe();
-            }
-          });
+  // createRoomReservation(
+  //   customer: Customer | null | undefined,
+  //   selectedFacilities: any[],
+  //   selectedProducts: any[],
+  // ) {
+  //   const reservationRequests = selectedFacilities.map((facility: any) => {
+  //     const currentDate = new Date();
+  //     const reservationDate = this.datePipe.transform(
+  //       currentDate,
+  //       'yyyy-MM-dd HH:mm:ss',
+  //     );
+  //     const reservationData = {
+  //       reservationDate: reservationDate,
+  //       total: facility.price,
+  //       customerId: customer!.id,
+  //       roomId: facility.id,
+  //     };
+  //     const reservation = new RoomReservation(reservationData);
+  //     return this.reservationsService.create(reservation).pipe(
+  //       switchMap((response: any) => {
+  //         console.log(response);
+  //         selectedProducts.forEach((product: any) => {
+  //           if (product.type == 'product') {
+  //             this.reservationProductsService
+  //               .add(
+  //                 response.reservationId,
+  //                 product.id,
+  //                 product.quantity,
+  //                 product.isPaid,
+  //               )
+  //               .subscribe();
+  //           } else {
+  //             this.reservationServicesService
+  //               .add(
+  //                 response.reservationId,
+  //                 product.id,
+  //                 product.quantity,
+  //                 product.isPaid,
+  //               )
+  //               .subscribe();
+  //           }
+  //         });
 
-          const body = {
-            id: reservationData.roomId,
-            status: 'IN_USE',
-          };
-          return this.facilitiesService.changeRoomStatus(
-            reservationData.roomId,
-            body,
-          );
-        }),
-      );
-    });
-    forkJoin(reservationRequests).subscribe({
-      next: () => {
-        this.clearReservation();
-      },
-    });
-  }
+  //         const body = {
+  //           id: reservationData.roomId,
+  //           status: 'IN_USE',
+  //         };
+  //         return this.facilitiesService.changeRoomStatus(
+  //           reservationData.roomId,
+  //           body,
+  //         );
+  //       }),
+  //     );
+  //   });
+  //   forkJoin(reservationRequests).subscribe({
+  //     next: () => {
+  //       this.clearReservation();
+  //     },
+  //   });
+  // }
 }

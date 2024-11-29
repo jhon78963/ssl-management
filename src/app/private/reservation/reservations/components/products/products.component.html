@@ -26,14 +26,6 @@
             <span class="text-900 font-bold mr-2">
               X{{ product.quantity }} {{ product.name }}
             </span>
-            <p-checkbox
-              [(ngModel)]="product.isPaid"
-              (onChange)="changeStatus(product)"
-              [binary]="true"
-              inputId="binary"
-              [inputId]="'binary-' + $index"
-              class="mr-1" />
-            <label [for]="'binary-' + $index">Pagado</label>
           </div>
 
           <div class="flex align-items-center justify-content-between gap-2">
