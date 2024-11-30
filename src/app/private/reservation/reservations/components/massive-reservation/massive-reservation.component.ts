@@ -179,6 +179,7 @@ export class MassiveReservationComponent implements OnInit {
       total: locker.price,
       customerId: this.customerId,
       lockerId: locker.id,
+      totalPaid: 0,
     };
     if (locker.reservationId == null) {
       const reservation = new Reservation(reservationData);

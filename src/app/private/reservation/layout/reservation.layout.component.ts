@@ -90,6 +90,7 @@ export class ReservationLayoutComponent implements OnInit {
   }
 
   showFacility(facility: any) {
+    console.log(facility);
     this.reservationsService.getOne(facility.reservationId).subscribe({
       next: (reservation: any) => {
         this.selectedFacilities = reservation.facilities;

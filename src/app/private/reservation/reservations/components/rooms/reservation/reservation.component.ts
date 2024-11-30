@@ -209,6 +209,7 @@ export class RoomReservationComponent implements OnInit {
       reservationDate: reservationDate,
       total: room.pricePerCapacity,
       roomId: room.id,
+      totalPaid: 0,
     };
     if (room.reservationId == null) {
       const reservation = new RoomReservation(reservationData);

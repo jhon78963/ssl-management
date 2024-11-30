@@ -2,6 +2,7 @@ export interface IReservation {
   id?: number;
   reservationDate?: string | null;
   total: number;
+  totalPaid: number;
   reservationTypeId?: number;
   status?: string;
   products?: any[];
@@ -48,6 +49,7 @@ export class RoomReservation {
   id?: number;
   reservationDate?: string | null;
   total: number;
+  totalPaid: number;
   reservationTypeId: number;
   roomId?: number;
   customerId?: number;
@@ -59,6 +61,7 @@ export class RoomReservation {
     this.id = reservation.id;
     this.reservationDate = reservation.reservationDate;
     this.total = reservation.total;
+    this.totalPaid = reservation.totalPaid;
     this.products = reservation.products;
     this.services = reservation.services;
     this.roomId = reservation.roomId;
@@ -71,6 +74,7 @@ export class LockerReservation {
   id?: number;
   reservationDate?: string | null;
   total: number;
+  totalPaid: number;
   customerId?: number;
   products?: any[];
   services?: any[];
@@ -79,6 +83,7 @@ export class LockerReservation {
     this.id = reservation.id;
     this.reservationDate = reservation.reservationDate;
     this.total = reservation.total;
+    this.totalPaid = reservation.totalPaid;
     this.customerId = reservation.customerId;
     this.products = reservation.products;
     this.services = reservation.services;
