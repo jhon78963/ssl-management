@@ -56,6 +56,7 @@ export class ReservationLayoutComponent implements OnInit {
   customer: Customer | null | undefined;
   showProductsForm: boolean = false;
   reservationId: number | null | undefined = null;
+  isPaid: boolean = false;
   constructor(
     private cdr: ChangeDetectorRef,
     private readonly dialogService: DialogService,
@@ -87,10 +88,10 @@ export class ReservationLayoutComponent implements OnInit {
     this.customer = null;
     this.showProductsForm = false;
     this.reservationId = null;
+    this.isPaid = false;
   }
 
   showFacility(facility: any) {
-    console.log(facility);
     this.reservationsService.getOne(facility.reservationId).subscribe({
       next: (reservation: any) => {
         this.selectedFacilities = reservation.facilities;
@@ -102,6 +103,7 @@ export class ReservationLayoutComponent implements OnInit {
           this.selectedProducts.push(service);
         });
         this.reservationId = reservation.id;
+        this.isPaid = true;
         this.cdr.detectChanges();
       },
     });
@@ -134,6 +136,7 @@ export class ReservationLayoutComponent implements OnInit {
       next: value => {
         if (value && value?.success) {
           this.customer = value.customer;
+          this.isPaid = true;
           this.cdr.detectChanges();
         } else {
           null;
