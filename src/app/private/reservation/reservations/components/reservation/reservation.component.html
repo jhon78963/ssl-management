@@ -94,6 +94,13 @@
                 <span class="text-900 font-bold">S/ {{ facility.price }}</span>
                 <p-checkbox
                   [(ngModel)]="facility.isPaid"
+                  (onChange)="
+                    plusTotalPayment(
+                      $event,
+                      facility.price,
+                      selectedPaymentType.id
+                    )
+                  "
                   [binary]="true"
                   [inputId]="'binary-' + $index" />
               </div>

@@ -95,6 +95,23 @@ export class ReservationComponent implements OnInit {
     this.customer = this.dynamicDialogConfig.data.customer;
   }
 
+  plusTotalPayment(event: any, price: number, paymentType: number) {
+    if (paymentType == 1) {
+      this.card = 0;
+      event.checked ? (this.cash += price) : (this.cash -= price);
+    }
+
+    if (paymentType == 2) {
+      this.cash = 0;
+      event.checked ? (this.card += price) : (this.card -= price);
+    }
+  }
+
+  // resetValues() {
+  //   this.card = 0;
+  //   this.cash = 0;
+  // }
+
   payment(
     customer: Customer | null | undefined,
     reservationId: number | null | undefined,
