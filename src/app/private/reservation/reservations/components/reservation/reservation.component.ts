@@ -51,8 +51,12 @@ export class ReservationComponent implements OnInit {
     { id: 3, name: 'Mixto' },
   ];
   selectedPaymentType: any = this.payments[0];
+  previousPaymentType: any;
+
+  paid: number = 0;
   cash: number = 0;
   card: number = 0;
+
   constructor(
     private readonly datePipe: DatePipe,
     private readonly dynamicDialogConfig: DynamicDialogConfig,
@@ -72,7 +76,6 @@ export class ReservationComponent implements OnInit {
       ?.filter(facility => facility.price)
       .reduce((sum, facility) => sum + facility.price, 0);
 
-    console.log(this.dynamicDialogConfig.data.facilities);
     this.products = this.dynamicDialogConfig.data.products.filter(
       (product: any) => product.type == 'product',
     );
@@ -95,16 +98,34 @@ export class ReservationComponent implements OnInit {
     this.customer = this.dynamicDialogConfig.data.customer;
   }
 
-  plusTotalPayment(event: any, price: number, paymentType: number) {
-    if (paymentType == 1) {
-      this.card = 0;
-      event.checked ? (this.cash += price) : (this.cash -= price);
+  plusTotalPayment(event: any, price: number) {
+    event.checked ? (this.paid += price) : (this.paid -= price);
+  }
+
+  calculateTotalCash(event: any) {
+    console.log(event);
+    this.card = this.paid - this.cash;
+  }
+
+  calculateTotalCard(event: any) {
+    console.log(event);
+    this.cash = this.paid - this.card;
+  }
+
+  validatePaidButton() {
+    if (this.selectedPaymentType.id == 3) {
+      if (this.cash + this.card != this.paid) {
+        return true;
+      }
     }
 
-    if (paymentType == 2) {
-      this.cash = 0;
-      event.checked ? (this.card += price) : (this.card -= price);
+    if (this.selectedPaymentType.id == 1 || this.selectedPaymentType.id == 2) {
+      if (this.paid <= 0) {
+        return true;
+      }
     }
+
+    return false;
   }
 
   // resetValues() {
