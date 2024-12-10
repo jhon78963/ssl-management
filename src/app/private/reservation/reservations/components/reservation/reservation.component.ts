@@ -19,6 +19,7 @@ import { FormsModule } from '@angular/forms';
 import { RadioButtonModule } from 'primeng/radiobutton';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { ReservationRoomsService } from '../../services/reservation-rooms.service';
+import { ReservationPaymentTypesService } from '../../services/reservation-payment-types.service';
 
 @Component({
   selector: 'app-reservation',
@@ -63,6 +64,7 @@ export class ReservationComponent implements OnInit {
     private readonly dynamicDialogRef: DynamicDialogRef,
     private readonly facilitiesService: FacilitiesService,
     private readonly reservationLockersService: ReservationLockersService,
+    private readonly reservationPaymentTypesService: ReservationPaymentTypesService,
     private readonly reservationProductsService: ReservationProductsService,
     private readonly reservationRoomsService: ReservationRoomsService,
     private readonly reservationServicesService: ReservationServicesService,
@@ -186,12 +188,28 @@ export class ReservationComponent implements OnInit {
       reservationDate: reservationDate,
       customerId: customer!.id,
       total: total,
-      totalPaid: this.cash + this.card,
+      totalPaid: this.paid,
       reservationTypeId: 1,
     };
     const reservation = new LockerReservation(reservationData);
     this.reservationsService.create(reservation).subscribe({
       next: (response: any) => {
+        const paymentTypeBoy = {
+          payment: this.paid,
+          paymentTypeId: this.selectedPaymentType.id,
+          cashPayment: this.cash,
+          cardPayment: this.card,
+        };
+        this.reservationPaymentTypesService
+          .add(
+            response.reservationId,
+            paymentTypeBoy.paymentTypeId,
+            paymentTypeBoy.payment,
+            paymentTypeBoy.cashPayment,
+            paymentTypeBoy.cardPayment,
+          )
+          .subscribe();
+
         products.forEach((product: any) => {
           this.reservationProductsService
             .add(
@@ -261,13 +279,28 @@ export class ReservationComponent implements OnInit {
     const reservationData = {
       reservationDate: reservationDate,
       total: total,
-      totalPaid: this.cash + this.card,
+      totalPaid: this.paid,
       customerId: customer!.id,
       reservationTypeId: 2,
     };
     const reservation = new RoomReservation(reservationData);
     this.reservationsService.create(reservation).subscribe({
       next: (response: any) => {
+        const paymentTypeBoy = {
+          payment: this.paid,
+          paymentTypeId: this.selectedPaymentType.id,
+          cashPayment: this.cash,
+          cardPayment: this.card,
+        };
+        this.reservationPaymentTypesService
+          .add(
+            response.reservationId,
+            paymentTypeBoy.paymentTypeId,
+            paymentTypeBoy.payment,
+            paymentTypeBoy.cashPayment,
+            paymentTypeBoy.cardPayment,
+          )
+          .subscribe();
         products.forEach((product: any) => {
           this.reservationProductsService
             .add(
