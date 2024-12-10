@@ -8,12 +8,12 @@
         <div *ngFor="let payment of payments" class="field-checkbox">
           <div class="flex align-items-center">
             <p-radioButton
-              [inputId]="payment.id"
+              [inputId]="payment.id.toString()"
               name="category"
               [value]="payment"
               [(ngModel)]="selectedPaymentType" />
             <label [for]="payment.id" class="ml-2">
-              {{ payment.name }}
+              {{ payment.description }}
             </label>
           </div>
         </div>

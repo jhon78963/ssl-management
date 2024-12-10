@@ -20,6 +20,7 @@ import { RadioButtonModule } from 'primeng/radiobutton';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { ReservationRoomsService } from '../../services/reservation-rooms.service';
 import { ReservationPaymentTypesService } from '../../services/reservation-payment-types.service';
+import { PaymentType } from '../../models/payment-type.model';
 
 @Component({
   selector: 'app-reservation',
@@ -46,13 +47,16 @@ export class ReservationComponent implements OnInit {
   lockerPrice: number = 0;
   total: number = 0;
   reservationId: number = 0;
-  payments: any[] = [
-    { id: 1, name: 'Efectivo' },
-    { id: 2, name: 'Tarjeta' },
-    { id: 3, name: 'Mixto' },
+  payments: PaymentType[] = [
+    { id: 1, description: 'Efectivo' },
+    { id: 2, description: 'Tarjeta' },
+    { id: 3, description: 'Mixto' },
   ];
   selectedPaymentType: any = this.payments[0];
-  previousPaymentType: any;
+  previousPaymentType: PaymentType = {
+    id: 0,
+    description: '',
+  };
 
   paid: number = 0;
   cash: number = 0;
