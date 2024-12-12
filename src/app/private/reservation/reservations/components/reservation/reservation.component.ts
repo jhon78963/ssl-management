@@ -41,6 +41,7 @@ export class ReservationComponent implements OnInit {
   products: any[] = [];
   services: any[] = [];
   facilities: any[] = [];
+  paymentTypes: any[] = [];
   customer: any;
   totalProducts: number = 0;
   totalServices: number = 0;
@@ -102,6 +103,28 @@ export class ReservationComponent implements OnInit {
 
     this.total = this.totalProducts + this.totalServices + this.lockerPrice;
     this.customer = this.dynamicDialogConfig.data.customer;
+    this.paymentTypes = this.dynamicDialogConfig.data.paymentTypes;
+
+    if (this.paymentTypes.length > 0) {
+      this.paymentTypes.forEach((payment: any) => {
+        this.selectedPaymentType = this.payments[payment.id - 1];
+        this.paid += payment.paid;
+        this.cash += payment.cash;
+        this.card += payment.card;
+      });
+    } else {
+      this.paid = this.facilities
+        ?.filter(facility => facility.isPaid)
+        .reduce((sum, facility) => sum + facility.price, 0);
+
+      this.paid += this.products
+        ?.filter(product => product.isPaid)
+        .reduce((sum, product) => sum + product.price, 0);
+
+      this.paid += this.services
+        ?.filter(service => service.isPaid)
+        .reduce((sum, service) => sum + service.price, 0);
+    }
   }
 
   plusTotalPayment(event: any, price: number) {
@@ -134,11 +157,6 @@ export class ReservationComponent implements OnInit {
     return false;
   }
 
-  // resetValues() {
-  //   this.card = 0;
-  //   this.cash = 0;
-  // }
-
   payment(
     customer: Customer | null | undefined,
     reservationId: number | null | undefined,
@@ -157,201 +175,219 @@ export class ReservationComponent implements OnInit {
         lockers.push(facility);
       }
     });
-    // console.log(facilities);
-    // console.log(rooms);
-    // console.log(lockers);
-    // console.log(products);
-    // console.log(services);
-    // console.log(this.selectedPaymentType);
     if (rooms.length > 0) {
-      this.createRoomReservation(customer, rooms, products, services);
+      this.createRoomReservation(
+        customer,
+        reservationId,
+        rooms,
+        products,
+        services,
+      );
     }
     if (lockers.length > 0) {
-      this.createLockerReservation(customer, lockers, products, services);
+      this.createLockerReservation(
+        customer,
+        reservationId,
+        lockers,
+        products,
+        services,
+      );
     }
   }
 
   createLockerReservation(
     customer: Customer | null | undefined,
+    reservationId: number | null | undefined,
     facilities: any[],
     products: any[],
     services: any[],
   ) {
-    const currentDate = new Date();
-    const reservationDate = this.datePipe.transform(
-      currentDate,
-      'yyyy-MM-dd HH:mm:ss',
-    );
+    if (reservationId) {
+      console.log(reservationId);
+      console.log(products);
+      console.log(services);
+    } else {
+      const currentDate = new Date();
+      const reservationDate = this.datePipe.transform(
+        currentDate,
+        'yyyy-MM-dd HH:mm:ss',
+      );
 
-    let total = 0;
-    facilities.map((facility: any) => {
-      total += facility.price;
-    });
+      let total = 0;
+      facilities.map((facility: any) => {
+        total += facility.price;
+      });
 
-    const reservationData = {
-      reservationDate: reservationDate,
-      customerId: customer!.id,
-      total: total,
-      totalPaid: this.paid,
-      reservationTypeId: 1,
-    };
-    const reservation = new LockerReservation(reservationData);
-    this.reservationsService.create(reservation).subscribe({
-      next: (response: any) => {
-        const paymentTypeBoy = {
-          payment: this.paid,
-          paymentTypeId: this.selectedPaymentType.id,
-          cashPayment: this.cash,
-          cardPayment: this.card,
-        };
-        this.reservationPaymentTypesService
-          .add(
-            response.reservationId,
-            paymentTypeBoy.paymentTypeId,
-            paymentTypeBoy.payment,
-            paymentTypeBoy.cashPayment,
-            paymentTypeBoy.cardPayment,
-          )
-          .subscribe();
-
-        products.forEach((product: any) => {
-          this.reservationProductsService
+      const reservationData = {
+        reservationDate: reservationDate,
+        customerId: customer!.id,
+        total: total,
+        totalPaid: this.paid,
+        reservationTypeId: 1,
+      };
+      const reservation = new LockerReservation(reservationData);
+      this.reservationsService.create(reservation).subscribe({
+        next: (response: any) => {
+          const paymentTypeBoy = {
+            payment: this.paid,
+            paymentTypeId: this.selectedPaymentType.id,
+            cashPayment: this.cash,
+            cardPayment: this.card,
+          };
+          this.reservationPaymentTypesService
             .add(
               response.reservationId,
-              product.id,
-              product.quantity,
-              product.isPaid,
+              paymentTypeBoy.paymentTypeId,
+              paymentTypeBoy.payment,
+              paymentTypeBoy.cashPayment,
+              paymentTypeBoy.cardPayment,
             )
             .subscribe();
-        });
-        services.forEach((service: any) => {
-          this.reservationServicesService
-            .add(
-              response.reservationId,
-              service.id,
-              service.quantity,
-              service.isPaid,
-            )
-            .subscribe();
-        });
-        const reservationRequests = facilities.map((facility: any) => {
-          return this.reservationLockersService
-            .add(
-              response.reservationId,
-              facility.id,
-              facility.price,
-              facility.isPaid,
-            )
-            .pipe(
-              switchMap(() => {
-                const body: any = {
-                  id: facility.id,
-                  status: 'IN_USE',
-                };
-                return this.facilitiesService.changeLockerStatus(
-                  facility.id,
-                  body,
-                );
-              }),
-            );
-        });
-        forkJoin(reservationRequests).subscribe({
-          next: () => {
-            this.dynamicDialogRef.close({ success: true });
-          },
-        });
-      },
-    });
+
+          products.forEach((product: any) => {
+            this.reservationProductsService
+              .add(
+                response.reservationId,
+                product.id,
+                product.quantity,
+                product.isPaid,
+              )
+              .subscribe();
+          });
+          services.forEach((service: any) => {
+            this.reservationServicesService
+              .add(
+                response.reservationId,
+                service.id,
+                service.quantity,
+                service.isPaid,
+              )
+              .subscribe();
+          });
+          const reservationRequests = facilities.map((facility: any) => {
+            return this.reservationLockersService
+              .add(
+                response.reservationId,
+                facility.id,
+                facility.price,
+                facility.isPaid,
+              )
+              .pipe(
+                switchMap(() => {
+                  const body: any = {
+                    id: facility.id,
+                    status: 'IN_USE',
+                  };
+                  return this.facilitiesService.changeLockerStatus(
+                    facility.id,
+                    body,
+                  );
+                }),
+              );
+          });
+          forkJoin(reservationRequests).subscribe({
+            next: () => {
+              this.dynamicDialogRef.close({ success: true });
+            },
+          });
+        },
+      });
+    }
   }
 
   createRoomReservation(
     customer: Customer | null | undefined,
+    reservationId: number | null | undefined,
     facilities: any[],
     products: any[],
     services: any[],
   ) {
-    const currentDate = new Date();
-    const reservationDate = this.datePipe.transform(
-      currentDate,
-      'yyyy-MM-dd HH:mm:ss',
-    );
+    if (reservationId) {
+      console.log(reservationId);
+    } else {
+      const currentDate = new Date();
+      const reservationDate = this.datePipe.transform(
+        currentDate,
+        'yyyy-MM-dd HH:mm:ss',
+      );
 
-    let total = 0;
-    facilities.map((facility: any) => {
-      total += facility.price;
-    });
-    const reservationData = {
-      reservationDate: reservationDate,
-      total: total,
-      totalPaid: this.paid,
-      customerId: customer!.id,
-      reservationTypeId: 2,
-    };
-    const reservation = new RoomReservation(reservationData);
-    this.reservationsService.create(reservation).subscribe({
-      next: (response: any) => {
-        const paymentTypeBoy = {
-          payment: this.paid,
-          paymentTypeId: this.selectedPaymentType.id,
-          cashPayment: this.cash,
-          cardPayment: this.card,
-        };
-        this.reservationPaymentTypesService
-          .add(
-            response.reservationId,
-            paymentTypeBoy.paymentTypeId,
-            paymentTypeBoy.payment,
-            paymentTypeBoy.cashPayment,
-            paymentTypeBoy.cardPayment,
-          )
-          .subscribe();
-        products.forEach((product: any) => {
-          this.reservationProductsService
+      let total = 0;
+      facilities.map((facility: any) => {
+        total += facility.price;
+      });
+      const reservationData = {
+        reservationDate: reservationDate,
+        total: total,
+        totalPaid: this.paid,
+        customerId: customer!.id,
+        reservationTypeId: 2,
+      };
+      const reservation = new RoomReservation(reservationData);
+      this.reservationsService.create(reservation).subscribe({
+        next: (response: any) => {
+          const paymentTypeBoy = {
+            payment: this.paid,
+            paymentTypeId: this.selectedPaymentType.id,
+            cashPayment: this.cash,
+            cardPayment: this.card,
+          };
+          this.reservationPaymentTypesService
             .add(
               response.reservationId,
-              product.id,
-              product.quantity,
-              product.isPaid,
+              paymentTypeBoy.paymentTypeId,
+              paymentTypeBoy.payment,
+              paymentTypeBoy.cashPayment,
+              paymentTypeBoy.cardPayment,
             )
             .subscribe();
-        });
-        services.forEach((service: any) => {
-          this.reservationServicesService
-            .add(
-              response.reservationId,
-              service.id,
-              service.quantity,
-              service.isPaid,
-            )
-            .subscribe();
-        });
-        const reservationRequests = facilities.map((facility: any) => {
-          return this.reservationRoomsService
-            .add(
-              response.reservationId,
-              facility.id,
-              facility.price,
-              facility.isPaid,
-            )
-            .pipe(
-              switchMap(() => {
-                const body = {
-                  id: facility.id,
-                  status: 'IN_USE',
-                };
-                return this.facilitiesService.changeRoomStatus(
-                  facility.id,
-                  body,
-                );
-              }),
-            );
-        });
-        forkJoin(reservationRequests).subscribe({
-          next: () => {
-            this.dynamicDialogRef.close({ success: true });
-          },
-        });
-      },
-    });
+          products.forEach((product: any) => {
+            this.reservationProductsService
+              .add(
+                response.reservationId,
+                product.id,
+                product.quantity,
+                product.isPaid,
+              )
+              .subscribe();
+          });
+          services.forEach((service: any) => {
+            this.reservationServicesService
+              .add(
+                response.reservationId,
+                service.id,
+                service.quantity,
+                service.isPaid,
+              )
+              .subscribe();
+          });
+          const reservationRequests = facilities.map((facility: any) => {
+            return this.reservationRoomsService
+              .add(
+                response.reservationId,
+                facility.id,
+                facility.price,
+                facility.isPaid,
+              )
+              .pipe(
+                switchMap(() => {
+                  const body = {
+                    id: facility.id,
+                    status: 'IN_USE',
+                  };
+                  return this.facilitiesService.changeRoomStatus(
+                    facility.id,
+                    body,
+                  );
+                }),
+              );
+          });
+          forkJoin(reservationRequests).subscribe({
+            next: () => {
+              this.dynamicDialogRef.close({ success: true });
+            },
+          });
+        },
+      });
+    }
   }
 }

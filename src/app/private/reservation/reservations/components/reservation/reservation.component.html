@@ -37,6 +37,7 @@
                 <span class="text-900 font-bold"> S/ {{ product.total }}</span>
                 <p-checkbox
                   [(ngModel)]="product.isPaid"
+                  (onChange)="plusTotalPayment($event, product.price)"
                   [binary]="true"
                   [inputId]="'binary-' + $index" />
               </div>
@@ -64,6 +65,7 @@
                 <span class="text-900 font-bold"> S/ {{ service.total }} </span>
                 <p-checkbox
                   [(ngModel)]="service.isPaid"
+                  (onChange)="plusTotalPayment($event, service.price)"
                   [binary]="true"
                   [inputId]="'binary-' + $index" />
               </div>
@@ -121,6 +123,7 @@
                 <span class="text-900 font-bold"> S/ {{ service.total }}</span>
                 <p-checkbox
                   [(ngModel)]="service.isPaid"
+                  (onChange)="plusTotalPayment($event, service.price)"
                   [binary]="true"
                   [inputId]="'binary-' + $index" />
               </div>

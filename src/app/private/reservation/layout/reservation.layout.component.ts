@@ -49,6 +49,7 @@ import { Service } from '../reservations/models/service.model';
 })
 export class ReservationLayoutComponent implements OnInit {
   modal: DynamicDialogRef | undefined;
+  selectedPaymentTypes: any[] = [];
   selectedFacilities: any[] = [];
   selectedProducts: Product[] = [];
   selectedServices: Service[] = [];
@@ -104,6 +105,7 @@ export class ReservationLayoutComponent implements OnInit {
         });
         this.reservationId = reservation.id;
         this.isPaid = true;
+        this.selectedPaymentTypes = reservation.paymentTypes;
         this.cdr.detectChanges();
       },
     });
@@ -185,6 +187,7 @@ export class ReservationLayoutComponent implements OnInit {
   buttonSaveReservation(
     customer: Customer | null | undefined,
     reservationId: number | null | undefined,
+    selectedPaymentTypes: any,
     selectedFacilities: any,
     selectedProducts: any,
     selectedServices: any,
@@ -197,6 +200,7 @@ export class ReservationLayoutComponent implements OnInit {
         facilities: selectedFacilities,
         products: selectedProducts,
         services: selectedServices,
+        paymentTypes: selectedPaymentTypes,
       },
     });
 
@@ -208,6 +212,7 @@ export class ReservationLayoutComponent implements OnInit {
         } else {
           null;
         }
+        this.cdr.detectChanges();
       },
     });
     // const selectedRooms: any[] = [];
