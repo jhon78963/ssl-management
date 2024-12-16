@@ -21,6 +21,21 @@ export class ReservationServicesService {
     });
   }
 
+  modify(
+    reservationId: number,
+    serviceId: number,
+    quantity: number,
+    isPaid: boolean = false,
+  ): Observable<void> {
+    return this.apiService.post(
+      `services/${reservationId}/modify/${serviceId}`,
+      {
+        quantity,
+        isPaid,
+      },
+    );
+  }
+
   findAll(id: number): Observable<Service[]> {
     return this.apiService.get(`services/${id}/all`);
   }

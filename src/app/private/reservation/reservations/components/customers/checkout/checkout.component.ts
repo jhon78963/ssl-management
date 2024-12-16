@@ -75,27 +75,29 @@ export class CheckoutComponent implements OnInit {
       total: total,
     };
     const reservation = new FinishReservation(body);
-    this.reservationsService.edit(locker.reservationId, reservation).subscribe({
-      next: () => {
-        const body = {
-          id: locker.id,
-          status: 'AVAILABLE',
-        };
-        if (locker.genderId == 1) {
-          const locker = new StatusLocker(body);
-          const pagination = this.dynamicDialogConfig.data.pagination;
-          this.maleLockersService
-            .changeStatus(locker.id, body, pagination)
-            .subscribe();
-        } else {
-          const locker = new StatusLocker(body);
-          const pagination = this.dynamicDialogConfig.data.pagination;
-          this.femaleLockersService
-            .changeStatus(locker.id, body, pagination)
-            .subscribe();
-        }
-        this.dynamicDialogRef.close({ success: true });
-      },
-    });
+    this.reservationsService
+      .update(locker.reservationId, reservation)
+      .subscribe({
+        next: () => {
+          const body = {
+            id: locker.id,
+            status: 'AVAILABLE',
+          };
+          if (locker.genderId == 1) {
+            const locker = new StatusLocker(body);
+            const pagination = this.dynamicDialogConfig.data.pagination;
+            this.maleLockersService
+              .changeStatus(locker.id, body, pagination)
+              .subscribe();
+          } else {
+            const locker = new StatusLocker(body);
+            const pagination = this.dynamicDialogConfig.data.pagination;
+            this.femaleLockersService
+              .changeStatus(locker.id, body, pagination)
+              .subscribe();
+          }
+          this.dynamicDialogRef.close({ success: true });
+        },
+      });
   }
 }

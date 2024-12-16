@@ -21,6 +21,16 @@ export class ReservationLockersService {
     });
   }
 
+  modify(
+    reservationId: number,
+    lockerId: number,
+    isPaid: boolean = false,
+  ): Observable<void> {
+    return this.apiService.post(`lockers/${reservationId}/modify/${lockerId}`, {
+      isPaid,
+    });
+  }
+
   findAll(id: number): Observable<Locker[]> {
     return this.apiService.get(`lockers/${id}/all`);
   }

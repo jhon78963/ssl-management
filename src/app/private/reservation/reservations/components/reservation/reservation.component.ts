@@ -62,6 +62,8 @@ export class ReservationComponent implements OnInit {
   paid: number = 0;
   cash: number = 0;
   card: number = 0;
+  advance: number = 0;
+  pending: number = 0;
 
   constructor(
     private readonly datePipe: DatePipe,
@@ -77,6 +79,7 @@ export class ReservationComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.clearPayments();
     this.reservationId = this.dynamicDialogConfig.data.reservationId;
     this.facilities = this.dynamicDialogConfig.data.facilities;
     this.lockerPrice = this.facilities
@@ -111,6 +114,8 @@ export class ReservationComponent implements OnInit {
         this.paid += payment.paid;
         this.cash += payment.cash;
         this.card += payment.card;
+        this.advance += payment.paid;
+        this.pending = this.total - this.advance;
       });
     } else {
       this.paid = this.facilities
@@ -125,31 +130,39 @@ export class ReservationComponent implements OnInit {
         ?.filter(service => service.isPaid)
         .reduce((sum, service) => sum + service.price, 0);
     }
+
+    if (this.reservationId) {
+      this.paid = this.pending;
+    }
   }
 
   plusTotalPayment(event: any, price: number) {
     event.checked ? (this.paid += price) : (this.paid -= price);
   }
 
-  calculateTotalCash(event: any) {
-    console.log(event);
-    this.card = this.paid - this.cash;
+  calculateTotalCash(cash: any) {
+    this.card = this.paid - cash;
   }
 
-  calculateTotalCard(event: any) {
-    console.log(event);
-    this.cash = this.paid - this.card;
+  calculateTotalCard(card: any) {
+    this.cash = this.paid - card;
   }
 
   validatePaidButton() {
     if (this.selectedPaymentType.id == 3) {
+      if (this.cash < 0) {
+        return true;
+      }
+      if (this.card < 0) {
+        return true;
+      }
       if (this.cash + this.card != this.paid) {
         return true;
       }
     }
 
     if (this.selectedPaymentType.id == 1 || this.selectedPaymentType.id == 2) {
-      if (this.paid <= 0) {
+      if (this.paid < 0) {
         return true;
       }
     }
@@ -165,7 +178,6 @@ export class ReservationComponent implements OnInit {
     services: any,
     total: number,
   ) {
-    console.log(total);
     const rooms: any[] = [];
     const lockers: any[] = [];
     facilities.forEach((facility: any) => {
@@ -182,6 +194,7 @@ export class ReservationComponent implements OnInit {
         rooms,
         products,
         services,
+        total,
       );
     }
     if (lockers.length > 0) {
@@ -191,6 +204,7 @@ export class ReservationComponent implements OnInit {
         lockers,
         products,
         services,
+        total,
       );
     }
   }
@@ -201,22 +215,136 @@ export class ReservationComponent implements OnInit {
     facilities: any[],
     products: any[],
     services: any[],
+    total: number,
   ) {
     if (reservationId) {
-      console.log(reservationId);
-      console.log(products);
-      console.log(services);
+      const reservationData = {
+        customerId: customer!.id,
+        total: total,
+        totalPaid: this.paid,
+        reservationTypeId: 1,
+        status: 'IN_USE',
+      };
+
+      if (this.paid == this.pending) {
+        reservationData.status = 'COMPLETED';
+        products.forEach(p => (p.isPaid = true));
+        services.forEach(s => (s.isPaid = true));
+        facilities.forEach(f => (f.isPaid = true));
+      }
+
+      const newProducts = products.filter(p => p.isAdd == true);
+      products = products.filter(p => p.isAdd != true);
+      const paidProducts = products.filter(p => p.isPaid == true);
+      const newServices = services.filter(s => s.isAdd == true);
+      services = services.filter(s => s.isAdd != true);
+      const paidServices = services.filter(s => s.isPaid == true);
+      const paidFacilities = facilities.filter(f => f.isPaid == true);
+
+      const reservation = new LockerReservation(reservationData);
+      this.reservationsService.update(reservationId, reservation).subscribe({
+        next: () => {
+          if (newProducts.length > 0) {
+            newProducts.forEach((product: any) => {
+              this.reservationProductsService
+                .add(
+                  reservationId,
+                  product.id,
+                  product.quantity,
+                  product.isPaid,
+                )
+                .subscribe();
+            });
+          }
+          if (paidProducts.length > 0) {
+            paidProducts.forEach((product: any) => {
+              this.reservationProductsService
+                .modify(
+                  reservationId,
+                  product.id,
+                  product.quantity,
+                  product.isPaid,
+                )
+                .subscribe();
+            });
+          }
+          if (newServices.length > 0) {
+            newServices.forEach((service: any) => {
+              this.reservationServicesService
+                .add(
+                  reservationId,
+                  service.id,
+                  service.quantity,
+                  service.isPaid,
+                )
+                .subscribe();
+            });
+          }
+          if (paidServices.length > 0) {
+            paidServices.forEach((service: any) => {
+              this.reservationServicesService
+                .modify(
+                  reservationId,
+                  service.id,
+                  service.quantity,
+                  service.isPaid,
+                )
+                .subscribe();
+            });
+          }
+          const paymentTypeBoy = {
+            payment: this.paid,
+            paymentTypeId: this.selectedPaymentType.id,
+            cashPayment: this.cash,
+            cardPayment: this.card,
+          };
+          this.reservationPaymentTypesService
+            .add(
+              reservationId,
+              paymentTypeBoy.paymentTypeId,
+              paymentTypeBoy.payment,
+              paymentTypeBoy.cashPayment,
+              paymentTypeBoy.cardPayment,
+            )
+            .subscribe();
+          if (facilities.length > 0) {
+            const reservationRequests = paidFacilities.map((facility: any) => {
+              return this.reservationLockersService
+                .modify(reservationId, facility.id, facility.isPaid)
+                .pipe(
+                  switchMap(() => {
+                    const body: any = {
+                      id: facility.id,
+                      status: 'IN_USE',
+                    };
+                    if (reservationData.status == 'COMPLETED') {
+                      body.status = 'AVAILABLE';
+                    }
+                    return this.facilitiesService.changeLockerStatus(
+                      facility.id,
+                      body,
+                    );
+                  }),
+                );
+            });
+            forkJoin(reservationRequests).subscribe({
+              next: () => {
+                this.clearPayments();
+                this.dynamicDialogRef.close({ success: true });
+              },
+            });
+          }
+          this.clearPayments();
+          this.dynamicDialogRef.close({ success: true });
+        },
+        error: () => {},
+      });
     } else {
       const currentDate = new Date();
       const reservationDate = this.datePipe.transform(
         currentDate,
         'yyyy-MM-dd HH:mm:ss',
       );
-
-      let total = 0;
-      facilities.map((facility: any) => {
-        total += facility.price;
-      });
 
       const reservationData = {
         reservationDate: reservationDate,
@@ -287,6 +415,7 @@ export class ReservationComponent implements OnInit {
           });
           forkJoin(reservationRequests).subscribe({
             next: () => {
+              this.clearPayments();
               this.dynamicDialogRef.close({ success: true });
             },
           });
@@ -301,9 +430,130 @@ export class ReservationComponent implements OnInit {
     facilities: any[],
     products: any[],
     services: any[],
+    total: number,
   ) {
     if (reservationId) {
-      console.log(reservationId);
+      const reservationData = {
+        customerId: customer!.id,
+        total: total,
+        totalPaid: this.paid,
+        reservationTypeId: 2,
+        status: 'IN_USE',
+      };
+
+      if (this.paid == this.pending) {
+        reservationData.status = 'COMPLETED';
+        products.forEach(p => (p.isPaid = true));
+        services.forEach(s => (s.isPaid = true));
+        facilities.forEach(f => (f.isPaid = true));
+      }
+
+      const newProducts = products.filter(p => p.isAdd == true);
+      products = products.filter(p => p.isAdd != true);
+      const paidProducts = products.filter(p => p.isPaid == true);
+      const newServices = services.filter(s => s.isAdd == true);
+      services = services.filter(s => s.isAdd != true);
+      const paidServices = services.filter(s => s.isPaid == true);
+      const paidFacilities = facilities.filter(f => f.isPaid == true);
+
+      const reservation = new RoomReservation(reservationData);
+      this.reservationsService.update(reservationId, reservation).subscribe({
+        next: () => {
+          if (newProducts.length > 0) {
+            newProducts.forEach((product: any) => {
+              this.reservationProductsService
+                .add(
+                  reservationId,
+                  product.id,
+                  product.quantity,
+                  product.isPaid,
+                )
+                .subscribe();
+            });
+          }
+          if (paidProducts.length > 0) {
+            paidProducts.forEach((product: any) => {
+              this.reservationProductsService
+                .modify(
+                  reservationId,
+                  product.id,
+                  product.quantity,
+                  product.isPaid,
+                )
+                .subscribe();
+            });
+          }
+          if (newServices.length > 0) {
+            newServices.forEach((service: any) => {
+              this.reservationServicesService
+                .add(
+                  reservationId,
+                  service.id,
+                  service.quantity,
+                  service.isPaid,
+                )
+                .subscribe();
+            });
+          }
+          if (paidServices.length > 0) {
+            paidServices.forEach((service: any) => {
+              this.reservationServicesService
+                .modify(
+                  reservationId,
+                  service.id,
+                  service.quantity,
+                  service.isPaid,
+                )
+                .subscribe();
+            });
+          }
+          const paymentTypeBoy = {
+            payment: this.paid,
+            paymentTypeId: this.selectedPaymentType.id,
+            cashPayment: this.cash,
+            cardPayment: this.card,
+          };
+          this.reservationPaymentTypesService
+            .add(
+              reservationId,
+              paymentTypeBoy.paymentTypeId,
+              paymentTypeBoy.payment,
+              paymentTypeBoy.cashPayment,
+              paymentTypeBoy.cardPayment,
+            )
+            .subscribe();
+          if (facilities.length > 0) {
+            const reservationRequests = paidFacilities.map((facility: any) => {
+              return this.reservationRoomsService
+                .modify(reservationId, facility.id, facility.isPaid)
+                .pipe(
+                  switchMap(() => {
+                    const body: any = {
+                      id: facility.id,
+                      status: 'IN_USE',
+                    };
+                    if (reservationData.status == 'COMPLETED') {
+                      body.status = 'AVAILABLE';
+                    }
+                    return this.facilitiesService.changeRoomStatus(
+                      facility.id,
+                      body,
+                    );
+                  }),
+                );
+            });
+            forkJoin(reservationRequests).subscribe({
+              next: () => {
+                this.clearPayments();
+                this.dynamicDialogRef.close({ success: true });
+              },
+            });
+          }
+          this.clearPayments();
+          this.dynamicDialogRef.close({ success: true });
+        },
+        error: () => {},
+      });
     } else {
       const currentDate = new Date();
       const reservationDate = this.datePipe.transform(
@@ -311,10 +561,6 @@ export class ReservationComponent implements OnInit {
         'yyyy-MM-dd HH:mm:ss',
       );
 
-      let total = 0;
-      facilities.map((facility: any) => {
-        total += facility.price;
-      });
       const reservationData = {
         reservationDate: reservationDate,
         total: total,
@@ -383,11 +629,20 @@ export class ReservationComponent implements OnInit {
           });
           forkJoin(reservationRequests).subscribe({
             next: () => {
+              this.clearPayments();
               this.dynamicDialogRef.close({ success: true });
             },
           });
         },
       });
     }
+  }
+
+  clearPayments() {
+    this.paid = 0;
+    this.cash = 0;
+    this.card = 0;
+    this.advance = 0;
+    this.pending = 0;
   }
 }

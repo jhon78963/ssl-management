@@ -21,6 +21,16 @@ export class ReservationRoomsService {
     });
   }
 
+  modify(
+    reservationId: number,
+    roomId: number,
+    isPaid: boolean = false,
+  ): Observable<void> {
+    return this.apiService.post(`rooms/${reservationId}/modify/${roomId}`, {
+      isPaid,
+    });
+  }
+
   findAll(id: number): Observable<Room[]> {
     return this.apiService.get(`rooms/${id}/all`);
   }

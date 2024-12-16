@@ -66,13 +66,11 @@ export class ReservationsService {
     return this.apiService.post<CreatedReservation>('reservations', data);
   }
 
-  edit(
+  update(
     id: number,
     data: Reservation | FinishReservation | ConsumptionReservation,
   ): Observable<void> {
-    return this.apiService
-      .patch(`reservations/${id}`, data)
-      .pipe(switchMap(() => this.callGetList()));
+    return this.apiService.patch(`reservations/${id}`, data);
   }
 
   delete(id: number): Observable<void> {

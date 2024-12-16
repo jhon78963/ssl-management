@@ -56,16 +56,16 @@ export class RoomReservation {
   customers?: any[];
   products?: any[];
   services?: any[];
-
+  status?: string;
   constructor(reservation: IReservation) {
     this.id = reservation.id;
     this.reservationDate = reservation.reservationDate;
     this.total = reservation.total;
     this.totalPaid = reservation.totalPaid;
+    this.customerId = reservation.customerId;
     this.products = reservation.products;
     this.services = reservation.services;
-    this.roomId = reservation.roomId;
-    this.customerId = reservation.customerId;
+    this.status = reservation.status;
     this.reservationTypeId = 2;
   }
 }
@@ -79,6 +79,7 @@ export class LockerReservation {
   products?: any[];
   services?: any[];
   reservationTypeId: number;
+  status?: string;
   constructor(reservation: IReservation) {
     this.id = reservation.id;
     this.reservationDate = reservation.reservationDate;
@@ -87,6 +88,7 @@ export class LockerReservation {
     this.customerId = reservation.customerId;
     this.products = reservation.products;
     this.services = reservation.services;
+    this.status = reservation.status;
     this.reservationTypeId = 1;
   }
 }

@@ -82,7 +82,7 @@ export class CheckoutComponent implements OnInit {
       total: total,
     };
     const reservation = new FinishReservation(body);
-    this.reservationsService.edit(room.reservationId, reservation).subscribe({
+    this.reservationsService.update(room.reservationId, reservation).subscribe({
       next: () => {
         const body = {
           id: room.id,
