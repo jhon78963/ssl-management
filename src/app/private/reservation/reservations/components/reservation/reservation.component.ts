@@ -327,15 +327,18 @@ export class ReservationComponent implements OnInit {
                   }),
                 );
             });
-            forkJoin(reservationRequests).subscribe({
-              next: () => {
-                this.clearPayments();
-                this.dynamicDialogRef.close({ success: true });
-              },
-            });
+            if (reservationRequests.length > 0) {
+              forkJoin(reservationRequests).subscribe({
+                next: () => {
+                  this.clearPayments();
+                  this.dynamicDialogRef.close({ success: true });
+                },
+              });
+            } else {
+              this.clearPayments();
+              this.dynamicDialogRef.close({ success: true });
+            }
           }
-          this.clearPayments();
-          this.dynamicDialogRef.close({ success: true });
         },
         error: () => {},
       });
@@ -542,15 +545,18 @@ export class ReservationComponent implements OnInit {
                   }),
                 );
             });
-            forkJoin(reservationRequests).subscribe({
-              next: () => {
-                this.clearPayments();
-                this.dynamicDialogRef.close({ success: true });
-              },
-            });
+            if (reservationRequests.length > 0) {
+              forkJoin(reservationRequests).subscribe({
+                next: () => {
+                  this.clearPayments();
+                  this.dynamicDialogRef.close({ success: true });
+                },
+              });
+            } else {
+              this.clearPayments();
+              this.dynamicDialogRef.close({ success: true });
+            }
           }
-          this.clearPayments();
-          this.dynamicDialogRef.close({ success: true });
         },
         error: () => {},
       });
