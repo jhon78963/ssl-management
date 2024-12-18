@@ -14,10 +14,12 @@ export class ReservationServicesService {
     serviceId: number,
     quantity: number,
     isPaid: boolean = false,
+    isFree: boolean = false,
   ): Observable<void> {
     return this.apiService.post(`services/${reservationId}/add/${serviceId}`, {
       quantity,
       isPaid,
+      isFree,
     });
   }
 
@@ -26,12 +28,14 @@ export class ReservationServicesService {
     serviceId: number,
     quantity: number,
     isPaid: boolean = false,
+    isFree: boolean = false,
   ): Observable<void> {
     return this.apiService.post(
       `services/${reservationId}/modify/${serviceId}`,
       {
         quantity,
         isPaid,
+        isFree,
       },
     );
   }

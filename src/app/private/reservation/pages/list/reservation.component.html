@@ -51,12 +51,33 @@
         </div>
         <div *ngIf="selectedProducts.length > 0">
           @for (product of selectedProducts; track $index) {
-            <p
-              class="m-0 p-0"
-              [ngClass]="product.isPaid ? 'paid-status' : 'unpaid-status'">
-              X{{ product.quantity }} {{ product.name }} - S/
-              {{ product.total }}
-            </p>
+            <div class="flex justify-content-center align-items-center">
+              <p
+                class="m-0 p-0 mr-4"
+                [ngClass]="product.isPaid ? 'paid-status' : 'unpaid-status'">
+                X{{ product.quantity }} {{ product.name }} - S/
+                {{ product.total }}
+              </p>
+              <p
+                class="m-0 p-0 mr-1"
+                [ngClass]="product.isPaid ? 'paid-status' : 'unpaid-status'">
+                P
+              </p>
+              <p-checkbox
+                class="mr-2"
+                [(ngModel)]="product.isPaid"
+                [binary]="true"
+                [inputId]="'binary-' + $index" />
+              <p
+                class="m-0 p-0 mr-1"
+                [ngClass]="product.isFree ? 'paid-status' : 'unpaid-status'">
+                C
+              </p>
+              <p-checkbox
+                [(ngModel)]="product.isFree"
+                [binary]="true"
+                [inputId]="'binary-' + $index" />
+            </div>
           }
         </div>
         <p class="m-0 p-0">Cliente</p>

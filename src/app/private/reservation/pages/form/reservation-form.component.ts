@@ -78,21 +78,36 @@ export class ReservationFormComponent implements OnInit {
     private readonly reservationsService: ReservationsService,
   ) {}
 
-  ngOnInit(): void {
-    this.clearPayments();
+  getCustomer() {
     this.reservationId = this.dynamicDialogConfig.data.reservationId;
+    this.customer = this.dynamicDialogConfig.data.customer;
+  }
+
+  getFacilities() {
     this.facilities = this.dynamicDialogConfig.data.facilities;
     this.lockerPrice = this.facilities
       ?.filter(facility => facility.price)
       .reduce((sum, facility) => sum + facility.price, 0);
+  }
 
-    this.products = this.dynamicDialogConfig.data.products.filter(
-      (product: any) => product.type == 'product',
-    );
+  getProducts() {
+    this.products = this.dynamicDialogConfig.data.products
+      .filter((product: any) => product.type == 'product')
+      .map((product: any) => {
+        if (product.isFree) {
+          product.total = 0;
+        } else {
+          product.total = product.quantity * product.price;
+        }
+        return product;
+      });
+
     this.totalProducts = this.products
       ?.filter(product => product.price)
-      .reduce((sum, product) => sum + product.price * product.quantity, 0);
+      .reduce((sum, product) => sum + product.total, 0);
+  }
 
+  getServices() {
     if (this.dynamicDialogConfig.data.services.lenght > 0) {
       this.services = this.dynamicDialogConfig.data.services;
     } else {
@@ -100,14 +115,25 @@ export class ReservationFormComponent implements OnInit {
         (product: any) => product.type == 'service',
       );
     }
+    this.services = this.services.map((service: any) => {
+      if (service.isFree) {
+        service.total = 0;
+      } else {
+        service.total = service.quantity * service.price;
+      }
+      return service;
+    });
     this.totalServices = this.services
       ?.filter(product => product.price)
-      .reduce((sum, product) => sum + product.price * product.quantity, 0);
+      .reduce((sum, product) => sum + product.total, 0);
+  }
 
+  getTotal() {
     this.total = this.totalProducts + this.totalServices + this.lockerPrice;
-    this.customer = this.dynamicDialogConfig.data.customer;
-    this.paymentTypes = this.dynamicDialogConfig.data.paymentTypes;
+  }
 
+  getPaymentTypes() {
+    this.paymentTypes = this.dynamicDialogConfig.data.paymentTypes;
     if (this.paymentTypes.length > 0) {
       this.paymentTypes.forEach((payment: any) => {
         this.selectedPaymentType = this.payments[payment.id - 1];
@@ -130,10 +156,23 @@ export class ReservationFormComponent implements OnInit {
         ?.filter(service => service.isPaid)
         .reduce((sum, service) => sum + service.price, 0);
     }
+  }
 
+  validatePaid() {
     if (this.reservationId) {
       this.paid = this.pending;
     }
+  }
+
+  ngOnInit(): void {
+    this.clearPayments();
+    this.getCustomer();
+    this.getFacilities();
+    this.getProducts();
+    this.getServices();
+    this.getTotal();
+    this.getPaymentTypes();
+    this.validatePaid();
   }
 
   plusTotalPayment(event: any, price: number) {
@@ -381,6 +420,7 @@ export class ReservationFormComponent implements OnInit {
       )
       .subscribe();
 
+    console.log('hola payment type');
     if (paidFacilities && paidFacilities.length == 0) {
       this.closeModal();
     }
@@ -390,12 +430,24 @@ export class ReservationFormComponent implements OnInit {
     this.addPaymentType(reservationId);
     products.forEach((product: any) => {
       this.reservationProductsService
-        .add(reservationId, product.id, product.quantity, product.isPaid)
+        .add(
+          reservationId,
+          product.id,
+          product.quantity,
+          product.isPaid,
+          product.isFree,
+        )
         .subscribe();
     });
     services.forEach((service: any) => {
       this.reservationServicesService
-        .add(reservationId, service.id, service.quantity, service.isPaid)
+        .add(
+          reservationId,
+          service.id,
+          service.quantity,
+          service.isPaid,
+          service.isFree,
+        )
         .subscribe();
     });
   }
@@ -452,28 +504,52 @@ export class ReservationFormComponent implements OnInit {
     if (newProducts.length > 0) {
       newProducts.forEach((product: any) => {
         this.reservationProductsService
-          .add(reservationId, product.id, product.quantity, product.isPaid)
+          .add(
+            reservationId,
+            product.id,
+            product.quantity,
+            product.isPaid,
+            product.isFree,
+          )
           .subscribe();
       });
     }
     if (paidProducts.length > 0) {
       paidProducts.forEach((product: any) => {
         this.reservationProductsService
-          .modify(reservationId, product.id, product.quantity, product.isPaid)
+          .modify(
+            reservationId,
+            product.id,
+            product.quantity,
+            product.isPaid,
+            product.isFree,
+          )
           .subscribe();
       });
     }
     if (newServices.length > 0) {
       newServices.forEach((service: any) => {
         this.reservationServicesService
-          .add(reservationId, service.id, service.quantity, service.isPaid)
+          .add(
+            reservationId,
+            service.id,
+            service.quantity,
+            service.isPaid,
+            service.isFree,
+          )
           .subscribe();
       });
     }
     if (paidServices.length > 0) {
       paidServices.forEach((service: any) => {
         this.reservationServicesService
-          .modify(reservationId, service.id, service.quantity, service.isPaid)
+          .modify(
+            reservationId,
+            service.id,
+            service.quantity,
+            service.isPaid,
+            service.isFree,
+          )
           .subscribe();
       });
     }
