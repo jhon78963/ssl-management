@@ -18,3 +18,7 @@
 .unpaid-status{
   color: red !important;
 }
+
+::ng-deep .col-12 {
+  padding: 0 !important;
+}

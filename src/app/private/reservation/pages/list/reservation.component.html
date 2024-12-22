@@ -1,6 +1,6 @@
 <div class="card">
   <div class="grid p-fluid text-center">
-    <div class="col-12 md:col-3">
+    <div class="col-12 md:col-2">
       @for (facility of selectedFacilities; track $index) {
         <button
           pButton
@@ -10,7 +10,7 @@
       }
       <p-divider *ngIf="selectedFacilities.length > 0" />
     </div>
-    <div class="col-12 md:col-6">
+    <div class="col-12 md:col-8">
       <div class="flex">
         <button
           pButton
@@ -52,8 +52,8 @@
         <div *ngIf="selectedProducts.length > 0">
           @for (product of selectedProducts; track $index) {
             <div class="grid">
-              <div class="col-12 md:col-2"></div>
-              <div class="col-12 md:col-8 flex justify-content-between">
+              <div class="col-12 md:col-0"></div>
+              <div class="col-12 md:col-12 flex justify-content-between">
                 <p
                   class="m-0 p-0 mr-4 flex"
                   [ngClass]="product.isPaid ? 'paid-status' : 'unpaid-status'">
@@ -98,7 +98,7 @@
                     "></button>
                 </div>
               </div>
-              <div class="col-12 md:col-2"></div>
+              <div class="col-12 md:col-0"></div>
             </div>
           }
         </div>
@@ -109,7 +109,7 @@
         <p class="m-0 p-0">Nota</p>
       </div>
     </div>
-    <div class="col-12 md:col-3">
+    <div class="col-12 md:col-2">
       <p>Total</p>
       <h1>S/ {{ total }}</h1>
     </div>
