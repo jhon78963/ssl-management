@@ -47,6 +47,8 @@ export class ReservationFormComponent implements OnInit {
   totalServices: number = 0;
   lockerPrice: number = 0;
   total: number = 0;
+  pricePerAdditionalPerson: number = 0;
+  additionalPeople: number = 0;
   reservationId: number = 0;
   payments: PaymentType[] = [
     { id: 1, description: 'Efectivo' },
@@ -127,8 +129,19 @@ export class ReservationFormComponent implements OnInit {
       ?.filter(product => product.price)
       .reduce((sum, product) => sum + product.total, 0);
   }
+
+  getPricePerAdditionalPerson() {
+    this.pricePerAdditionalPerson =
+      this.dynamicDialogConfig.data.pricePerAdditionalPerson;
+    this.additionalPeople = this.dynamicDialogConfig.data.additionalPeople;
+  }
+
   getTotal() {
-    this.total = this.totalProducts + this.totalServices + this.lockerPrice;
+    this.total =
+      this.totalProducts +
+      this.totalServices +
+      this.lockerPrice +
+      this.pricePerAdditionalPerson;
   }
 
   getPaymentTypes() {
@@ -169,6 +182,7 @@ export class ReservationFormComponent implements OnInit {
     this.getFacilities();
     this.getProducts();
     this.getServices();
+    this.getPricePerAdditionalPerson();
     this.getTotal();
     this.getPaymentTypes();
     this.validatePaid();
@@ -475,7 +489,13 @@ export class ReservationFormComponent implements OnInit {
   roomCreateReservation(reservationId: number, facilities: any[]) {
     const reservationRequests = facilities.map((facility: any) => {
       return this.reservationRoomsService
-        .add(reservationId, facility.id, facility.price, facility.isPaid)
+        .add(
+          reservationId,
+          facility.id,
+          facility.price,
+          facility.isPaid,
+          this.additionalPeople,
+        )
         .pipe(
           switchMap(() => {
             const body = {

@@ -14,10 +14,12 @@ export class ReservationRoomsService {
     roomId: number,
     price: number,
     isPaid: boolean = false,
+    additionalPeople: number = 0,
   ): Observable<void> {
     return this.apiService.post(`rooms/${reservationId}/add/${roomId}`, {
       price,
       isPaid,
+      additionalPeople,
     });
   }
 

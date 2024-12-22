@@ -1,0 +1,165 @@
+<div class="card">
+  <div class="grid p-fluid text-center">
+    <div class="col-12 md:col-2">
+      @for (facility of selectedFacilities; track $index) {
+        <button
+          pButton
+          pRipple
+          [label]="facility.number"
+          class="mr-2 mt-2 p-width p-button-rounded"></button>
+      }
+      <p-divider *ngIf="selectedFacilities.length > 0" />
+    </div>
+    <div class="col-12 md:col-8">
+      <div class="flex">
+        <button
+          pButton
+          pRipple
+          [label]="showProductsForm ? 'Ocultar productos' : 'Agregar products'"
+          class="p-button-info mr-1"
+          (click)="showProducts()"></button>
+        <button
+          pButton
+          pRipple
+          label="Agregar cliente"
+          class="p-button-warning mr-1 ml-1"
+          (click)="addCustomer()"></button>
+        <button
+          pButton
+          pRipple
+          [label]="reservationId ? 'Pagar todo' : 'Pagar'"
+          class="ml-1"
+          (click)="
+            buttonSaveReservation(
+              customer,
+              reservationId,
+              selectedPaymentTypes,
+              selectedFacilities,
+              selectedProducts,
+              selectedServices,
+              additionalPeople,
+              pricePerAdditionalPerson
+            )
+          "
+          [disabled]="!isPaid"></button>
+      </div>
+
+      <div class="card">
+        <p class="m-0 p-0">Productos</p>
+        <div *ngIf="showProductsForm">
+          <app-products
+            [selectedProducts]="selectedProducts"
+            (productChanges)="getProducts($event)" />
+        </div>
+        <div *ngIf="selectedProducts.length > 0">
+          @for (product of selectedProducts; track $index) {
+            <div class="grid">
+              <div class="col-12 md:col-0"></div>
+              <div class="col-12 md:col-12 flex justify-content-between">
+                <p
+                  class="m-0 p-0 mr-4 flex"
+                  [ngClass]="product.isPaid ? 'paid-status' : 'unpaid-status'">
+                  X{{ product.quantity }} {{ product.name }} - S/
+                  {{ product.total }}
+                </p>
+                <div class="flex">
+                  <p
+                    class="m-0 p-0 mr-1"
+                    [ngClass]="
+                      product.isPaid ? 'paid-status' : 'unpaid-status'
+                    ">
+                    P
+                  </p>
+                  <p-checkbox
+                    class="mr-2"
+                    [(ngModel)]="product.isPaid"
+                    [binary]="true"
+                    [inputId]="'binary-' + $index"
+                    [disabled]="product.isBd" />
+                  <p
+                    class="m-0 p-0 mr-1"
+                    [ngClass]="
+                      product.isFree ? 'paid-status' : 'unpaid-status'
+                    ">
+                    C
+                  </p>
+                  <p-checkbox
+                    class="mr-2"
+                    [(ngModel)]="product.isFree"
+                    (ngModelChange)="changeFreeProduct($event, product)"
+                    [binary]="true"
+                    [inputId]="'binary-' + $index"
+                    [disabled]="product.isBd" />
+                  <button
+                    pButton
+                    pRipple
+                    class="p-button-primary p-button-rounded b-width"
+                    icon="pi pi-fw pi-trash"
+                    (click)="
+                      removeFacility(product, reservationId, $event)
+                    "></button>
+                </div>
+              </div>
+              <div class="col-12 md:col-0"></div>
+            </div>
+          }
+        </div>
+        <p class="m-0 p-0">Cliente</p>
+        <p class="m-0 p-0" *ngIf="customer">
+          {{ customer.name }} {{ customer.surname }}
+        </p>
+        <p class="m-0 p-0">Nota</p>
+      </div>
+    </div>
+    <div class="col-12 md:col-2">
+      <p>Total</p>
+      <h1>S/ {{ total }}</h1>
+      @if (this.pricePerAdditionalPerson > 0) {
+        <p>Personas adicionales</p>
+        <div class="flex align-items-center justify-content-center gap-2">
+          <button
+            pButton
+            pRipple
+            icon="pi pi-minus"
+            class="p-button-warning additional-height"
+            (click)="subAdditionalPerson()"
+            [disabled]="additionalPeople < 0 || reservationId"></button>
+          <span class="text-900 font-bold">{{ additionalPeople }}</span>
+          <button
+            pButton
+            pRipple
+            icon="pi pi-plus"
+            class="p-button-warning additional-height"
+            [disabled]="reservationId"
+            (click)="addAdditionalPerson()"></button>
+        </div>
+      }
+    </div>
+  </div>
+</div>
+<div class="facilities-width">
+  @for (facility of facilities | async; track $index) {
+    <button
+      pButton
+      pRipple
+      class="mr-1 mt-1 p-width p-button-rounded"
+      [label]="facility.number"
+      (click)="
+        facility.status === 'AVAILABLE'
+          ? addFacility(facility)
+          : showFacility(facility)
+      "
+      [ngClass]="facility | buttonClass: isSelected(facility)"></button>
+  }
+</div>
+
+<div class="flex justify-content-center align-items-center mb-2">
+  <button
+    pButton
+    pRipple
+    class="mt-3 p-button-rounded p-button-secondary"
+    icon="pi pi-refresh"
+    (click)="clearSelections()"></button>
+</div>
+<p-confirmDialog />
+<p-toast />
