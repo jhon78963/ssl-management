@@ -13,4 +13,5 @@ export interface Product {
   type: string;
   isAdd: boolean;
   isChecked: boolean;
+  isBd: boolean;
 }

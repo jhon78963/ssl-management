@@ -18,14 +18,16 @@ import { SharedModule } from '../../../../shared/shared.module';
 import { showSuccess } from '../../../../utils/notifications';
 import { CustomerFormComponent } from '../../components/customers/customer-form.component';
 import { ProductsComponent } from '../../components/products/products.component';
-import { ReservationFormComponent } from '../form/reservation-form.component';
 import { Customer } from '../../models/customer.model';
-import { Facility } from '../../models/facility.model';
+import { Facility, FacilityType } from '../../models/facility.model';
 import { Product } from '../../models/product.model';
+import { Service } from '../../models/service.model';
 import { ButtonClassPipe } from '../../pipes/button-class.pipe';
 import { FacilitiesService } from '../../services/facilities.service';
 import { ReservationsService } from '../../services/reservations.service';
-import { Service } from '../../models/service.model';
+import { ReservationFormComponent } from '../form/reservation-form.component';
+import { ReservationProductsService } from '../../services/reservation-products.service';
+import { ReservationServicesService } from '../../services/reservation-services.service';
 
 @Component({
   selector: 'app-reservation.layout',
@@ -60,10 +62,13 @@ export class ReservationListComponent implements OnInit {
   isPaid: boolean = false;
   constructor(
     private cdr: ChangeDetectorRef,
+    private confirmationService: ConfirmationService,
     private readonly dialogService: DialogService,
     private readonly facilitiesService: FacilitiesService,
     private readonly messageService: MessageService,
     private readonly reservationsService: ReservationsService,
+    private readonly reservationProductsService: ReservationProductsService,
+    private readonly reservationServicesService: ReservationServicesService,
   ) {}
 
   ngOnInit(): void {
@@ -126,6 +131,77 @@ export class ReservationListComponent implements OnInit {
     } else {
       this.selectedFacilities.push(facility);
       this.total += facility.price;
+    }
+  }
+
+  removeFacility(
+    product: any,
+    reservationId: number | null | undefined,
+    event: Event,
+  ): void {
+    this.confirmationService.confirm({
+      target: event.target as EventTarget,
+      message: 'Deseas eliminar este tipo de habitación?',
+      header: 'Eliminar tipo de habitación',
+      icon: 'pi pi-info-circle',
+      acceptButtonStyleClass: 'p-button-danger p-button-text',
+      rejectButtonStyleClass: 'p-button-text p-button-text',
+      acceptIcon: 'none',
+      rejectIcon: 'none',
+      accept: () => {
+        if (reservationId && product.type == FacilityType.PRODUCT) {
+          this.reservationProductsService
+            .remove(reservationId, product.id, product.quantity)
+            .subscribe();
+        }
+
+        if (reservationId && product.type == FacilityType.SERVICE) {
+          this.reservationServicesService
+            .remove(reservationId, product.id, product.quantity)
+            .subscribe();
+        }
+
+        this.removeItem(product);
+      },
+      reject: () => {},
+    });
+  }
+
+  removeItem(product: any) {
+    const index = this.selectedProducts.findIndex(
+      productInList =>
+        productInList.id === product.id &&
+        productInList.type == product.type &&
+        productInList.isPaid == product.isPaid,
+    );
+
+    if (index != -1) {
+      this.selectedProducts.splice(index, 1);
+      this.total -= product.price;
+    }
+  }
+
+  changeFreeProduct(event: any, product: any) {
+    const index = this.selectedProducts.findIndex(
+      productInList =>
+        productInList.id === product.id &&
+        productInList.type == product.type &&
+        productInList.isPaid == product.isPaid,
+    );
+
+    if (index != -1) {
+      if (event) {
+        this.selectedProducts[index].total = 0;
+        this.total -=
+          this.selectedProducts[index].price *
+          this.selectedProducts[index].quantity;
+      } else {
+        this.selectedProducts[index].total =
+          this.selectedProducts[index].price *
+          this.selectedProducts[index].quantity;
+
+        this.total += this.selectedProducts[index].total;
+      }
     }
   }
 

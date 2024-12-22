@@ -51,32 +51,54 @@
         </div>
         <div *ngIf="selectedProducts.length > 0">
           @for (product of selectedProducts; track $index) {
-            <div class="flex justify-content-center align-items-center">
-              <p
-                class="m-0 p-0 mr-4"
-                [ngClass]="product.isPaid ? 'paid-status' : 'unpaid-status'">
-                X{{ product.quantity }} {{ product.name }} - S/
-                {{ product.total }}
-              </p>
-              <p
-                class="m-0 p-0 mr-1"
-                [ngClass]="product.isPaid ? 'paid-status' : 'unpaid-status'">
-                P
-              </p>
-              <p-checkbox
-                class="mr-2"
-                [(ngModel)]="product.isPaid"
-                [binary]="true"
-                [inputId]="'binary-' + $index" />
-              <p
-                class="m-0 p-0 mr-1"
-                [ngClass]="product.isFree ? 'paid-status' : 'unpaid-status'">
-                C
-              </p>
-              <p-checkbox
-                [(ngModel)]="product.isFree"
-                [binary]="true"
-                [inputId]="'binary-' + $index" />
+            <div class="grid">
+              <div class="col-12 md:col-2"></div>
+              <div class="col-12 md:col-8 flex justify-content-between">
+                <p
+                  class="m-0 p-0 mr-4 flex"
+                  [ngClass]="product.isPaid ? 'paid-status' : 'unpaid-status'">
+                  X{{ product.quantity }} {{ product.name }} - S/
+                  {{ product.total }}
+                </p>
+                <div class="flex">
+                  <p
+                    class="m-0 p-0 mr-1"
+                    [ngClass]="
+                      product.isPaid ? 'paid-status' : 'unpaid-status'
+                    ">
+                    P
+                  </p>
+                  <p-checkbox
+                    class="mr-2"
+                    [(ngModel)]="product.isPaid"
+                    [binary]="true"
+                    [inputId]="'binary-' + $index"
+                    [disabled]="product.isBd" />
+                  <p
+                    class="m-0 p-0 mr-1"
+                    [ngClass]="
+                      product.isFree ? 'paid-status' : 'unpaid-status'
+                    ">
+                    C
+                  </p>
+                  <p-checkbox
+                    class="mr-2"
+                    [(ngModel)]="product.isFree"
+                    (ngModelChange)="changeFreeProduct($event, product)"
+                    [binary]="true"
+                    [inputId]="'binary-' + $index"
+                    [disabled]="product.isBd" />
+                  <button
+                    pButton
+                    pRipple
+                    class="p-button-primary p-button-rounded b-width"
+                    icon="pi pi-fw pi-trash"
+                    (click)="
+                      removeFacility(product, reservationId, $event)
+                    "></button>
+                </div>
+              </div>
+              <div class="col-12 md:col-2"></div>
             </div>
           }
         </div>
@@ -93,20 +115,21 @@
     </div>
   </div>
 </div>
-
-@for (facility of facilities | async; track $index) {
-  <button
-    pButton
-    pRipple
-    class="mr-1 mt-1 p-width p-button-rounded"
-    [label]="facility.number"
-    (click)="
-      facility.status === 'AVAILABLE'
-        ? addFacility(facility)
-        : showFacility(facility)
-    "
-    [ngClass]="facility | buttonClass: isSelected(facility)"></button>
-}
+<div class="ml-3">
+  @for (facility of facilities | async; track $index) {
+    <button
+      pButton
+      pRipple
+      class="mr-1 mt-1 p-width p-button-rounded"
+      [label]="facility.number"
+      (click)="
+        facility.status === 'AVAILABLE'
+          ? addFacility(facility)
+          : showFacility(facility)
+      "
+      [ngClass]="facility | buttonClass: isSelected(facility)"></button>
+  }
+</div>
 
 <div class="flex justify-content-center align-items-center mb-2">
   <button

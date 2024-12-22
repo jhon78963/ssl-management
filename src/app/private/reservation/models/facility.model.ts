@@ -1,6 +1,8 @@
 export enum FacilityType {
   LOCKER = 'locker',
   ROOM = 'room',
+  PRODUCT = 'product',
+  SERVICE = 'service',
 }
 
 export interface Facility {

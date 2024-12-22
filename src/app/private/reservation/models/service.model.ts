@@ -5,4 +5,5 @@ export interface Service {
   price: number;
   priceString?: string;
   total: number;
+  isBd: boolean;
 }

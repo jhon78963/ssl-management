@@ -127,7 +127,6 @@ export class ReservationFormComponent implements OnInit {
       ?.filter(product => product.price)
       .reduce((sum, product) => sum + product.total, 0);
   }
-
   getTotal() {
     this.total = this.totalProducts + this.totalServices + this.lockerPrice;
   }

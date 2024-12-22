@@ -21,7 +21,7 @@
         alignFrozen="left"
         [ngClass]="{
           hover: col.clickable === true,
-          'text-end': col.clickable === false
+          'text-end': col.clickable === false,
         }"
         (click)="col.clickable === true ? cellToAction.click(rowData) : ''">
         @if (col.image) {
