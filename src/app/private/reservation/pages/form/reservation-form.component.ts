@@ -141,7 +141,7 @@ export class ReservationFormComponent implements OnInit {
       this.totalProducts +
       this.totalServices +
       this.lockerPrice +
-      this.pricePerAdditionalPerson;
+      (this.pricePerAdditionalPerson ?? 0);
   }
 
   getPaymentTypes() {
@@ -262,6 +262,7 @@ export class ReservationFormComponent implements OnInit {
 
   validateReservationData(
     status: string,
+    finalReservationDate: string | null | undefined,
     products: any[],
     services: any[],
     facilities: any[],
@@ -271,6 +272,7 @@ export class ReservationFormComponent implements OnInit {
       products.forEach(p => (p.isPaid = true));
       services.forEach(s => (s.isPaid = true));
       facilities.forEach(f => (f.isPaid = true));
+      finalReservationDate = this.currentDate();
     }
 
     const newProducts = products.filter(p => p.isAdd == true);
@@ -283,6 +285,7 @@ export class ReservationFormComponent implements OnInit {
 
     return {
       status,
+      finalReservationDate,
       newProducts,
       paidProducts,
       newServices,
@@ -303,11 +306,14 @@ export class ReservationFormComponent implements OnInit {
       const reservationData = this.reservationData(customer, total, 1);
       const reservationSummary = this.validateReservationData(
         reservationData.status,
+        reservationData.finalReservationDate,
         products,
         services,
         facilities,
       );
       reservationData.status = reservationSummary.status;
+      reservationData.finalReservationDate =
+        reservationSummary.finalReservationDate;
       const reservation = new LockerReservation(reservationData);
       this.reservationsService.update(reservationId, reservation).subscribe({
         next: () => {
@@ -328,12 +334,13 @@ export class ReservationFormComponent implements OnInit {
         error: () => {},
       });
     } else {
-      const reservationDate = this.currentDate();
+      const initialReservationDate = this.currentDate();
       const reservationData = this.reservationData(
         customer,
         total,
         1,
-        reservationDate || null,
+        initialReservationDate || null,
+        null,
       );
       const reservation = new LockerReservation(reservationData);
       this.reservationsService.create(reservation).subscribe({
@@ -357,11 +364,14 @@ export class ReservationFormComponent implements OnInit {
       const reservationData = this.reservationData(customer, total, 2);
       const reservationSummary = this.validateReservationData(
         reservationData.status,
+        reservationData.finalReservationDate,
         products,
         services,
         facilities,
       );
       reservationData.status = reservationSummary.status;
+      reservationData.finalReservationDate =
+        reservationSummary.finalReservationDate;
 
       const reservation = new RoomReservation(reservationData);
       this.reservationsService.update(reservationId, reservation).subscribe({
@@ -383,12 +393,13 @@ export class ReservationFormComponent implements OnInit {
         error: () => {},
       });
     } else {
-      const reservationDate = this.currentDate();
+      const initialReservationDate = this.currentDate();
       const reservationData = this.reservationData(
         customer,
         total,
         2,
-        reservationDate || null,
+        initialReservationDate || null,
+        null,
       );
       const reservation = new RoomReservation(reservationData);
       this.reservationsService.create(reservation).subscribe({
@@ -404,13 +415,17 @@ export class ReservationFormComponent implements OnInit {
     customer: Customer | null | undefined,
     total: number,
     reservationTypeId: number,
-    reservationDate?: string | null,
+    initialReservationDate?: string | null,
+    finalReservationDate?: string | null,
   ) {
     return {
-      reservationDate: reservationDate,
+      initialReservationDate: initialReservationDate,
+      finalReservationDate: finalReservationDate,
       customerId: customer!.id,
       total: total,
       totalPaid: this.paid,
+      facilitiesImport: this.lockerPrice,
+      consumptionsImport: this.totalProducts + this.totalServices,
       reservationTypeId: reservationTypeId,
       status: 'IN_USE',
     };

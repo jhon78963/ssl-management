@@ -1,6 +1,7 @@
 export interface IReservation {
   id?: number;
-  reservationDate?: string | null;
+  initialReservationDate?: string | null;
+  finalReservationDate?: string | null;
   total: number;
   totalPaid: number;
   reservationTypeId?: number;
@@ -14,12 +15,15 @@ export interface IReservation {
   roomId?: number;
   room?: string;
   customers?: any[];
+  facilitiesImport?: number;
+  consumptionsImport?: number;
 }
 
 export class Reservation {
   [x: string]: any;
   id?: number;
-  reservationDate?: string | null;
+  initialReservationDate?: string | null;
+  finalReservationDate?: string | null;
   total: number;
   reservationTypeId?: number;
   status?: string;
@@ -32,22 +36,24 @@ export class Reservation {
 
   constructor(reservation: IReservation) {
     this.id = reservation.id;
-    this.reservationDate = reservation.reservationDate;
+    this.initialReservationDate = reservation.initialReservationDate;
+    this.finalReservationDate = reservation.finalReservationDate;
     this.total = reservation.total;
-    this.status = reservation.status;
+    this.customerId = reservation.customerId;
     this.products = reservation.products;
     this.services = reservation.services;
-    this.customerId = reservation.customerId;
     this.lockerId = reservation.lockerId;
     this.roomId = reservation.roomId;
     this.customers = reservation.customers;
     this.reservationTypeId = reservation.reservationTypeId;
+    this.status = reservation.status;
   }
 }
 
 export class RoomReservation {
   id?: number;
-  reservationDate?: string | null;
+  initialReservationDate?: string | null;
+  finalReservationDate?: string | null;
   total: number;
   totalPaid: number;
   reservationTypeId: number;
@@ -57,14 +63,19 @@ export class RoomReservation {
   products?: any[];
   services?: any[];
   status?: string;
+  facilitiesImport?: number;
+  consumptionsImport?: number;
   constructor(reservation: IReservation) {
     this.id = reservation.id;
-    this.reservationDate = reservation.reservationDate;
+    this.initialReservationDate = reservation.initialReservationDate;
+    this.finalReservationDate = reservation.finalReservationDate;
     this.total = reservation.total;
     this.totalPaid = reservation.totalPaid;
     this.customerId = reservation.customerId;
     this.products = reservation.products;
     this.services = reservation.services;
+    this.facilitiesImport = reservation.facilitiesImport;
+    this.consumptionsImport = reservation.consumptionsImport;
     this.status = reservation.status;
     this.reservationTypeId = 2;
   }
@@ -72,7 +83,8 @@ export class RoomReservation {
 
 export class LockerReservation {
   id?: number;
-  reservationDate?: string | null;
+  initialReservationDate?: string | null;
+  finalReservationDate?: string | null;
   total: number;
   totalPaid: number;
   customerId?: number;
@@ -80,14 +92,19 @@ export class LockerReservation {
   services?: any[];
   reservationTypeId: number;
   status?: string;
+  facilitiesImport?: number;
+  consumptionsImport?: number;
   constructor(reservation: IReservation) {
     this.id = reservation.id;
-    this.reservationDate = reservation.reservationDate;
+    this.initialReservationDate = reservation.initialReservationDate;
+    this.finalReservationDate = reservation.finalReservationDate;
     this.total = reservation.total;
     this.totalPaid = reservation.totalPaid;
     this.customerId = reservation.customerId;
     this.products = reservation.products;
     this.services = reservation.services;
+    this.facilitiesImport = reservation.facilitiesImport;
+    this.consumptionsImport = reservation.consumptionsImport;
     this.status = reservation.status;
     this.reservationTypeId = 1;
   }

@@ -1,10 +1,22 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { ReservationBookComponent } from './pages/book/reservation.component';
 
 const routes: Routes = [
-  { path: '', component: ReservationBookComponent },
-  { path: '', pathMatch: 'full', redirectTo: 'reservations' },
+  {
+    path: 'book',
+    loadComponent: () =>
+      import('./pages/book/reservation.component').then(
+        c => c.ReservationBookComponent,
+      ),
+  },
+  {
+    path: 'list',
+    loadComponent: () =>
+      import('./pages/list/reservation.component').then(
+        c => c.ReservationListComponent,
+      ),
+  },
+  { path: '', pathMatch: 'full', redirectTo: 'book' },
 ];
 
 @NgModule({

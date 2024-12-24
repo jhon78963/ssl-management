@@ -123,7 +123,7 @@
             icon="pi pi-minus"
             class="p-button-warning additional-height"
             (click)="subAdditionalPerson()"
-            [disabled]="additionalPeople < 0 || reservationId"></button>
+            [disabled]="additionalPeople <= 0 || reservationId"></button>
           <span class="text-900 font-bold">{{ additionalPeople }}</span>
           <button
             pButton
