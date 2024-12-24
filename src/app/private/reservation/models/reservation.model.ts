@@ -17,6 +17,7 @@ export interface IReservation {
   customers?: any[];
   facilitiesImport?: number;
   consumptionsImport?: number;
+  extraImport?: number;
 }
 
 export class Reservation {
@@ -65,6 +66,7 @@ export class RoomReservation {
   status?: string;
   facilitiesImport?: number;
   consumptionsImport?: number;
+  extraImport?: number;
   constructor(reservation: IReservation) {
     this.id = reservation.id;
     this.initialReservationDate = reservation.initialReservationDate;
@@ -76,6 +78,7 @@ export class RoomReservation {
     this.services = reservation.services;
     this.facilitiesImport = reservation.facilitiesImport;
     this.consumptionsImport = reservation.consumptionsImport;
+    this.extraImport = reservation.extraImport;
     this.status = reservation.status;
     this.reservationTypeId = 2;
   }
@@ -94,6 +97,7 @@ export class LockerReservation {
   status?: string;
   facilitiesImport?: number;
   consumptionsImport?: number;
+  extraImport?: number;
   constructor(reservation: IReservation) {
     this.id = reservation.id;
     this.initialReservationDate = reservation.initialReservationDate;
@@ -105,6 +109,7 @@ export class LockerReservation {
     this.services = reservation.services;
     this.facilitiesImport = reservation.facilitiesImport;
     this.consumptionsImport = reservation.consumptionsImport;
+    this.extraImport = reservation.extraImport;
     this.status = reservation.status;
     this.reservationTypeId = 1;
   }

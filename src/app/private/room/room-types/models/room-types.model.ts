@@ -7,6 +7,7 @@ export interface IRoomType {
   capacity: number;
   pricePerCapacity: number;
   pricePerAdditionalPerson: number;
+  pricePerExtraHour: number;
   ageFree: number;
   amenities: IAmenity[];
   rates: IRate[];
@@ -18,6 +19,7 @@ export class RoomType {
   capacity: number;
   pricePerCapacity: number;
   pricePerAdditionalPerson: number;
+  pricePerExtraHour: number;
   ageFree: number;
   amenities: IAmenity[];
   rates: IRate[];
@@ -27,6 +29,7 @@ export class RoomType {
     this.capacity = roomType.capacity;
     this.pricePerCapacity = roomType.pricePerCapacity;
     this.pricePerAdditionalPerson = roomType.pricePerAdditionalPerson;
+    this.pricePerExtraHour = roomType.pricePerExtraHour;
     this.ageFree = roomType.ageFree;
     this.amenities = roomType.amenities;
     this.rates = roomType.rates;

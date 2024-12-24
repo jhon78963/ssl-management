@@ -62,6 +62,8 @@ export class ReservationBookComponent implements OnInit {
   isPaid: boolean = false;
   additionalPeople: number = 0;
   pricePerAdditionalPerson: number = 0;
+  extraHours: number = 0;
+  pricePerExtraHour: number = 0;
   constructor(
     private cdr: ChangeDetectorRef,
     private confirmationService: ConfirmationService,
@@ -99,6 +101,8 @@ export class ReservationBookComponent implements OnInit {
     this.isPaid = false;
     this.additionalPeople = 0;
     this.pricePerAdditionalPerson = 0;
+    this.extraHours = 0;
+    this.pricePerExtraHour = 0;
   }
 
   showFacility(facility: any) {
@@ -108,6 +112,8 @@ export class ReservationBookComponent implements OnInit {
         this.additionalPeople = reservation.facilities[0].additionalPeople;
         this.pricePerAdditionalPerson =
           reservation.facilities[0].pricePerAdditionalPerson;
+        this.extraHours = reservation.facilities[0].extraHours;
+        this.pricePerExtraHour = reservation.facilities[0].pricePerExtraHour;
         this.total = reservation.total;
         this.customer = reservation.customer;
         this.selectedProducts = reservation.products;
@@ -136,10 +142,12 @@ export class ReservationBookComponent implements OnInit {
       this.selectedFacilities.splice(index, 1);
       this.total -= facility.price;
       this.pricePerAdditionalPerson = 0;
+      this.pricePerExtraHour = 0;
     } else {
       this.selectedFacilities.push(facility);
       this.total += facility.price;
       this.pricePerAdditionalPerson = facility.pricePerAdditionalPerson;
+      this.pricePerExtraHour = facility.pricePerExtraHour;
     }
   }
 
@@ -278,6 +286,8 @@ export class ReservationBookComponent implements OnInit {
     selectedServices: any,
     additionalPeople: number,
     pricePerAdditionalPerson: number,
+    extraHours: number,
+    pricePerExtraHour: number,
   ) {
     this.modal = this.dialogService.open(ReservationFormComponent, {
       header: reservationId ? 'Pago total' : 'Pago',
@@ -288,10 +298,10 @@ export class ReservationBookComponent implements OnInit {
         products: selectedProducts,
         services: selectedServices,
         paymentTypes: selectedPaymentTypes,
-        pricePerAdditionalPerson: reservationId
-          ? pricePerAdditionalPerson
-          : additionalPeople * pricePerAdditionalPerson,
-        additionalPeople: additionalPeople,
+        additionalPeople: additionalPeople || 0,
+        pricePerAdditionalPerson: pricePerAdditionalPerson || 0,
+        pricePerExtraHour: pricePerExtraHour || 0,
+        extraHours: extraHours || 0,
       },
     });
 
@@ -317,6 +327,17 @@ export class ReservationBookComponent implements OnInit {
     if (this.additionalPeople == 0) return;
     this.additionalPeople -= 1;
     this.total -= this.pricePerAdditionalPerson;
+  }
+
+  addAdditionalHour() {
+    this.extraHours += 1;
+    this.total += this.pricePerExtraHour;
+  }
+
+  subAdditionalHour() {
+    if (this.extraHours == 0) return;
+    this.extraHours -= 1;
+    this.total -= this.pricePerExtraHour;
   }
 
   clearReservation() {

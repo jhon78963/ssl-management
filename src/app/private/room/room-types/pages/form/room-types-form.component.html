@@ -1,7 +1,7 @@
 @if (form) {
   <form [formGroup]="form" (ngSubmit)="roomTypeSaveButton()" class="pt-2">
     <div class="p-fluid p-formgrid grid">
-      <div class="field col-12">
+      <div class="field col-12 md:col-6">
         <app-input-text
           label="Tipo de Habitación"
           for="description"
@@ -18,6 +18,15 @@
           id="pricePerCapacity"
           placeholder="Ingrese precio"
           controlName="pricePerCapacity"></app-input-text>
+      </div>
+      <div class="field col-12 md:col-6">
+        <app-input-text
+          label="Edad libre de pago"
+          for="ageFree"
+          type="text"
+          id="ageFree"
+          placeholder="Ingrese edad libre de pago"
+          controlName="ageFree"></app-input-text>
       </div>
       <div class="field col-12 md:col-6">
         <app-input-text
@@ -39,12 +48,12 @@
       </div>
       <div class="field col-12 md:col-6">
         <app-input-text
-          label="Edad libre de pago"
-          for="ageFree"
+          label="Precio por hora extra"
+          for="pricePerExtraHour"
           type="text"
-          id="ageFree"
-          placeholder="Ingrese edad libre de pago"
-          controlName="ageFree"></app-input-text>
+          id="pricePerExtraHour"
+          placeholder="Ingrese precio por hora extra"
+          controlName="pricePerExtraHour"></app-input-text>
       </div>
       <button
         type="submit"

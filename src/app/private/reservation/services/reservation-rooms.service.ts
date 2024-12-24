@@ -15,11 +15,13 @@ export class ReservationRoomsService {
     price: number,
     isPaid: boolean = false,
     additionalPeople: number = 0,
+    extraHours: number = 0,
   ): Observable<void> {
     return this.apiService.post(`rooms/${reservationId}/add/${roomId}`, {
       price,
       isPaid,
       additionalPeople,
+      extraHours,
     });
   }
 
@@ -27,9 +29,13 @@ export class ReservationRoomsService {
     reservationId: number,
     roomId: number,
     isPaid: boolean = false,
+    additionalPeople: number = 0,
+    extraHours: number = 0,
   ): Observable<void> {
     return this.apiService.post(`rooms/${reservationId}/modify/${roomId}`, {
       isPaid,
+      additionalPeople,
+      extraHours,
     });
   }
 

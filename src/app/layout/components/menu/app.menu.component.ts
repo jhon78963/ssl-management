@@ -77,6 +77,11 @@ export class AppMenuComponent implements OnInit {
               icon: 'pi pi-fw pi-book',
               routerLink: ['/reservation/book'],
             },
+            {
+              label: 'Reservas',
+              icon: 'pi pi-fw pi-calendar',
+              routerLink: ['/reservation/calendar'],
+            },
           ],
         },
       ];
@@ -95,6 +100,11 @@ export class AppMenuComponent implements OnInit {
               label: 'Reservaciones',
               icon: 'pi pi-fw pi-book',
               routerLink: ['/reservation'],
+            },
+            {
+              label: 'Reservas',
+              icon: 'pi pi-fw pi-calendar',
+              routerLink: ['/reservation/calendar'],
             },
           ],
         },

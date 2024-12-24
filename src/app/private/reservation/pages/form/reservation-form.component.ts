@@ -49,6 +49,8 @@ export class ReservationFormComponent implements OnInit {
   total: number = 0;
   pricePerAdditionalPerson: number = 0;
   additionalPeople: number = 0;
+  pricePerExtraHour: number = 0;
+  extraHours: number = 0;
   reservationId: number = 0;
   payments: PaymentType[] = [
     { id: 1, description: 'Efectivo' },
@@ -131,9 +133,20 @@ export class ReservationFormComponent implements OnInit {
   }
 
   getPricePerAdditionalPerson() {
-    this.pricePerAdditionalPerson =
-      this.dynamicDialogConfig.data.pricePerAdditionalPerson;
     this.additionalPeople = this.dynamicDialogConfig.data.additionalPeople;
+    this.pricePerAdditionalPerson =
+      this.additionalPeople == 0
+        ? 0
+        : this.dynamicDialogConfig.data.pricePerAdditionalPerson *
+          this.additionalPeople;
+  }
+
+  getPriceExtraHours() {
+    this.extraHours = this.dynamicDialogConfig.data.extraHours;
+    this.pricePerExtraHour =
+      this.extraHours == 0
+        ? 0
+        : this.dynamicDialogConfig.data.pricePerExtraHour * this.extraHours;
   }
 
   getTotal() {
@@ -141,7 +154,8 @@ export class ReservationFormComponent implements OnInit {
       this.totalProducts +
       this.totalServices +
       this.lockerPrice +
-      (this.pricePerAdditionalPerson ?? 0);
+      (this.pricePerAdditionalPerson ?? 0) +
+      (this.pricePerExtraHour ?? 0);
   }
 
   getPaymentTypes() {
@@ -183,6 +197,7 @@ export class ReservationFormComponent implements OnInit {
     this.getProducts();
     this.getServices();
     this.getPricePerAdditionalPerson();
+    this.getPriceExtraHours();
     this.getTotal();
     this.getPaymentTypes();
     this.validatePaid();
@@ -424,6 +439,7 @@ export class ReservationFormComponent implements OnInit {
       customerId: customer!.id,
       total: total,
       totalPaid: this.paid,
+      extraImport: this.pricePerAdditionalPerson + this.pricePerExtraHour,
       facilitiesImport: this.lockerPrice,
       consumptionsImport: this.totalProducts + this.totalServices,
       reservationTypeId: reservationTypeId,
@@ -438,6 +454,7 @@ export class ReservationFormComponent implements OnInit {
       cashPayment: this.cash,
       cardPayment: this.card,
     };
+
     this.reservationPaymentTypesService
       .add(
         reservationId,
@@ -448,7 +465,6 @@ export class ReservationFormComponent implements OnInit {
       )
       .subscribe();
 
-    console.log('hola payment type');
     if (paidFacilities && paidFacilities.length == 0) {
       this.closeModal();
     }
@@ -510,6 +526,7 @@ export class ReservationFormComponent implements OnInit {
           facility.price,
           facility.isPaid,
           this.additionalPeople,
+          this.extraHours,
         )
         .pipe(
           switchMap(() => {
@@ -634,7 +651,13 @@ export class ReservationFormComponent implements OnInit {
     if (paidFacilities.length > 0) {
       const reservationRequests = paidFacilities.map((facility: any) => {
         return this.reservationRoomsService
-          .modify(reservationId, facility.id, facility.isPaid)
+          .modify(
+            reservationId,
+            facility.id,
+            facility.isPaid,
+            this.additionalPeople,
+            this.extraHours,
+          )
           .pipe(
             switchMap(() => {
               const body: any = {

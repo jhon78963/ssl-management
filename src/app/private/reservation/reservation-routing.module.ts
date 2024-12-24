@@ -16,6 +16,13 @@ const routes: Routes = [
         c => c.ReservationListComponent,
       ),
   },
+  {
+    path: 'calendar',
+    loadComponent: () =>
+      import('./pages/calendar/reservation-calendar.component').then(
+        c => c.ReservationCalendarComponent,
+      ),
+  },
   { path: '', pathMatch: 'full', redirectTo: 'book' },
 ];
 

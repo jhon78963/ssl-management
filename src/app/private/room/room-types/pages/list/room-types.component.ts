@@ -85,11 +85,11 @@ export class RoomTypesComponent implements OnInit, OnDestroy {
   private searchTermSubject = new Subject<string>();
 
   constructor(
+    private confirmationService: ConfirmationService,
+    private loadingService: LoadingService,
     private readonly dialogService: DialogService,
     private readonly roomTypesService: RoomTypesService,
     public messageService: MessageService,
-    private confirmationService: ConfirmationService,
-    private loadingService: LoadingService,
   ) {}
 
   ngOnInit(): void {
@@ -116,6 +116,12 @@ export class RoomTypesComponent implements OnInit, OnDestroy {
       {
         header: 'Precio por persona adicional',
         field: 'pricePerAdditionalPersonTable',
+        clickable: false,
+        image: false,
+      },
+      {
+        header: 'Precio por hora extra',
+        field: 'pricePerExtraHourTable',
         clickable: false,
         image: false,
       },

@@ -38,7 +38,9 @@
               selectedProducts,
               selectedServices,
               additionalPeople,
-              pricePerAdditionalPerson
+              pricePerAdditionalPerson,
+              extraHours,
+              pricePerExtraHour
             )
           "
           [disabled]="!isPaid"></button>
@@ -112,10 +114,10 @@
       </div>
     </div>
     <div class="col-12 md:col-2">
-      <p>Total</p>
-      <h1>S/ {{ total }}</h1>
+      <p class="m-0 p-0">Total</p>
+      <h1 class="m-0 p-0">S/ {{ total }}</h1>
       @if (this.pricePerAdditionalPerson > 0) {
-        <p>Personas adicionales</p>
+        <p class="m-0 p-0">Personas adicionales</p>
         <div class="flex align-items-center justify-content-center gap-2">
           <button
             pButton
@@ -123,15 +125,33 @@
             icon="pi pi-minus"
             class="p-button-warning additional-height"
             (click)="subAdditionalPerson()"
-            [disabled]="additionalPeople <= 0 || reservationId"></button>
+            [disabled]="additionalPeople <= 0"></button>
           <span class="text-900 font-bold">{{ additionalPeople }}</span>
           <button
             pButton
             pRipple
             icon="pi pi-plus"
             class="p-button-warning additional-height"
-            [disabled]="reservationId"
             (click)="addAdditionalPerson()"></button>
+        </div>
+      }
+      @if (this.pricePerExtraHour > 0) {
+        <p class="m-0 p-0">Horas adicionales</p>
+        <div class="flex align-items-center justify-content-center gap-2">
+          <button
+            pButton
+            pRipple
+            icon="pi pi-minus"
+            class="p-button-warning additional-height"
+            (click)="subAdditionalHour()"
+            [disabled]="extraHours <= 0"></button>
+          <span class="text-900 font-bold">{{ extraHours }}</span>
+          <button
+            pButton
+            pRipple
+            icon="pi pi-plus"
+            class="p-button-warning additional-height"
+            (click)="addAdditionalHour()"></button>
         </div>
       }
     </div>

@@ -34,6 +34,7 @@ export class RoomTypesFormComponent implements OnInit {
     capacity: ['', Validators.required],
     pricePerCapacity: ['', Validators.required],
     pricePerAdditionalPerson: ['', Validators.required],
+    pricePerExtraHour: ['', Validators.required],
     ageFree: ['', Validators.required],
   });
 
