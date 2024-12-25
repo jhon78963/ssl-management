@@ -5,6 +5,7 @@ export interface IRoomType {
   id: number;
   description: string;
   capacity: number;
+  rentalHours: number;
   pricePerCapacity: number;
   pricePerAdditionalPerson: number;
   pricePerExtraHour: number;
@@ -17,6 +18,7 @@ export class RoomType {
   id: number;
   description: string;
   capacity: number;
+  rentalHours: number;
   pricePerCapacity: number;
   pricePerAdditionalPerson: number;
   pricePerExtraHour: number;
@@ -27,6 +29,7 @@ export class RoomType {
     this.id = roomType.id;
     this.description = roomType.description;
     this.capacity = roomType.capacity;
+    this.rentalHours = roomType.rentalHours;
     this.pricePerCapacity = roomType.pricePerCapacity;
     this.pricePerAdditionalPerson = roomType.pricePerAdditionalPerson;
     this.pricePerExtraHour = roomType.pricePerExtraHour;

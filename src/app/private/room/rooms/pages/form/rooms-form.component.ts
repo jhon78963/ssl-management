@@ -36,6 +36,7 @@ export class RoomsFormComponent implements OnInit {
 
   form: FormGroup = this.formBuilder.group({
     number: ['', Validators.required],
+    description: ['', Validators.required],
     roomTypeId: [null, Validators.required],
   });
 

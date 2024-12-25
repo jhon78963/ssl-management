@@ -11,6 +11,7 @@ export interface RoomStatus {
 export interface IRoom {
   id: number;
   number: number;
+  description: string;
   capacity: number;
   status: string;
   roomStatus: string;
@@ -26,6 +27,7 @@ export interface IRoom {
 export class Room {
   id: number;
   number: number;
+  description: string;
   roomName?: string;
   capacity?: number;
   freeAge?: number;
@@ -43,6 +45,7 @@ export class Room {
   constructor(room: IRoom) {
     this.id = room.id;
     this.number = room.number;
+    this.description = room.description;
     this.status = room.status;
     this.roomTypeId = room.roomTypeId;
     this.images = room.images;

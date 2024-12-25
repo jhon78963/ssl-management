@@ -32,6 +32,7 @@ export class RoomTypesFormComponent implements OnInit {
   form: FormGroup = this.formBuilder.group({
     description: ['', Validators.required],
     capacity: ['', Validators.required],
+    rentalHours: ['', Validators.required],
     pricePerCapacity: ['', Validators.required],
     pricePerAdditionalPerson: ['', Validators.required],
     pricePerExtraHour: ['', Validators.required],

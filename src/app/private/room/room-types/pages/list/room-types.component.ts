@@ -108,6 +108,12 @@ export class RoomTypesComponent implements OnInit, OnDestroy {
         image: false,
       },
       {
+        header: 'Horas alquiladas',
+        field: 'rentalHoursTable',
+        clickable: false,
+        image: false,
+      },
+      {
         header: 'Precio regular',
         field: 'pricePerCapacityTable',
         clickable: false,
