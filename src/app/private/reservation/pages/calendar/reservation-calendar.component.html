@@ -59,20 +59,20 @@
       <div *ngIf="view !== 'display'">
         <div class="grid p-fluid formgrid">
           <div class="col-12 md:col-6 field">
-            <label for="title" class="text-900 font-semibold">Title</label>
+            <label for="title" class="text-900 font-semibold">DNI</label>
             <span class="p-input-icon-left">
               <i class="pi pi-pencil"></i>
               <input
                 id="title"
                 type="text"
                 pInputText
-                placeholder="Title"
+                placeholder="DNI"
                 [(ngModel)]="changedEvent.title" />
             </span>
           </div>
           <div class="col-12 md:col-6 field">
             <label for="location" class="text-900 font-semibold"
-              >Location</label
+              >Habitación</label
             >
             <span class="p-input-icon-left">
               <i class="pi pi-map-marker"></i>
@@ -80,25 +80,14 @@
                 id="location"
                 type="text"
                 pInputText
-                placeholder="Location"
+                placeholder="Habitación"
                 [(ngModel)]="changedEvent.location" />
             </span>
           </div>
-          <div class="col-12 field">
-            <label for="description" class="text-900 font-semibold"
-              >Event Description</label
-            >
-            <textarea
-              id="description"
-              type="text"
-              pInputTextarea
-              [rows]="5"
-              [(ngModel)]="changedEvent.description"
-              style="resize: none"></textarea>
-          </div>
-
           <div class="col-12 md:col-6 field">
-            <label for="start" class="text-900 font-semibold">Start Date</label>
+            <label for="start" class="text-900 font-semibold"
+              >Fecha de inicio</label
+            >
             <p-calendar
               [appendTo]="dd"
               dateFormat="mm-dd-yy"
@@ -109,7 +98,9 @@
               [(ngModel)]="changedEvent.start"></p-calendar>
           </div>
           <div class="col-12 md:col-6 field">
-            <label for="start" class="text-900 font-semibold">End Date</label>
+            <label for="start" class="text-900 font-semibold"
+              >Fecha de fin</label
+            >
             <p-calendar
               [appendTo]="dd"
               dateFormat="mm-dd-yy"
@@ -120,6 +111,16 @@
               [(ngModel)]="changedEvent.end"></p-calendar>
           </div>
           <div class="col-12 field">
+            <label for="description" class="text-900 font-semibold">Nota</label>
+            <textarea
+              id="description"
+              type="text"
+              pInputTextarea
+              [rows]="5"
+              [(ngModel)]="changedEvent.description"
+              style="resize: none"></textarea>
+          </div>
+          <!-- <div class="col-12 field">
             <label for="company-color" class="text-900 font-semibold"
               >Color</label
             >
@@ -146,7 +147,7 @@
                 </div>
               </ng-template>
             </p-dropdown>
-          </div>
+          </div> -->
         </div>
       </div>
     </ng-template>

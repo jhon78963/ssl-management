@@ -51,6 +51,7 @@ export class ReservationFormComponent implements OnInit {
   additionalPeople: number = 0;
   pricePerExtraHour: number = 0;
   extraHours: number = 0;
+  brokenThings: number = 0;
   reservationId: number = 0;
   payments: PaymentType[] = [
     { id: 1, description: 'Efectivo' },
@@ -149,13 +150,18 @@ export class ReservationFormComponent implements OnInit {
         : this.dynamicDialogConfig.data.pricePerExtraHour * this.extraHours;
   }
 
+  getBrokenThings() {
+    this.brokenThings = this.dynamicDialogConfig.data.brokenThings;
+  }
+
   getTotal() {
     this.total =
       this.totalProducts +
       this.totalServices +
       this.lockerPrice +
       (this.pricePerAdditionalPerson ?? 0) +
-      (this.pricePerExtraHour ?? 0);
+      (this.pricePerExtraHour ?? 0) +
+      (Number(this.brokenThings) ?? 0);
   }
 
   getPaymentTypes() {
@@ -198,6 +204,7 @@ export class ReservationFormComponent implements OnInit {
     this.getServices();
     this.getPricePerAdditionalPerson();
     this.getPriceExtraHours();
+    this.getBrokenThings();
     this.getTotal();
     this.getPaymentTypes();
     this.validatePaid();
@@ -297,6 +304,7 @@ export class ReservationFormComponent implements OnInit {
     services = services.filter(s => s.isAdd != true);
     const paidServices = services.filter(s => s.isPaid == true);
     const paidFacilities = facilities.filter(f => f.isPaid == true);
+    const brokenThingsImport = this.brokenThings ? this.brokenThings : 0;
 
     return {
       status,
@@ -306,6 +314,7 @@ export class ReservationFormComponent implements OnInit {
       newServices,
       paidServices,
       paidFacilities,
+      brokenThingsImport,
     };
   }
 
@@ -327,6 +336,8 @@ export class ReservationFormComponent implements OnInit {
         facilities,
       );
       reservationData.status = reservationSummary.status;
+      reservationData.brokenThingsImport =
+        reservationSummary.brokenThingsImport;
       reservationData.finalReservationDate =
         reservationSummary.finalReservationDate;
       const reservation = new LockerReservation(reservationData);
@@ -385,6 +396,8 @@ export class ReservationFormComponent implements OnInit {
         facilities,
       );
       reservationData.status = reservationSummary.status;
+      reservationData.brokenThingsImport =
+        reservationSummary.brokenThingsImport;
       reservationData.finalReservationDate =
         reservationSummary.finalReservationDate;
 
@@ -432,6 +445,7 @@ export class ReservationFormComponent implements OnInit {
     reservationTypeId: number,
     initialReservationDate?: string | null,
     finalReservationDate?: string | null,
+    brokenThingsImport?: number,
   ) {
     return {
       initialReservationDate: initialReservationDate,
@@ -444,6 +458,7 @@ export class ReservationFormComponent implements OnInit {
       consumptionsImport: this.totalProducts + this.totalServices,
       reservationTypeId: reservationTypeId,
       status: 'IN_USE',
+      brokenThingsImport: brokenThingsImport,
     };
   }
 

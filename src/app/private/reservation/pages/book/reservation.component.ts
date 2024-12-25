@@ -13,6 +13,7 @@ import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { TabMenuModule } from 'primeng/tabmenu';
 import { TabViewModule } from 'primeng/tabview';
 import { ToastModule } from 'primeng/toast';
+import { KeyFilterModule } from 'primeng/keyfilter';
 import { Observable } from 'rxjs';
 import { SharedModule } from '../../../../shared/shared.module';
 import { showSuccess } from '../../../../utils/notifications';
@@ -43,6 +44,7 @@ import { ReservationServicesService } from '../../services/reservation-services.
     ReactiveFormsModule,
     ButtonClassPipe,
     ProductsComponent,
+    KeyFilterModule,
   ],
   templateUrl: './reservation.component.html',
   styleUrl: './reservation.component.scss',
@@ -64,7 +66,14 @@ export class ReservationBookComponent implements OnInit {
   pricePerAdditionalPerson: number = 0;
   extraHours: number = 0;
   pricePerExtraHour: number = 0;
+  startDate: string | null | undefined;
+  endDate: string | null | undefined;
+  rentedTime: string | null | undefined;
+  brokenThings: number | null = null;
+  previousBrokenThings: number = 0;
+
   constructor(
+    private datePipe: DatePipe,
     private cdr: ChangeDetectorRef,
     private confirmationService: ConfirmationService,
     private readonly dialogService: DialogService,
@@ -103,11 +112,36 @@ export class ReservationBookComponent implements OnInit {
     this.pricePerAdditionalPerson = 0;
     this.extraHours = 0;
     this.pricePerExtraHour = 0;
+    this.startDate = undefined;
+    this.endDate = undefined;
+    this.rentedTime = undefined;
+    this.brokenThings = null;
+    this.previousBrokenThings = 0;
+  }
+
+  getRentedTime(startDate: string | null | undefined): string | null {
+    if (startDate) {
+      const startDateParsed = new Date(startDate);
+      const currentDate = new Date();
+      const diffInMs = currentDate.getTime() - startDateParsed.getTime();
+
+      const hours = Math.floor(diffInMs / (1000 * 60 * 60));
+      const minutes = Math.floor((diffInMs % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((diffInMs % (1000 * 60)) / 1000);
+
+      return `${hours}h ${minutes}m ${seconds}s`;
+    } else {
+      return null;
+    }
   }
 
   showFacility(facility: any) {
+    this.clearSelections();
     this.reservationsService.getOne(facility.reservationId).subscribe({
       next: (reservation: any) => {
+        this.startDate = reservation.startDate;
+        this.rentedTime = this.getRentedTime(this.startDate);
+        this.endDate = reservation.finalReservationDate;
         this.selectedFacilities = reservation.facilities;
         this.additionalPeople = reservation.facilities[0].additionalPeople;
         this.pricePerAdditionalPerson =
@@ -288,6 +322,7 @@ export class ReservationBookComponent implements OnInit {
     pricePerAdditionalPerson: number,
     extraHours: number,
     pricePerExtraHour: number,
+    brokenThings: number | null,
   ) {
     this.modal = this.dialogService.open(ReservationFormComponent, {
       header: reservationId ? 'Pago total' : 'Pago',
@@ -302,6 +337,7 @@ export class ReservationBookComponent implements OnInit {
         pricePerAdditionalPerson: pricePerAdditionalPerson || 0,
         pricePerExtraHour: pricePerExtraHour || 0,
         extraHours: extraHours || 0,
+        brokenThings: brokenThings || 0,
       },
     });
 
@@ -338,6 +374,16 @@ export class ReservationBookComponent implements OnInit {
     if (this.extraHours == 0) return;
     this.extraHours -= 1;
     this.total -= this.pricePerExtraHour;
+  }
+
+  addBrokenThings() {
+    if (this.previousBrokenThings) {
+      this.total -= this.previousBrokenThings;
+    }
+
+    const currentBrokenThings = Number(this.brokenThings) || 0;
+    this.total += currentBrokenThings;
+    this.previousBrokenThings = currentBrokenThings;
   }
 
   clearReservation() {

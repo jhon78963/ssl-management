@@ -49,6 +49,12 @@ export class ReservationListComponent implements OnInit {
       image: false,
     },
     {
+      header: 'Cosas rotas',
+      field: 'brokenThingsImport',
+      clickable: false,
+      image: false,
+    },
+    {
       header: 'Consumo',
       field: 'consumptionsImport',
       clickable: false,

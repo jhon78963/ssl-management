@@ -9,6 +9,10 @@
           class="mr-2 mt-2 p-width p-button-rounded"></button>
       }
       <p-divider *ngIf="selectedFacilities.length > 0" />
+      <p class="text-left m-0 p-0" *ngIf="startDate">Fecha de inicio</p>
+      <p class="text-left">{{ startDate }}</p>
+      <p class="text-left m-0 p-0" *ngIf="rentedTime">Horas transcurridas</p>
+      <p class="text-left">{{ rentedTime }}</p>
     </div>
     <div class="col-12 md:col-8">
       <div class="flex">
@@ -40,7 +44,8 @@
               additionalPeople,
               pricePerAdditionalPerson,
               extraHours,
-              pricePerExtraHour
+              pricePerExtraHour,
+              brokenThings
             )
           "
           [disabled]="!isPaid"></button>
@@ -153,6 +158,19 @@
             class="p-button-warning additional-height"
             (click)="addAdditionalHour()"></button>
         </div>
+      }
+      @if (startDate) {
+        <p class="m-0 p-0">Cosas rotas</p>
+        <p class="m-0 p-0">
+          <input
+            [(ngModel)]="brokenThings"
+            (ngModelChange)="addBrokenThings()"
+            type="text"
+            class="w-6 text-center"
+            pInputText
+            [pKeyFilter]="'num'"
+            [disabled]="reservationId === undefined" />
+        </p>
       }
     </div>
   </div>
