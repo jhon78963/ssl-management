@@ -67,6 +67,7 @@ export class ReservationBookComponent implements OnInit {
   extraHours: number = 0;
   pricePerExtraHour: number = 0;
   startDate: string | null | undefined;
+  startDateParsed: string | null | undefined;
   endDate: string | null | undefined;
   rentedTime: string | null | undefined;
   brokenThings: number | null = null;
@@ -139,6 +140,7 @@ export class ReservationBookComponent implements OnInit {
     this.clearSelections();
     this.reservationsService.getOne(facility.reservationId).subscribe({
       next: (reservation: any) => {
+        this.startDateParsed = reservation.initialReservationDate;
         this.startDate = reservation.startDate;
         this.rentedTime = this.getRentedTime(this.startDate);
         this.endDate = reservation.finalReservationDate;

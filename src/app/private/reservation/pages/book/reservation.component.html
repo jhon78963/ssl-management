@@ -9,8 +9,8 @@
           class="mr-2 mt-2 p-width p-button-rounded"></button>
       }
       <p-divider *ngIf="selectedFacilities.length > 0" />
-      <p class="text-left m-0 p-0" *ngIf="startDate">Fecha de inicio</p>
-      <p class="text-left">{{ startDate }}</p>
+      <p class="text-left m-0 p-0" *ngIf="startDateParsed">Fecha de inicio</p>
+      <p class="text-left">{{ startDateParsed }}</p>
       <p class="text-left m-0 p-0" *ngIf="rentedTime">Horas transcurridas</p>
       <p class="text-left">{{ rentedTime }}</p>
     </div>
