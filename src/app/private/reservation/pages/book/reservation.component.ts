@@ -114,13 +114,14 @@ export class ReservationBookComponent implements OnInit {
     this.extraHours = 0;
     this.pricePerExtraHour = 0;
     this.startDate = undefined;
+    this.startDateParsed = undefined;
     this.endDate = undefined;
     this.rentedTime = undefined;
     this.brokenThings = null;
     this.previousBrokenThings = 0;
   }
 
-  getRentedTime(startDate: string | null | undefined): string | null {
+  getRentedTime(startDate: string | null | undefined) {
     if (startDate) {
       const startDateParsed = new Date(startDate);
       const currentDate = new Date();
@@ -130,9 +131,15 @@ export class ReservationBookComponent implements OnInit {
       const minutes = Math.floor((diffInMs % (1000 * 60 * 60)) / (1000 * 60));
       const seconds = Math.floor((diffInMs % (1000 * 60)) / 1000);
 
-      return `${hours}h ${minutes}m ${seconds}s`;
+      return {
+        time: `${hours}h ${minutes}m ${seconds}s`,
+        hours: hours,
+      };
     } else {
-      return null;
+      return {
+        time: null,
+        hours: 0,
+      };
     }
   }
 
@@ -142,7 +149,8 @@ export class ReservationBookComponent implements OnInit {
       next: (reservation: any) => {
         this.startDateParsed = reservation.initialReservationDate;
         this.startDate = reservation.startDate;
-        this.rentedTime = this.getRentedTime(this.startDate);
+        const rented = this.getRentedTime(this.startDate);
+        this.rentedTime = rented.time;
         this.endDate = reservation.finalReservationDate;
         this.selectedFacilities = reservation.facilities;
         this.additionalPeople = reservation.facilities[0].additionalPeople;
@@ -150,7 +158,13 @@ export class ReservationBookComponent implements OnInit {
           reservation.facilities[0].pricePerAdditionalPerson;
         this.extraHours = reservation.facilities[0].extraHours;
         this.pricePerExtraHour = reservation.facilities[0].pricePerExtraHour;
+
         this.total = reservation.total;
+        if (rented.hours > 0) {
+          this.extraHours = rented.hours;
+          this.total +=
+            reservation.facilities[0].pricePerExtraHour * this.extraHours;
+        }
         this.customer = reservation.customer;
         this.selectedProducts = reservation.products;
         this.selectedServices = reservation.services;
