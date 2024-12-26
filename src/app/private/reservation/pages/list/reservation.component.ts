@@ -7,6 +7,8 @@ import { debounceTime, Observable, Subject } from 'rxjs';
 import { PaginatorState } from 'primeng/paginator';
 import { ReservationsService } from '../../services/reservations.service';
 import { LoadingService } from '../../../../services/loading.service';
+import { ReservationTypesService } from '../../services/reservation-types.service';
+import { ReservationType } from '../../models/reservation-type.model';
 
 @Component({
   selector: 'app-reservation',
@@ -17,60 +19,82 @@ import { LoadingService } from '../../../../services/loading.service';
 })
 export class ReservationListComponent implements OnInit {
   columns: Column[] = [
-    { header: '#', field: 'id', clickable: false, image: false },
+    {
+      header: '#',
+      field: 'id',
+      clickable: false,
+      image: false,
+      money: false,
+    },
     {
       header: 'Fecha de entrada',
       field: 'initialReservationDate',
       clickable: false,
       image: false,
+      money: false,
     },
     {
       header: 'Fecha de salida',
       field: 'finalReservationDate',
       clickable: false,
       image: false,
+      money: false,
     },
     {
       header: 'Tipo de reserva',
       field: 'reservationType',
       clickable: false,
       image: false,
+      money: false,
     },
     {
-      header: 'Importe',
+      header: 'Locker/Room',
       field: 'facilitiesImport',
       clickable: false,
       image: false,
+      money: true,
     },
     {
-      header: 'Importe extra',
-      field: 'extraImport',
+      header: 'Personas extras',
+      field: 'peopleExtraImport',
       clickable: false,
       image: false,
+      money: true,
+    },
+    {
+      header: 'Horas extras',
+      field: 'hoursExtraImport',
+      clickable: false,
+      image: false,
+      money: true,
     },
     {
       header: 'Cosas rotas',
       field: 'brokenThingsImport',
       clickable: false,
       image: false,
+      money: true,
     },
     {
       header: 'Consumo',
       field: 'consumptionsImport',
       clickable: false,
       image: false,
+      money: true,
     },
     {
       header: 'Total',
       field: 'total',
       clickable: false,
       image: false,
+      money: true,
     },
     {
       header: 'Estado',
       field: 'status',
       clickable: false,
       image: false,
+      money: false,
     },
   ];
   cellToAction: any;
@@ -79,15 +103,19 @@ export class ReservationListComponent implements OnInit {
   page: number = 1;
   description: string = '';
   callToAction: CallToAction<Reservation>[] = [];
+  reservationTypes: ReservationType[] = [];
+  selectedReservationType: ReservationType = { id: 0, description: '' };
 
   private searchTermSubject = new Subject<string>();
 
   constructor(
     private readonly reservationsService: ReservationsService,
+    private readonly reservationTypesService: ReservationTypesService,
     private loadingService: LoadingService,
   ) {}
 
   ngOnInit(): void {
+    this.getReservationTypes();
     this.getReservations(this.limit, this.page, this.description);
     this.searchTermSubject.pipe(debounceTime(600)).subscribe(() => {
       this.loadingService.sendLoadingState(true);
@@ -102,6 +130,14 @@ export class ReservationListComponent implements OnInit {
 
   onSearchTermChange(term: any): void {
     this.searchTermSubject.next(term);
+  }
+
+  getReservationTypes() {
+    this.reservationTypesService.getReservationTypes().subscribe({
+      next: (reservationTypes: ReservationType[]) => {
+        this.reservationTypes = reservationTypes;
+      },
+    });
   }
 
   async getReservations(

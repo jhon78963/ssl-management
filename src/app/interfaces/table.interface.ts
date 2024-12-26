@@ -13,6 +13,7 @@ export interface Column {
   field: string;
   clickable: boolean;
   image: boolean;
+  money: boolean;
 }
 
 export interface Paginate {

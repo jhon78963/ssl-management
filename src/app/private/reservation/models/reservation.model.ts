@@ -17,12 +17,13 @@ export interface IReservation {
   customers?: any[];
   facilitiesImport?: number;
   consumptionsImport?: number;
-  extraImport?: number;
+  peopleExtraImport?: number;
+  hoursExtraImport?: number;
   brokenThingsImport?: number;
+  notes?: string;
 }
 
 export class Reservation {
-  [x: string]: any;
   id?: number;
   initialReservationDate?: string | null;
   finalReservationDate?: string | null;
@@ -35,6 +36,7 @@ export class Reservation {
   lockerId?: number;
   roomId?: number;
   customers?: any[];
+  notes?: any;
 
   constructor(reservation: IReservation) {
     this.id = reservation.id;
@@ -48,6 +50,7 @@ export class Reservation {
     this.roomId = reservation.roomId;
     this.customers = reservation.customers;
     this.reservationTypeId = reservation.reservationTypeId;
+    this.notes = reservation.notes;
     this.status = reservation.status;
   }
 }
@@ -67,8 +70,10 @@ export class RoomReservation {
   status?: string;
   facilitiesImport?: number;
   consumptionsImport?: number;
-  extraImport?: number;
+  peopleExtraImport?: number;
+  hoursExtraImport?: number;
   brokenThingsImport?: number;
+  notes?: string;
   constructor(reservation: IReservation) {
     this.id = reservation.id;
     this.initialReservationDate = reservation.initialReservationDate;
@@ -80,9 +85,11 @@ export class RoomReservation {
     this.services = reservation.services;
     this.facilitiesImport = reservation.facilitiesImport;
     this.consumptionsImport = reservation.consumptionsImport;
-    this.extraImport = reservation.extraImport;
+    this.peopleExtraImport = reservation.peopleExtraImport;
+    this.hoursExtraImport = reservation.hoursExtraImport;
     this.brokenThingsImport = reservation.brokenThingsImport;
     this.status = reservation.status;
+    this.notes = reservation.notes;
     this.reservationTypeId = 2;
   }
 }
@@ -100,8 +107,10 @@ export class LockerReservation {
   status?: string;
   facilitiesImport?: number;
   consumptionsImport?: number;
-  extraImport?: number;
+  peopleExtraImport?: number;
+  hoursExtraImport?: number;
   brokenThingsImport?: number;
+  notes?: string;
   constructor(reservation: IReservation) {
     this.id = reservation.id;
     this.initialReservationDate = reservation.initialReservationDate;
@@ -113,49 +122,55 @@ export class LockerReservation {
     this.services = reservation.services;
     this.facilitiesImport = reservation.facilitiesImport;
     this.consumptionsImport = reservation.consumptionsImport;
-    this.extraImport = reservation.extraImport;
+    this.peopleExtraImport = reservation.peopleExtraImport;
+    this.hoursExtraImport = reservation.hoursExtraImport;
     this.brokenThingsImport = reservation.brokenThingsImport;
+    this.notes = reservation.notes;
     this.status = reservation.status;
     this.reservationTypeId = 1;
+  }
+}
+
+export class PersonalReservation {
+  id?: number;
+  initialReservationDate?: string | null;
+  finalReservationDate?: string | null;
+  total: number;
+  totalPaid: number;
+  customerId?: number;
+  products?: any[];
+  services?: any[];
+  reservationTypeId: number;
+  status?: string;
+  facilitiesImport?: number;
+  consumptionsImport?: number;
+  peopleExtraImport?: number;
+  hoursExtraImport?: number;
+  brokenThingsImport?: number;
+  notes?: string;
+  constructor(reservation: IReservation) {
+    this.id = reservation.id;
+    this.initialReservationDate = reservation.initialReservationDate;
+    this.finalReservationDate = reservation.finalReservationDate;
+    this.total = reservation.total;
+    this.totalPaid = reservation.totalPaid;
+    this.customerId = reservation.customerId;
+    this.products = reservation.products;
+    this.services = reservation.services;
+    this.facilitiesImport = reservation.facilitiesImport;
+    this.consumptionsImport = reservation.consumptionsImport;
+    this.peopleExtraImport = reservation.peopleExtraImport;
+    this.hoursExtraImport = reservation.hoursExtraImport;
+    this.brokenThingsImport = reservation.brokenThingsImport;
+    this.notes = reservation.notes;
+    this.status = reservation.status;
+    this.reservationTypeId = 3;
   }
 }
 
 export interface CreatedReservation {
   message: string;
   reservationId: number;
-}
-
-export interface IFinishReservation {
-  id: number;
-  status: string;
-  total: number;
-}
-
-export class FinishReservation {
-  id: number;
-  status: string;
-  total: number;
-
-  constructor(reservation: IFinishReservation) {
-    this.id = reservation.id;
-    this.status = reservation.status;
-    this.total = reservation.total;
-  }
-}
-
-export interface IConsumptionReservation {
-  id: number;
-  total: number;
-}
-
-export class ConsumptionReservation {
-  id: number;
-  total: number;
-
-  constructor(reservation: IConsumptionReservation) {
-    this.id = reservation.id;
-    this.total = reservation.total;
-  }
 }
 
 export interface Paginate {

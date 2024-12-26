@@ -70,24 +70,33 @@ export class DaysComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.columns = [
-      { header: '#', field: 'id', clickable: false, image: false },
+      {
+        header: '#',
+        field: 'id',
+        clickable: false,
+        image: false,
+        money: false,
+      },
       {
         header: 'Nombre',
         field: 'name',
         clickable: false,
         image: false,
+        money: false,
       },
       {
         header: 'Abreviación',
         field: 'abbreviation',
         clickable: false,
         image: false,
+        money: false,
       },
       {
         field: 'button',
         header: 'Acción',
         clickable: false,
         image: false,
+        money: false,
       },
     ];
 

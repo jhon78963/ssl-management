@@ -31,7 +31,8 @@
             class="file-thumbnail-image"
             [src]="getFieldValue(col.field, rowData)" />
         } @else {
-          {{ getFieldValue(col.field, rowData) }}
+          <span *ngIf="col.money">S/ </span
+          >{{ getFieldValue(col.field, rowData) }}
         }
 
         <span

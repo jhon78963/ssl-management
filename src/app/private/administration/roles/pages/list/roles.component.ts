@@ -66,18 +66,26 @@ export class RoleListComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.columns = [
-      { header: '#', field: 'id', clickable: false, image: false },
+      {
+        header: '#',
+        field: 'id',
+        clickable: false,
+        image: false,
+        money: false,
+      },
       {
         header: 'Rol',
         field: 'name',
         clickable: false,
         image: false,
+        money: false,
       },
       {
         field: 'button',
         header: 'Acción',
         clickable: false,
         image: false,
+        money: false,
       },
     ];
 

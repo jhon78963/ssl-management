@@ -12,6 +12,7 @@ import { FacilityType } from '../../models/facility.model';
 import { PaymentType } from '../../models/payment-type.model';
 import {
   LockerReservation,
+  PersonalReservation,
   RoomReservation,
 } from '../../models/reservation.model';
 import { FacilitiesService } from '../../services/facilities.service';
@@ -53,6 +54,7 @@ export class ReservationFormComponent implements OnInit {
   extraHours: number = 0;
   brokenThings: number = 0;
   reservationId: number = 0;
+  notes: string = '';
   payments: PaymentType[] = [
     { id: 1, description: 'Efectivo' },
     { id: 2, description: 'Tarjeta' },
@@ -133,6 +135,10 @@ export class ReservationFormComponent implements OnInit {
       .reduce((sum, product) => sum + product.total, 0);
   }
 
+  getNotes() {
+    this.notes = this.dynamicDialogConfig.data.notes;
+  }
+
   getPricePerAdditionalPerson() {
     this.additionalPeople = this.dynamicDialogConfig.data.additionalPeople;
     this.pricePerAdditionalPerson =
@@ -202,6 +208,7 @@ export class ReservationFormComponent implements OnInit {
     this.getFacilities();
     this.getProducts();
     this.getServices();
+    this.getNotes();
     this.getPricePerAdditionalPerson();
     this.getPriceExtraHours();
     this.getBrokenThings();
@@ -279,6 +286,9 @@ export class ReservationFormComponent implements OnInit {
         services,
         total,
       );
+    }
+    if (newFacilities.rooms.length == 0 && newFacilities.lockers.length == 0) {
+      this.createPersonalReservation(customer, products, services, total);
     }
   }
 
@@ -439,6 +449,32 @@ export class ReservationFormComponent implements OnInit {
     }
   }
 
+  createPersonalReservation(
+    customer: Customer | null | undefined,
+    products: any[],
+    services: any[],
+    total: number,
+  ) {
+    const initialReservationDate = this.currentDate();
+    const reservationData = this.reservationData(
+      customer,
+      total,
+      3,
+      initialReservationDate || null,
+      null,
+    );
+    reservationData.brokenThingsImport = this.brokenThings
+      ? this.brokenThings
+      : 0;
+    const reservation = new PersonalReservation(reservationData);
+    this.reservationsService.create(reservation).subscribe({
+      next: (response: any) => {
+        this.createReservation(response.reservationId, products, services);
+        this.closeModal();
+      },
+    });
+  }
+
   reservationData(
     customer: Customer | null | undefined,
     total: number,
@@ -449,16 +485,19 @@ export class ReservationFormComponent implements OnInit {
   ) {
     return {
       initialReservationDate: initialReservationDate,
-      finalReservationDate: finalReservationDate,
+      finalReservationDate:
+        reservationTypeId == 3 ? initialReservationDate : finalReservationDate,
       customerId: customer!.id,
       total: total,
       totalPaid: this.paid,
-      extraImport: this.pricePerAdditionalPerson + this.pricePerExtraHour,
+      peopleExtraImport: this.pricePerAdditionalPerson,
+      hoursExtraImport: this.pricePerExtraHour,
       facilitiesImport: this.lockerPrice,
       consumptionsImport: this.totalProducts + this.totalServices,
       reservationTypeId: reservationTypeId,
-      status: 'IN_USE',
+      status: reservationTypeId == 3 ? 'COMPLETED' : 'IN_USE',
       brokenThingsImport: brokenThingsImport,
+      notes: this.notes,
     };
   }
 

@@ -1,4 +1,11 @@
 <div class="card">
+  <p-dropdown
+    [options]="reservationTypes"
+    [(ngModel)]="selectedReservationType"
+    class="w-12"
+    optionLabel="description"
+    placeholder="Seleccione tipo de reserva" />
+
   <app-table-pagination
     [data]="(reservations | async) ?? []"
     [columns]="columns"

@@ -11,9 +11,7 @@ import {
 import { ApiService } from '../../../services/api.service';
 
 import {
-  ConsumptionReservation,
   CreatedReservation,
-  FinishReservation,
   Reservation,
   ReservationListResponse,
 } from '../models/reservation.model';
@@ -66,10 +64,7 @@ export class ReservationsService {
     return this.apiService.post<CreatedReservation>('reservations', data);
   }
 
-  update(
-    id: number,
-    data: Reservation | FinishReservation | ConsumptionReservation,
-  ): Observable<void> {
+  update(id: number, data: Reservation): Observable<void> {
     return this.apiService.patch(`reservations/${id}`, data);
   }
 

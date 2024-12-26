@@ -94,54 +94,68 @@ export class RoomTypesComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.columns = [
-      { header: '#', field: 'id', clickable: false, image: false },
+      {
+        header: '#',
+        field: 'id',
+        clickable: false,
+        image: false,
+        money: false,
+      },
       {
         header: 'Tipo de Habitación',
         field: 'description',
         clickable: false,
         image: false,
+        money: false,
       },
       {
         header: 'Capacidad',
         field: 'capacityTable',
         clickable: false,
         image: false,
+        money: false,
       },
       {
         header: 'Horas alquiladas',
         field: 'rentalHoursTable',
         clickable: false,
         image: false,
+        money: false,
       },
       {
         header: 'Precio regular',
         field: 'pricePerCapacityTable',
         clickable: false,
         image: false,
+        money: false,
       },
       {
         header: 'Precio por persona adicional',
         field: 'pricePerAdditionalPersonTable',
         clickable: false,
         image: false,
+        money: false,
       },
       {
         header: 'Precio por hora extra',
         field: 'pricePerExtraHourTable',
         clickable: false,
         image: false,
+        money: false,
       },
       {
         header: 'Edad libre',
         field: 'ageFreeTable',
         clickable: false,
         image: false,
+        money: false,
       },
       {
         field: 'button',
         header: 'Acción',
         clickable: false,
         image: false,
+        money: false,
       },
     ];
 

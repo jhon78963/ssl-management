@@ -45,7 +45,8 @@
               pricePerAdditionalPerson,
               extraHours,
               pricePerExtraHour,
-              brokenThings
+              brokenThings,
+              notes
             )
           "
           [disabled]="!isPaid"></button>
@@ -116,6 +117,8 @@
           {{ customer.name }} {{ customer.surname }}
         </p>
         <p class="m-0 p-0">Nota</p>
+        <textarea rows="3" cols="10" pInputTextarea [(ngModel)]="notes">
+        </textarea>
       </div>
     </div>
     <div class="col-12 md:col-2">
@@ -159,7 +162,7 @@
             (click)="addAdditionalHour()"></button>
         </div>
       }
-      @if (startDate) {
+      @if (customer) {
         <p class="m-0 p-0">Cosas rotas</p>
         <p class="m-0 p-0">
           <input

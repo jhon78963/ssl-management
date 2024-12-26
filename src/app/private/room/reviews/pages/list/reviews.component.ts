@@ -70,36 +70,47 @@ export class ReviewsComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.columns = [
-      { header: '#', field: 'id', clickable: false, image: false },
+      {
+        header: '#',
+        field: 'id',
+        clickable: false,
+        image: false,
+        money: false,
+      },
       {
         header: 'Cliente',
         field: 'customerName',
         clickable: false,
         image: false,
+        money: false,
       },
       {
         header: 'Reseña',
         field: 'description',
         clickable: false,
         image: false,
+        money: false,
       },
       {
         header: 'Calificación',
         field: 'rating',
         clickable: false,
         image: false,
+        money: false,
       },
       {
         header: 'Habitación',
         field: 'room',
         clickable: false,
         image: false,
+        money: false,
       },
       {
         field: 'button',
         header: 'Acción',
         clickable: false,
         image: false,
+        money: false,
       },
     ];
 

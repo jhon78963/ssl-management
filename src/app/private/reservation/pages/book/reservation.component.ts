@@ -1,4 +1,4 @@
-import { CommonModule, DatePipe } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
@@ -10,10 +10,10 @@ import { ConfirmationService, MessageService } from 'primeng/api';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { DividerModule } from 'primeng/divider';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
+import { KeyFilterModule } from 'primeng/keyfilter';
 import { TabMenuModule } from 'primeng/tabmenu';
 import { TabViewModule } from 'primeng/tabview';
 import { ToastModule } from 'primeng/toast';
-import { KeyFilterModule } from 'primeng/keyfilter';
 import { Observable } from 'rxjs';
 import { SharedModule } from '../../../../shared/shared.module';
 import { showSuccess } from '../../../../utils/notifications';
@@ -25,10 +25,10 @@ import { Product } from '../../models/product.model';
 import { Service } from '../../models/service.model';
 import { ButtonClassPipe } from '../../pipes/button-class.pipe';
 import { FacilitiesService } from '../../services/facilities.service';
-import { ReservationsService } from '../../services/reservations.service';
-import { ReservationFormComponent } from '../form/reservation-form.component';
 import { ReservationProductsService } from '../../services/reservation-products.service';
 import { ReservationServicesService } from '../../services/reservation-services.service';
+import { ReservationsService } from '../../services/reservations.service';
+import { ReservationFormComponent } from '../form/reservation-form.component';
 
 @Component({
   selector: 'app-reservation.layout',
@@ -48,7 +48,7 @@ import { ReservationServicesService } from '../../services/reservation-services.
   ],
   templateUrl: './reservation.component.html',
   styleUrl: './reservation.component.scss',
-  providers: [ConfirmationService, DatePipe, DialogService, MessageService],
+  providers: [ConfirmationService, DialogService, MessageService],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ReservationBookComponent implements OnInit {
@@ -72,9 +72,9 @@ export class ReservationBookComponent implements OnInit {
   rentedTime: string | null | undefined;
   brokenThings: number | null = null;
   previousBrokenThings: number = 0;
+  notes: string | null = null;
 
   constructor(
-    private datePipe: DatePipe,
     private cdr: ChangeDetectorRef,
     private confirmationService: ConfirmationService,
     private readonly dialogService: DialogService,
@@ -119,6 +119,7 @@ export class ReservationBookComponent implements OnInit {
     this.rentedTime = undefined;
     this.brokenThings = null;
     this.previousBrokenThings = 0;
+    this.notes = null;
   }
 
   getRentedTime(startDate: string | null | undefined) {
@@ -339,12 +340,14 @@ export class ReservationBookComponent implements OnInit {
     extraHours: number,
     pricePerExtraHour: number,
     brokenThings: number | null,
+    notes: string | null,
   ) {
     this.modal = this.dialogService.open(ReservationFormComponent, {
       header: reservationId ? 'Pago total' : 'Pago',
       data: {
         customer,
         reservationId,
+        notes,
         facilities: selectedFacilities,
         products: selectedProducts,
         services: selectedServices,
