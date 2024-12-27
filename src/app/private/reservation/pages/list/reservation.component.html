@@ -1,10 +1,38 @@
 <div class="card">
-  <p-dropdown
-    [options]="reservationTypes"
-    [(ngModel)]="selectedReservationType"
-    class="w-12"
-    optionLabel="description"
-    placeholder="Seleccione tipo de reserva" />
+  <div class="flex justify-content-between">
+    <div class="flex">
+      <p-dropdown
+        class="filter-width"
+        [options]="reservationTypes"
+        [(ngModel)]="selectedReservationType"
+        optionLabel="description"
+        placeholder="Seleccione tipo de reserva"
+        (ngModelChange)="filterReservationType($event)" />
+    </div>
+
+    <div class="flex gap-3">
+      <p-calendar
+        class="filter-width"
+        [(ngModel)]="startDate"
+        dateFormat="dd/mm/yy"
+        (ngModelChange)="filterStartDate($event)" />
+
+      <p-calendar
+        class="filter-width"
+        [(ngModel)]="endDate"
+        dateFormat="dd/mm/yy"
+        (ngModelChange)="filterEndDate($event)" />
+    </div>
+
+    <div class="flex">
+      <button
+        pButton
+        pRipple
+        class="p-button-primary b-width"
+        label="Aperturar caja"
+        (click)="cash()"></button>
+    </div>
+  </div>
 
   <app-table-pagination
     [data]="(reservations | async) ?? []"

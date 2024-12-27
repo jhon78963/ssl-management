@@ -1,14 +1,16 @@
+import { CommonModule, DatePipe } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { SharedModule } from '../../../../shared/shared.module';
-import { CommonModule } from '@angular/common';
-import { CallToAction, Column } from '../../../../interfaces/table.interface';
-import { Reservation } from '../../models/reservation.model';
-import { debounceTime, Observable, Subject } from 'rxjs';
 import { PaginatorState } from 'primeng/paginator';
-import { ReservationsService } from '../../services/reservations.service';
+import { Observable } from 'rxjs';
+import { CallToAction, Column } from '../../../../interfaces/table.interface';
 import { LoadingService } from '../../../../services/loading.service';
-import { ReservationTypesService } from '../../services/reservation-types.service';
+import { SharedModule } from '../../../../shared/shared.module';
 import { ReservationType } from '../../models/reservation-type.model';
+import { Reservation } from '../../models/reservation.model';
+import { ReservationTypesService } from '../../services/reservation-types.service';
+import { ReservationsService } from '../../services/reservations.service';
+import { DialogService } from 'primeng/dynamicdialog';
+import { CashComponent } from '../../components/cash/cash.component';
 
 @Component({
   selector: 'app-reservation',
@@ -16,6 +18,7 @@ import { ReservationType } from '../../models/reservation-type.model';
   imports: [CommonModule, SharedModule],
   templateUrl: './reservation.component.html',
   styleUrl: './reservation.component.scss',
+  providers: [DatePipe, DialogService],
 })
 export class ReservationListComponent implements OnInit {
   columns: Column[] = [
@@ -101,14 +104,15 @@ export class ReservationListComponent implements OnInit {
   data: any[] = [];
   limit: number = 10;
   page: number = 1;
-  description: string = '';
+  startDate: Date = new Date();
+  endDate: Date = new Date();
   callToAction: CallToAction<Reservation>[] = [];
-  reservationTypes: ReservationType[] = [];
-  selectedReservationType: ReservationType = { id: 0, description: '' };
-
-  private searchTermSubject = new Subject<string>();
+  reservationTypes: ReservationType[] = [{ id: 0, description: 'Todos' }];
+  selectedReservationType: ReservationType = this.reservationTypes[0];
 
   constructor(
+    private readonly datePipe: DatePipe,
+    private readonly dialogService: DialogService,
     private readonly reservationsService: ReservationsService,
     private readonly reservationTypesService: ReservationTypesService,
     private loadingService: LoadingService,
@@ -116,37 +120,79 @@ export class ReservationListComponent implements OnInit {
 
   ngOnInit(): void {
     this.getReservationTypes();
-    this.getReservations(this.limit, this.page, this.description);
-    this.searchTermSubject.pipe(debounceTime(600)).subscribe(() => {
-      this.loadingService.sendLoadingState(true);
-      this.getReservations(this.limit, this.page, this.description);
-    });
-  }
-
-  clearFilter(): void {
-    this.description = '';
-    this.onSearchTermChange('');
-  }
-
-  onSearchTermChange(term: any): void {
-    this.searchTermSubject.next(term);
+    this.getReservations(
+      this.limit,
+      this.page,
+      this.selectedReservationType.id,
+      this.parseDate(this.startDate),
+      this.parseDate(this.endDate),
+    );
   }
 
   getReservationTypes() {
     this.reservationTypesService.getReservationTypes().subscribe({
       next: (reservationTypes: ReservationType[]) => {
         this.reservationTypes = reservationTypes;
+        this.selectedReservationType = this.reservationTypes[0];
       },
+    });
+  }
+
+  parseDate(startDate: Date) {
+    return this.datePipe.transform(startDate, 'yyyy-MM-dd');
+  }
+
+  filterReservationType(reservationType: ReservationType) {
+    this.getReservations(
+      this.limit,
+      this.page,
+      reservationType.id,
+      this.parseDate(this.startDate),
+      this.parseDate(this.endDate),
+    );
+  }
+
+  filterStartDate(startDate: Date) {
+    this.getReservations(
+      this.limit,
+      this.page,
+      this.selectedReservationType.id,
+      this.parseDate(startDate),
+      this.parseDate(this.endDate),
+    );
+  }
+
+  filterEndDate(endDate: Date) {
+    this.getReservations(
+      this.limit,
+      this.page,
+      this.selectedReservationType.id,
+      this.parseDate(this.startDate),
+      this.parseDate(endDate),
+    );
+  }
+
+  cash() {
+    const modalRef = this.dialogService.open(CashComponent, {
+      header: 'Caja',
+    });
+
+    modalRef.onClose.subscribe({
+      next: () => {},
     });
   }
 
   async getReservations(
     limit = this.limit,
     page = this.page,
-    description = this.description,
+    reservationType = this.selectedReservationType.id,
+    startDate = this.parseDate(this.startDate),
+    endDate = this.parseDate(this.endDate),
   ): Promise<void> {
     this.updatePage(page);
-    this.reservationsService.callGetList(limit, page, description).subscribe();
+    this.reservationsService
+      .callGetList(limit, page, reservationType, startDate, endDate)
+      .subscribe();
     setTimeout(() => {
       this.loadingService.sendLoadingState(false);
     }, 600);

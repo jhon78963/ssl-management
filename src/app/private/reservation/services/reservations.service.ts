@@ -33,11 +33,19 @@ export class ReservationsService {
   callGetList(
     limit: number = 10,
     page: number = 1,
-    date: string = '',
+    reservationType: number = 0,
+    startDate: string | null = null,
+    endDate: string | null = null,
   ): Observable<void> {
     let url = `reservations?limit=${limit}&page=${page}`;
-    if (date) {
-      url += `&search=${date}`;
+    if (reservationType != 0) {
+      url += `&search=${reservationType}`;
+    }
+    if (startDate) {
+      url += `&startDate=${startDate}`;
+    }
+    if (endDate) {
+      url += `&endDate=${endDate}`;
     }
     return this.apiService.get<ReservationListResponse>(url).pipe(
       debounceTime(600),
