@@ -1,5 +1,6 @@
 import { CommonModule, DatePipe } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
+import { DialogService } from 'primeng/dynamicdialog';
 import { PaginatorState } from 'primeng/paginator';
 import { Observable } from 'rxjs';
 import { CallToAction, Column } from '../../../../interfaces/table.interface';
@@ -7,10 +8,9 @@ import { LoadingService } from '../../../../services/loading.service';
 import { SharedModule } from '../../../../shared/shared.module';
 import { ReservationType } from '../../models/reservation-type.model';
 import { Reservation } from '../../models/reservation.model';
+import { ReservationExportsService } from '../../services/reservation-exports.service';
 import { ReservationTypesService } from '../../services/reservation-types.service';
 import { ReservationsService } from '../../services/reservations.service';
-import { DialogService } from 'primeng/dynamicdialog';
-import { CashComponent } from '../../components/cash/cash.component';
 
 @Component({
   selector: 'app-reservation',
@@ -112,9 +112,9 @@ export class ReservationListComponent implements OnInit {
 
   constructor(
     private readonly datePipe: DatePipe,
-    private readonly dialogService: DialogService,
     private readonly reservationsService: ReservationsService,
     private readonly reservationTypesService: ReservationTypesService,
+    private readonly reservationExportsService: ReservationExportsService,
     private loadingService: LoadingService,
   ) {}
 
@@ -172,16 +172,6 @@ export class ReservationListComponent implements OnInit {
     );
   }
 
-  cash() {
-    const modalRef = this.dialogService.open(CashComponent, {
-      header: 'Caja',
-    });
-
-    modalRef.onClose.subscribe({
-      next: () => {},
-    });
-  }
-
   async getReservations(
     limit = this.limit,
     page = this.page,
@@ -196,6 +186,25 @@ export class ReservationListComponent implements OnInit {
     setTimeout(() => {
       this.loadingService.sendLoadingState(false);
     }, 600);
+  }
+
+  export() {
+    this.reservationExportsService
+      .export(this.parseDate(this.startDate), this.parseDate(this.endDate))
+      .subscribe({
+        next: (data: any) => {
+          const blob = new Blob([data], {
+            type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+          });
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `export.xlsx`;
+          document.body.appendChild(a);
+          a.click();
+          window.URL.revokeObjectURL(url);
+        },
+      });
   }
 
   get reservations(): Observable<Reservation[]> {

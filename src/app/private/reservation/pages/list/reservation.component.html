@@ -24,7 +24,14 @@
         (ngModelChange)="filterEndDate($event)" />
     </div>
 
-    <div class="flex"></div>
+    <div class="flex">
+      <button
+        pButton
+        pRipple
+        class="p-button-primary"
+        label="Exportar"
+        (click)="export()"></button>
+    </div>
   </div>
 
   <app-table-pagination
