@@ -1,7 +1,7 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { DialogService } from 'primeng/dynamicdialog';
-import { Observable } from 'rxjs';
+import { Observable, take } from 'rxjs';
 import { AuthService } from '../../../auth/services/auth.service';
 import { CashComponent } from '../../../private/reservation/components/cash/cash.component';
 import { CashService } from '../../../private/reservation/services/cash.service';
@@ -45,7 +45,7 @@ export class AppTopbarComponent implements OnInit {
   }
 
   cash() {
-    this.cashType.subscribe({
+    this.cashType.pipe(take(1)).subscribe({
       next: (cashType: CashType) => {
         this.dialogService.open(CashComponent, {
           header: cashType.label,
