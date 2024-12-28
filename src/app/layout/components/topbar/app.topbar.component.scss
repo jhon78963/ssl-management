@@ -1,0 +1,24 @@
+::ng-deep {
+  @media screen and (min-width: 992px) {
+    .layout-container.layout-horizontal .layout-topbar .topbar-end {
+      width: 22rem;
+    }
+  }
+
+  .layout-topbar .topbar-menu {
+    padding: 0 1.15rem 0 0 !important;
+
+    li.topbar-item {
+      margin-left: 0;
+    }
+  }
+
+  .bt-width {
+    width: 10rem;
+    font-size: 12px;
+  }
+}
+
+.font-size {
+  font-size: 12px;
+}

@@ -1,7 +1,7 @@
 @if (form) {
-  <form [formGroup]="form" (ngSubmit)="cashSaveButton()" class="pt-2">
-    <div class="p-fluid p-formgrid grid">
-      <div class="field col-12 md:col-6">
+  <form [formGroup]="form" (ngSubmit)="cashSaveButton()" class="mt-1">
+    <div class="p-fluid p-formgrid grid mt-3">
+      <div class="field col-12 md:col-6" *ngIf="cashType.id === 1">
         <app-input-text
           class="w-full"
           label="Caja chica"
@@ -12,16 +12,27 @@
           controlName="pettyCashAmount"
           pKeyFilter="num"></app-input-text>
       </div>
-      <div class="field col-12 md:col-6">
+      <div
+        [class]="cashType.id === 1 ? 'field col-12 md:col-6' : 'field col-12'">
         <app-input-text
           class="w-full"
-          label="Monto inicial"
-          for="initialAmount"
+          label="Monto"
+          for="amount"
           type="text"
-          id="initialAmount"
-          placeholder="Ingrese monto inicial"
-          controlName="initialAmount"
+          id="amount"
+          placeholder="Ingrese monto"
+          controlName="amount"
           pKeyFilter="num"></app-input-text>
+      </div>
+      <div class="field col-12" *ngIf="cashType.id === 1">
+        <app-input-text
+          class="w-full"
+          label="Personal"
+          for="name"
+          type="text"
+          id="name"
+          placeholder="Ingrese nombre del personal"
+          controlName="name"></app-input-text>
       </div>
       <button
         type="submit"

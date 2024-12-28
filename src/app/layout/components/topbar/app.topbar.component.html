@@ -11,7 +11,14 @@
   <div class="layout-topbar-menu-section">
     <app-sidebar></app-sidebar>
   </div>
-  <div class="topbar-end">
+  <div class="topbar-end flex align-items-center justify-content-end gap-3">
+    <span class="font-size">Caja: S/ {{ total | async }}</span>
+    <button
+      pButton
+      pRipple
+      class="p-button-primary bt-width"
+      [label]="(cashType | async)?.label ?? ''"
+      (click)="cash()"></button>
     <ul class="topbar-menu">
       <li class="topbar-item">
         <a

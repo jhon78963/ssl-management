@@ -22,6 +22,7 @@ import { ReservationProductsService } from '../../services/reservation-products.
 import { ReservationRoomsService } from '../../services/reservation-rooms.service';
 import { ReservationServicesService } from '../../services/reservation-services.service';
 import { ReservationsService } from '../../services/reservations.service';
+import { CashService } from '../../services/cash.service';
 
 @Component({
   selector: 'app-reservation-form',
@@ -73,6 +74,7 @@ export class ReservationFormComponent implements OnInit {
   pending: number = 0;
 
   constructor(
+    private readonly cashService: CashService,
     private readonly datePipe: DatePipe,
     private readonly dynamicDialogConfig: DynamicDialogConfig,
     private readonly dynamicDialogRef: DynamicDialogRef,
@@ -754,5 +756,6 @@ export class ReservationFormComponent implements OnInit {
     this.card = 0;
     this.advance = 0;
     this.pending = 0;
+    this.cashService.getCashTotal().subscribe();
   }
 }

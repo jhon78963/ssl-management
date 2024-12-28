@@ -80,9 +80,9 @@ export class ReservationBookComponent implements OnInit {
     private readonly dialogService: DialogService,
     private readonly facilitiesService: FacilitiesService,
     private readonly messageService: MessageService,
-    private readonly reservationsService: ReservationsService,
     private readonly reservationProductsService: ReservationProductsService,
     private readonly reservationServicesService: ReservationServicesService,
+    private readonly reservationsService: ReservationsService,
   ) {}
 
   ngOnInit(): void {
@@ -164,7 +164,8 @@ export class ReservationBookComponent implements OnInit {
         if (rented.hours > 0) {
           this.extraHours = rented.hours;
           this.total +=
-            reservation.facilities[0].pricePerExtraHour * this.extraHours;
+            (reservation.facilities[0].pricePerExtraHour ?? 0) *
+            this.extraHours;
         }
         this.customer = reservation.customer;
         this.selectedProducts = reservation.products;
