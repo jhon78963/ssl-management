@@ -190,7 +190,8 @@
           ? addFacility(facility)
           : showFacility(facility)
       "
-      [ngClass]="facility | buttonClass: isSelected(facility)"></button>
+      [ngClass]="facility | buttonClass: isSelected(facility)"
+      [disabled]="(cashType | async)?.id === 1"></button>
   }
 </div>
 

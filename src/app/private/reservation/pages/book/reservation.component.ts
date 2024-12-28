@@ -29,6 +29,8 @@ import { ReservationProductsService } from '../../services/reservation-products.
 import { ReservationServicesService } from '../../services/reservation-services.service';
 import { ReservationsService } from '../../services/reservations.service';
 import { ReservationFormComponent } from '../form/reservation-form.component';
+import { CashService } from '../../services/cash.service';
+import { CashType } from '../../models/cash.model';
 
 @Component({
   selector: 'app-reservation.layout',
@@ -83,10 +85,16 @@ export class ReservationBookComponent implements OnInit {
     private readonly reservationProductsService: ReservationProductsService,
     private readonly reservationServicesService: ReservationServicesService,
     private readonly reservationsService: ReservationsService,
+    private readonly cashService: CashService,
   ) {}
 
   ngOnInit(): void {
     this.getFacilities();
+    this.cashService.getCashTotal().subscribe();
+  }
+
+  get cashType(): Observable<CashType> {
+    return this.cashService.getCashType();
   }
 
   async getFacilities(): Promise<void> {
