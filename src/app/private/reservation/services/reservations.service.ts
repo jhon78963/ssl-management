@@ -34,12 +34,16 @@ export class ReservationsService {
     limit: number = 10,
     page: number = 1,
     reservationType: number = 0,
+    schedule: number = 0,
     startDate: string | null = null,
     endDate: string | null = null,
   ): Observable<void> {
     let url = `reservations?limit=${limit}&page=${page}`;
     if (reservationType != 0) {
-      url += `&search=${reservationType}`;
+      url += `&reservationType=${reservationType}`;
+    }
+    if (schedule != 0) {
+      url += `&schedule=${schedule}`;
     }
     if (startDate) {
       url += `&startDate=${startDate}`;

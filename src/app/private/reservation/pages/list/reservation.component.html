@@ -1,6 +1,6 @@
 <div class="card">
   <div class="flex justify-content-between">
-    <div class="flex">
+    <div class="flex gap-3">
       <p-dropdown
         class="filter-width"
         [options]="reservationTypes"
@@ -8,6 +8,13 @@
         optionLabel="description"
         placeholder="Seleccione tipo de reserva"
         (ngModelChange)="filterReservationType($event)" />
+      <p-dropdown
+        class="filter-width"
+        [options]="schedules"
+        [(ngModel)]="selectedSchedule"
+        optionLabel="description"
+        placeholder="Seleccione turno"
+        (ngModelChange)="filterSchedule($event)" />
     </div>
 
     <div class="flex gap-3">

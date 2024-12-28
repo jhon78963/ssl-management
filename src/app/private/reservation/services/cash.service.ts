@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { ApiService } from '../../../services/api.service';
 import { BehaviorSubject, map, Observable } from 'rxjs';
+import { ApiService } from '../../../services/api.service';
 import {
   Cash,
   CashOperation,
@@ -9,6 +9,7 @@ import {
   CashUpdate,
   CurrentCash,
 } from '../models/cash.model';
+import { Schedule } from '../models/schedule.model';
 
 @Injectable({
   providedIn: 'root',
@@ -72,5 +73,9 @@ export class CashService {
 
   currentCash(): Observable<CurrentCash> {
     return this.apiService.get('cashes/currentCash');
+  }
+
+  currentSchedule(): Observable<Schedule> {
+    return this.apiService.get('cashes/currentSchedule');
   }
 }

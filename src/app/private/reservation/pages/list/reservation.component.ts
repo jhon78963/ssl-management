@@ -11,6 +11,9 @@ import { Reservation } from '../../models/reservation.model';
 import { ReservationExportsService } from '../../services/reservation-exports.service';
 import { ReservationTypesService } from '../../services/reservation-types.service';
 import { ReservationsService } from '../../services/reservations.service';
+import { ReservationSchedulesService } from '../../services/reservation-schedules.service';
+import { Schedule } from '../../models/schedule.model';
+import { CashService } from '../../services/cash.service';
 
 @Component({
   selector: 'app-reservation',
@@ -22,13 +25,6 @@ import { ReservationsService } from '../../services/reservations.service';
 })
 export class ReservationListComponent implements OnInit {
   columns: Column[] = [
-    {
-      header: '#',
-      field: 'id',
-      clickable: false,
-      image: false,
-      money: false,
-    },
     {
       header: 'Fecha de entrada',
       field: 'initialReservationDate',
@@ -44,8 +40,22 @@ export class ReservationListComponent implements OnInit {
       money: false,
     },
     {
+      header: 'Caja',
+      field: 'cash',
+      clickable: false,
+      image: false,
+      money: false,
+    },
+    {
       header: 'Tipo de reserva',
       field: 'reservationType',
+      clickable: false,
+      image: false,
+      money: false,
+    },
+    {
+      header: 'Turno',
+      field: 'schedule',
       clickable: false,
       image: false,
       money: false,
@@ -109,21 +119,27 @@ export class ReservationListComponent implements OnInit {
   callToAction: CallToAction<Reservation>[] = [];
   reservationTypes: ReservationType[] = [{ id: 0, description: 'Todos' }];
   selectedReservationType: ReservationType = this.reservationTypes[0];
+  schedules: Schedule[] = [{ id: 0, description: 'Todos' }];
+  selectedSchedule: Schedule = this.schedules[0];
 
   constructor(
     private readonly datePipe: DatePipe,
     private readonly reservationsService: ReservationsService,
     private readonly reservationTypesService: ReservationTypesService,
+    private readonly reservationSchedulesService: ReservationSchedulesService,
     private readonly reservationExportsService: ReservationExportsService,
+    private readonly cashService: CashService,
     private loadingService: LoadingService,
   ) {}
 
   ngOnInit(): void {
     this.getReservationTypes();
+    this.getSchedules();
     this.getReservations(
       this.limit,
       this.page,
       this.selectedReservationType.id,
+      this.selectedSchedule.id,
       this.parseDate(this.startDate),
       this.parseDate(this.endDate),
     );
@@ -138,15 +154,50 @@ export class ReservationListComponent implements OnInit {
     });
   }
 
+  getSchedules() {
+    this.reservationSchedulesService.getSchedules().subscribe({
+      next: (schedules: Schedule[]) => {
+        this.schedules = schedules;
+      },
+    });
+    this.cashService.currentSchedule().subscribe({
+      next: (schedule: Schedule) => {
+        this.selectedSchedule = schedule;
+        this.getReservations(
+          this.limit,
+          this.page,
+          this.selectedReservationType.id,
+          this.selectedSchedule.id,
+          this.parseDate(this.startDate),
+          this.parseDate(this.endDate),
+        );
+      },
+    });
+  }
+
   parseDate(startDate: Date) {
     return this.datePipe.transform(startDate, 'yyyy-MM-dd');
   }
 
   filterReservationType(reservationType: ReservationType) {
+    this.selectedReservationType = reservationType;
     this.getReservations(
       this.limit,
       this.page,
-      reservationType.id,
+      this.selectedReservationType.id,
+      this.selectedSchedule.id,
+      this.parseDate(this.startDate),
+      this.parseDate(this.endDate),
+    );
+  }
+
+  filterSchedule(schedule: Schedule) {
+    this.selectedSchedule = schedule;
+    this.getReservations(
+      this.limit,
+      this.page,
+      this.selectedReservationType.id,
+      this.selectedSchedule.id,
       this.parseDate(this.startDate),
       this.parseDate(this.endDate),
     );
@@ -157,6 +208,7 @@ export class ReservationListComponent implements OnInit {
       this.limit,
       this.page,
       this.selectedReservationType.id,
+      this.selectedSchedule.id,
       this.parseDate(startDate),
       this.parseDate(this.endDate),
     );
@@ -167,6 +219,7 @@ export class ReservationListComponent implements OnInit {
       this.limit,
       this.page,
       this.selectedReservationType.id,
+      this.selectedSchedule.id,
       this.parseDate(this.startDate),
       this.parseDate(endDate),
     );
@@ -176,12 +229,13 @@ export class ReservationListComponent implements OnInit {
     limit = this.limit,
     page = this.page,
     reservationType = this.selectedReservationType.id,
+    schedule = this.selectedSchedule.id,
     startDate = this.parseDate(this.startDate),
     endDate = this.parseDate(this.endDate),
   ): Promise<void> {
     this.updatePage(page);
     this.reservationsService
-      .callGetList(limit, page, reservationType, startDate, endDate)
+      .callGetList(limit, page, reservationType, schedule, startDate, endDate)
       .subscribe();
     setTimeout(() => {
       this.loadingService.sendLoadingState(false);
@@ -190,7 +244,12 @@ export class ReservationListComponent implements OnInit {
 
   export() {
     this.reservationExportsService
-      .export(this.parseDate(this.startDate), this.parseDate(this.endDate))
+      .export(
+        this.parseDate(this.startDate),
+        this.parseDate(this.endDate),
+        this.selectedReservationType.id.toString(),
+        this.selectedSchedule.id!.toString(),
+      )
       .subscribe({
         next: (data: any) => {
           const blob = new Blob([data], {
