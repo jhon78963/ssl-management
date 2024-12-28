@@ -12,9 +12,12 @@
     <app-sidebar></app-sidebar>
   </div>
   <div class="topbar-end flex align-items-center justify-content-end gap-3">
-    <span class="font-size" *ngIf="(cashType | async)?.id !== 1"
-      >Caja: S/ {{ total | async }}</span
-    >
+    @if ((cashType | async)?.id !== 1) {
+      <div class="flex flex-column">
+        <span class="font-size"> Caja </span>
+        <span class="font-size">S/ {{ total | async }} </span>
+      </div>
+    }
     <button
       pButton
       pRipple
