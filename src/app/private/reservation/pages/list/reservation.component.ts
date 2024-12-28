@@ -158,19 +158,21 @@ export class ReservationListComponent implements OnInit {
     this.reservationSchedulesService.getSchedules().subscribe({
       next: (schedules: Schedule[]) => {
         this.schedules = schedules;
-      },
-    });
-    this.cashService.currentSchedule().subscribe({
-      next: (schedule: Schedule) => {
-        this.selectedSchedule = schedule;
-        this.getReservations(
-          this.limit,
-          this.page,
-          this.selectedReservationType.id,
-          this.selectedSchedule.id,
-          this.parseDate(this.startDate),
-          this.parseDate(this.endDate),
-        );
+        if (schedules.length > 1) {
+          this.cashService.currentSchedule().subscribe({
+            next: (schedule: Schedule) => {
+              this.selectedSchedule = schedule;
+              this.getReservations(
+                this.limit,
+                this.page,
+                this.selectedReservationType.id,
+                this.selectedSchedule.id,
+                this.parseDate(this.startDate),
+                this.parseDate(this.endDate),
+              );
+            },
+          });
+        }
       },
     });
   }
