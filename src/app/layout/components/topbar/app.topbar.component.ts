@@ -44,6 +44,10 @@ export class AppTopbarComponent implements OnInit {
     return this.cashService.getCashType();
   }
 
+  get disableCash(): Observable<boolean> {
+    return this.cashService.getCashDisabled();
+  }
+
   cash() {
     this.cashType.pipe(take(1)).subscribe({
       next: (cashType: CashType) => {

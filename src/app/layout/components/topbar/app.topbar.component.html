@@ -23,7 +23,8 @@
       pRipple
       class="p-button-primary bt-width"
       [label]="(cashType | async)?.label ?? ''"
-      (click)="cash()"></button>
+      (click)="cash()"
+      [disabled]="disableCash"></button>
     <ul class="topbar-menu">
       <li class="topbar-item">
         <a
