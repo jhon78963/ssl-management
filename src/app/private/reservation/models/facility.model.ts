@@ -14,6 +14,10 @@ export interface Facility {
   reservation?: number;
 }
 
+export interface FacilityCount {
+  count: number;
+}
+
 export interface Paginate {
   total: number;
   pages: number;

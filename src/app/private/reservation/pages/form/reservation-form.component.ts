@@ -757,5 +757,6 @@ export class ReservationFormComponent implements OnInit {
     this.advance = 0;
     this.pending = 0;
     this.cashService.getCashTotal().subscribe();
+    this.facilitiesService.countFacilities().subscribe();
   }
 }

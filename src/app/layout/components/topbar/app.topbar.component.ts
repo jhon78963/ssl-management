@@ -8,6 +8,7 @@ import { CashService } from '../../../private/reservation/services/cash.service'
 import { LayoutService } from '../../services/app.layout.service';
 import { AppSidebarComponent } from '../sidebar/app.sidebar.component';
 import { CashType } from '../../../private/reservation/models/cash.model';
+import { FacilitiesService } from '../../../private/reservation/services/facilities.service';
 
 @Component({
   selector: 'app-topbar',
@@ -25,6 +26,7 @@ export class AppTopbarComponent implements OnInit {
   constructor(
     private readonly authService: AuthService,
     private readonly cashService: CashService,
+    private readonly facilitiesService: FacilitiesService,
     private readonly dialogService: DialogService,
     private readonly router: Router,
     public el: ElementRef,
@@ -34,6 +36,7 @@ export class AppTopbarComponent implements OnInit {
   ngOnInit(): void {
     this.cashService.getCashTotal().subscribe();
     this.cashService.getCashValidate().subscribe();
+    this.facilitiesService.countFacilities().subscribe();
   }
 
   get total(): Observable<number> {
@@ -44,8 +47,8 @@ export class AppTopbarComponent implements OnInit {
     return this.cashService.getCashType();
   }
 
-  get disableCash(): Observable<boolean> {
-    return this.cashService.getCashDisabled();
+  get countFacilities(): Observable<number> {
+    return this.facilitiesService.getCount();
   }
 
   cash() {

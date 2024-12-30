@@ -13,9 +13,13 @@
   </div>
   <div class="topbar-end flex align-items-center justify-content-end gap-3">
     @if ((cashType | async)?.id !== 1) {
-      <div class="flex flex-column">
-        <span class="font-size"> Caja </span>
+      <div class="flex flex-column text-center">
+        <span class="font-size">Caja</span>
         <span class="font-size">S/ {{ total | async }} </span>
+      </div>
+      <div class="flex flex-column text-center">
+        <span class="font-size">Reservas</span>
+        <span class="font-size">{{ countFacilities | async }} </span>
       </div>
     }
     <button
@@ -24,7 +28,7 @@
       class="p-button-primary bt-width"
       [label]="(cashType | async)?.label ?? ''"
       (click)="cash()"
-      [disabled]="disableCash"></button>
+      [disabled]="(countFacilities | async) !== 0"></button>
     <ul class="topbar-menu">
       <li class="topbar-item">
         <a

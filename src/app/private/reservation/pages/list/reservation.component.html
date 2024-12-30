@@ -1,5 +1,5 @@
 <div class="card">
-  <div class="flex justify-content-between">
+  <div class="flex align-items-center">
     <div class="flex gap-3">
       <p-dropdown
         class="filter-width"
@@ -15,9 +15,28 @@
         optionLabel="description"
         placeholder="Seleccione turno"
         (ngModelChange)="filterSchedule($event)" />
+
+      <p-calendar
+        class="filter-width"
+        [(ngModel)]="startDate"
+        dateFormat="dd/mm/yy"
+        (ngModelChange)="filterStartDate($event)" />
+
+      <p-calendar
+        class="filter-width"
+        [(ngModel)]="endDate"
+        dateFormat="dd/mm/yy"
+        (ngModelChange)="filterEndDate($event)" />
+
+      <button
+        pButton
+        pRipple
+        class="p-button-primary"
+        label="Exportar"
+        (click)="export()"></button>
     </div>
 
-    <div class="flex gap-3">
+    <!-- <div class="flex gap-3">
       <p-calendar
         class="filter-width"
         [(ngModel)]="startDate"
@@ -38,7 +57,7 @@
         class="p-button-primary"
         label="Exportar"
         (click)="export()"></button>
-    </div>
+    </div> -->
   </div>
 
   <app-table-pagination

@@ -61,7 +61,7 @@ export class ReservationListComponent implements OnInit {
       money: false,
     },
     {
-      header: 'Locker/Room',
+      header: 'L/H',
       field: 'facilitiesImport',
       clickable: false,
       image: false,

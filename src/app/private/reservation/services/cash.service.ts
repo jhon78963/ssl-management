@@ -23,11 +23,6 @@ export class CashService {
     this.cashType,
   );
 
-  disabled: boolean = false;
-  disabled$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(
-    this.disabled,
-  );
-
   constructor(private apiService: ApiService) {}
 
   getCashTotal(): Observable<void> {
@@ -54,10 +49,6 @@ export class CashService {
     return this.cashType$.asObservable();
   }
 
-  getCashDisabled(): Observable<boolean> {
-    return this.disabled$.asObservable();
-  }
-
   updateCashTotal(mount: number): void {
     this.total = mount;
     this.total$.next(mount);
@@ -66,11 +57,6 @@ export class CashService {
   updateCashType(cashType: CashType): void {
     this.cashType = cashType;
     this.cashType$.next(cashType);
-  }
-
-  updateCashValidate(disabled: boolean): void {
-    this.disabled = disabled;
-    this.disabled$.next(disabled);
   }
 
   createOperation(body: CashOperation): Observable<void> {
