@@ -26,7 +26,7 @@ export class CashService {
   constructor(private apiService: ApiService) {}
 
   getCashTotal(): Observable<void> {
-    return this.apiService.get<CashTotal>(`cashes/total`).pipe(
+    return this.apiService.get<CashTotal>(`cash-operations/total`).pipe(
       map((cash: CashTotal) => {
         this.updateCashTotal(cash.total);
       }),
@@ -38,7 +38,7 @@ export class CashService {
   }
 
   getCashValidate(): Observable<void> {
-    return this.apiService.get<CashType>(`cashes/validate`).pipe(
+    return this.apiService.get<CashType>(`cash-types/get`).pipe(
       map((cash: CashType) => {
         this.updateCashType(cash);
       }),
@@ -60,7 +60,7 @@ export class CashService {
   }
 
   createOperation(body: CashOperation): Observable<void> {
-    return this.apiService.post('cashes/operation', body);
+    return this.apiService.post('cash-operations', body);
   }
 
   createCash(body: Cash): Observable<void> {
@@ -72,10 +72,10 @@ export class CashService {
   }
 
   currentCash(): Observable<CurrentCash> {
-    return this.apiService.get('cashes/currentCash');
+    return this.apiService.get('cashes/current');
   }
 
   currentSchedule(): Observable<Schedule> {
-    return this.apiService.get('cashes/currentSchedule');
+    return this.apiService.get('schedules/current');
   }
 }
