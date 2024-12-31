@@ -1,8 +1,11 @@
-import { HttpInterceptorFn, HttpErrorResponse } from '@angular/common/http';
+import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
-import { catchError, switchMap, throwError } from 'rxjs';
-import { AuthService } from './auth.service';
 import { Router } from '@angular/router';
+import { Subject, catchError, switchMap, throwError } from 'rxjs';
+import { AuthService } from './auth.service';
+
+let refreshTokenInProgress = false;
+let refreshTokenSubject: Subject<any> = new Subject<any>();
 
 export const tokenInterceptor: HttpInterceptorFn = (request, next) => {
   const authService = inject(AuthService);
@@ -33,26 +36,49 @@ export const tokenInterceptor: HttpInterceptorFn = (request, next) => {
         tokenData &&
         tokenData.refreshToken
       ) {
-        return authService
-          .refreshToken(tokenData.refreshToken, tokenData.token)
-          .pipe(
-            switchMap((response: any) => {
-              localStorage.setItem('tokenData', JSON.stringify(response));
-              const newRequest = request.clone({
-                setHeaders: {
-                  Authorization: `Bearer ${response.token}`,
-                },
-              });
-
-              return next(newRequest);
-            }),
-            catchError(refreshError => {
-              console.error('Error refreshing token:', refreshError);
-              localStorage.clear();
-              router.navigate(['auth']);
-              return throwError(() => refreshError);
+        if (refreshTokenInProgress) {
+          return refreshTokenSubject.pipe(
+            switchMap(token => {
+              return next(
+                request.clone({
+                  setHeaders: {
+                    Authorization: `Bearer ${token}`,
+                  },
+                }),
+              );
             }),
           );
+        } else {
+          refreshTokenInProgress = true;
+          refreshTokenSubject = new Subject<any>();
+          return authService
+            .refreshToken(tokenData.refreshToken, tokenData.token)
+            .pipe(
+              switchMap((response: any) => {
+                refreshTokenInProgress = false;
+                refreshTokenSubject.next(response.token);
+                refreshTokenSubject.complete();
+
+                localStorage.setItem('tokenData', JSON.stringify(response));
+
+                return next(
+                  request.clone({
+                    setHeaders: {
+                      Authorization: `Bearer ${response.token}`,
+                    },
+                  }),
+                );
+              }),
+              catchError(refreshError => {
+                refreshTokenInProgress = false;
+                refreshTokenSubject.error(refreshError);
+                console.error('Error refreshing token:', refreshError);
+                localStorage.clear();
+                router.navigate(['auth']);
+                return throwError(() => refreshError);
+              }),
+            );
+        }
       }
       return throwError(() => error);
     }),
