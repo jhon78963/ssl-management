@@ -10,6 +10,6 @@ export class ReservationSchedulesService {
   constructor(private apiService: ApiService) {}
 
   getSchedules(): Observable<Schedule[]> {
-    return this.apiService.get(`reservations/schedules`);
+    return this.apiService.get(`schedules`);
   }
 }

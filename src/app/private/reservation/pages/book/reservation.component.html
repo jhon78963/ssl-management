@@ -34,7 +34,7 @@
           [label]="reservationId ? 'Pagar todo' : 'Pagar'"
           class="ml-1"
           (click)="
-            buttonSaveReservation(
+            saveReservationButton(
               customer,
               reservationId,
               selectedPaymentTypes,
@@ -50,6 +50,15 @@
             )
           "
           [disabled]="!isPaid"></button>
+        @if (this.pricePerAdditionalPerson > 0) {
+          <button
+            pButton
+            pRipple
+            label="Reservar"
+            class="ml-1"
+            (click)="saveBookingButton(customer, selectedFacilities, notes)"
+            [disabled]="!isPaid"></button>
+        }
       </div>
 
       <div class="card">

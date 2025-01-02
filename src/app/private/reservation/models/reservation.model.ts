@@ -1,7 +1,7 @@
 export interface IReservation {
   id?: number;
-  initialReservationDate?: string | null;
-  finalReservationDate?: string | null;
+  startDate?: string | null;
+  endDate?: string | null;
   total: number;
   totalPaid: number;
   reservationTypeId?: number;
@@ -25,8 +25,8 @@ export interface IReservation {
 
 export class Reservation {
   id?: number;
-  initialReservationDate?: string | null;
-  finalReservationDate?: string | null;
+  startDate?: string | null;
+  endDate?: string | null;
   total: number;
   reservationTypeId?: number;
   status?: string;
@@ -40,8 +40,8 @@ export class Reservation {
 
   constructor(reservation: IReservation) {
     this.id = reservation.id;
-    this.initialReservationDate = reservation.initialReservationDate;
-    this.finalReservationDate = reservation.finalReservationDate;
+    this.startDate = reservation.startDate;
+    this.endDate = reservation.endDate;
     this.total = reservation.total;
     this.customerId = reservation.customerId;
     this.products = reservation.products;
@@ -57,8 +57,8 @@ export class Reservation {
 
 export class RoomReservation {
   id?: number;
-  initialReservationDate?: string | null;
-  finalReservationDate?: string | null;
+  startDate?: string | null;
+  endDate?: string | null;
   total: number;
   totalPaid: number;
   reservationTypeId: number;
@@ -76,8 +76,8 @@ export class RoomReservation {
   notes?: string;
   constructor(reservation: IReservation) {
     this.id = reservation.id;
-    this.initialReservationDate = reservation.initialReservationDate;
-    this.finalReservationDate = reservation.finalReservationDate;
+    this.startDate = reservation.startDate;
+    this.endDate = reservation.endDate;
     this.total = reservation.total;
     this.totalPaid = reservation.totalPaid;
     this.customerId = reservation.customerId;
@@ -96,8 +96,8 @@ export class RoomReservation {
 
 export class LockerReservation {
   id?: number;
-  initialReservationDate?: string | null;
-  finalReservationDate?: string | null;
+  startDate?: string | null;
+  endDate?: string | null;
   total: number;
   totalPaid: number;
   customerId?: number;
@@ -113,8 +113,8 @@ export class LockerReservation {
   notes?: string;
   constructor(reservation: IReservation) {
     this.id = reservation.id;
-    this.initialReservationDate = reservation.initialReservationDate;
-    this.finalReservationDate = reservation.finalReservationDate;
+    this.startDate = reservation.startDate;
+    this.endDate = reservation.endDate;
     this.total = reservation.total;
     this.totalPaid = reservation.totalPaid;
     this.customerId = reservation.customerId;
@@ -133,8 +133,8 @@ export class LockerReservation {
 
 export class PersonalReservation {
   id?: number;
-  initialReservationDate?: string | null;
-  finalReservationDate?: string | null;
+  startDate?: string | null;
+  endDate?: string | null;
   total: number;
   totalPaid: number;
   customerId?: number;
@@ -150,8 +150,8 @@ export class PersonalReservation {
   notes?: string;
   constructor(reservation: IReservation) {
     this.id = reservation.id;
-    this.initialReservationDate = reservation.initialReservationDate;
-    this.finalReservationDate = reservation.finalReservationDate;
+    this.startDate = reservation.startDate;
+    this.endDate = reservation.endDate;
     this.total = reservation.total;
     this.totalPaid = reservation.totalPaid;
     this.customerId = reservation.customerId;

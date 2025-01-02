@@ -296,7 +296,7 @@ export class ReservationFormComponent implements OnInit {
 
   validateReservationData(
     status: string,
-    finalReservationDate: string | null | undefined,
+    endDate: string | null | undefined,
     products: any[],
     services: any[],
     facilities: any[],
@@ -306,7 +306,7 @@ export class ReservationFormComponent implements OnInit {
       products.forEach(p => (p.isPaid = true));
       services.forEach(s => (s.isPaid = true));
       facilities.forEach(f => (f.isPaid = true));
-      finalReservationDate = this.currentDate();
+      endDate = this.currentDate();
     }
 
     const newProducts = products.filter(p => p.isAdd == true);
@@ -320,7 +320,7 @@ export class ReservationFormComponent implements OnInit {
 
     return {
       status,
-      finalReservationDate,
+      endDate,
       newProducts,
       paidProducts,
       newServices,
@@ -342,7 +342,7 @@ export class ReservationFormComponent implements OnInit {
       const reservationData = this.reservationData(customer, total, 1);
       const reservationSummary = this.validateReservationData(
         reservationData.status,
-        reservationData.finalReservationDate,
+        reservationData.endDate,
         products,
         services,
         facilities,
@@ -350,8 +350,7 @@ export class ReservationFormComponent implements OnInit {
       reservationData.status = reservationSummary.status;
       reservationData.brokenThingsImport =
         reservationSummary.brokenThingsImport;
-      reservationData.finalReservationDate =
-        reservationSummary.finalReservationDate;
+      reservationData.endDate = reservationSummary.endDate;
       const reservation = new LockerReservation(reservationData);
       this.reservationsService.update(reservationId, reservation).subscribe({
         next: () => {
@@ -372,12 +371,12 @@ export class ReservationFormComponent implements OnInit {
         error: () => {},
       });
     } else {
-      const initialReservationDate = this.currentDate();
+      const startDate = this.currentDate();
       const reservationData = this.reservationData(
         customer,
         total,
         1,
-        initialReservationDate || null,
+        startDate || null,
         null,
       );
       const reservation = new LockerReservation(reservationData);
@@ -402,7 +401,7 @@ export class ReservationFormComponent implements OnInit {
       const reservationData = this.reservationData(customer, total, 2);
       const reservationSummary = this.validateReservationData(
         reservationData.status,
-        reservationData.finalReservationDate,
+        reservationData.endDate,
         products,
         services,
         facilities,
@@ -410,8 +409,7 @@ export class ReservationFormComponent implements OnInit {
       reservationData.status = reservationSummary.status;
       reservationData.brokenThingsImport =
         reservationSummary.brokenThingsImport;
-      reservationData.finalReservationDate =
-        reservationSummary.finalReservationDate;
+      reservationData.endDate = reservationSummary.endDate;
 
       const reservation = new RoomReservation(reservationData);
       this.reservationsService.update(reservationId, reservation).subscribe({
@@ -433,12 +431,12 @@ export class ReservationFormComponent implements OnInit {
         error: () => {},
       });
     } else {
-      const initialReservationDate = this.currentDate();
+      const startDate = this.currentDate();
       const reservationData = this.reservationData(
         customer,
         total,
         2,
-        initialReservationDate || null,
+        startDate || null,
         null,
       );
       const reservation = new RoomReservation(reservationData);
@@ -457,12 +455,12 @@ export class ReservationFormComponent implements OnInit {
     services: any[],
     total: number,
   ) {
-    const initialReservationDate = this.currentDate();
+    const startDate = this.currentDate();
     const reservationData = this.reservationData(
       customer,
       total,
       3,
-      initialReservationDate || null,
+      startDate || null,
       null,
     );
     reservationData.brokenThingsImport = this.brokenThings
@@ -481,14 +479,13 @@ export class ReservationFormComponent implements OnInit {
     customer: Customer | null | undefined,
     total: number,
     reservationTypeId: number,
-    initialReservationDate?: string | null,
-    finalReservationDate?: string | null,
+    startDate?: string | null,
+    endDate?: string | null,
     brokenThingsImport?: number,
   ) {
     return {
-      initialReservationDate: initialReservationDate,
-      finalReservationDate:
-        reservationTypeId == 3 ? initialReservationDate : finalReservationDate,
+      startDate: startDate,
+      endDate: reservationTypeId == 3 ? startDate : endDate,
       customerId: customer!.id,
       total: total,
       totalPaid: this.paid,

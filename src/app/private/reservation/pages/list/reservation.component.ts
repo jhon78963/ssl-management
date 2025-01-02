@@ -27,14 +27,14 @@ export class ReservationListComponent implements OnInit {
   columns: Column[] = [
     {
       header: 'Fecha de entrada',
-      field: 'initialReservationDate',
+      field: 'startDateF',
       clickable: false,
       image: false,
       money: false,
     },
     {
       header: 'Fecha de salida',
-      field: 'finalReservationDate',
+      field: 'endDate',
       clickable: false,
       image: false,
       money: false,

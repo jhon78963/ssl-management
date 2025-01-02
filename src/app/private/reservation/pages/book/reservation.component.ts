@@ -156,11 +156,11 @@ export class ReservationBookComponent implements OnInit {
     this.clearSelections();
     this.reservationsService.getOne(facility.reservationId).subscribe({
       next: (reservation: any) => {
-        this.startDateParsed = reservation.initialReservationDate;
+        this.startDateParsed = reservation.startDate;
         this.startDate = reservation.startDate;
         const rented = this.getRentedTime(this.startDate);
         this.rentedTime = rented.time;
-        this.endDate = reservation.finalReservationDate;
+        this.endDate = reservation.endDate;
         this.selectedFacilities = reservation.facilities;
         this.additionalPeople = reservation.facilities[0].additionalPeople;
         this.pricePerAdditionalPerson =
@@ -337,7 +337,7 @@ export class ReservationBookComponent implements OnInit {
     }
   }
 
-  buttonSaveReservation(
+  saveReservationButton(
     customer: Customer | null | undefined,
     reservationId: number | null | undefined,
     selectedPaymentTypes: any,
@@ -366,6 +366,33 @@ export class ReservationBookComponent implements OnInit {
         pricePerExtraHour: pricePerExtraHour || 0,
         extraHours: extraHours || 0,
         brokenThings: brokenThings || 0,
+      },
+    });
+
+    this.modal.onClose.subscribe({
+      next: value => {
+        if (value && value?.success) {
+          showSuccess(this.messageService, 'Reservación registrada.');
+          this.clearReservation();
+        } else {
+          null;
+        }
+        this.cdr.detectChanges();
+      },
+    });
+  }
+
+  saveBookingButton(
+    customer: Customer | null | undefined,
+    selectedFacilities: any,
+    notes: string | null,
+  ) {
+    this.modal = this.dialogService.open(ReservationFormComponent, {
+      header: 'Reservar',
+      data: {
+        customer,
+        notes,
+        facilities: selectedFacilities,
       },
     });
 
