@@ -15,6 +15,7 @@ import { ToastModule } from 'primeng/toast';
 import { RippleModule } from 'primeng/ripple';
 import { FullCalendarModule } from '@fullcalendar/angular';
 import esLocale from '@fullcalendar/core/locales/es';
+import { currentDateTime } from '../../../../utils/dates';
 
 @Component({
   standalone: true,
@@ -61,7 +62,7 @@ export class ReservationCalendarComponent implements OnInit {
   constructor(private readonly datePipe: DatePipe) {}
 
   ngOnInit(): void {
-    this.today = this.currentDate();
+    this.today = currentDateTime(this.datePipe);
 
     this.events = [];
     this.calendarOptions = { ...this.calendarOptions, ...{ events: [] } };
@@ -84,10 +85,6 @@ export class ReservationCalendarComponent implements OnInit {
       eventClick: (e: MouseEvent) => this.onEventClick(e),
       select: (e: MouseEvent) => this.onDateSelect(e),
     };
-  }
-
-  currentDate() {
-    return this.datePipe.transform(new Date(), 'yyyy-MM-dd');
   }
 
   onEventClick(e: any) {

@@ -9,6 +9,7 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { CalendarModule } from 'primeng/calendar';
 import { Customer } from '../../models/customer.model';
 import { FacilityType } from '../../models/facility.model';
+import { formatDateTime } from '../../../../utils/dates';
 
 @Component({
   selector: 'app-booking',
@@ -90,10 +91,6 @@ export class BookingComponent implements OnInit {
     };
   }
 
-  getDate(date: Date) {
-    return this.datePipe.transform(date, 'yyyy-MM-dd HH:mm:ss');
-  }
-
   book() {
     const newFacilities = this.validateFacilities(this.facilities);
     if (newFacilities.rooms.length > 0) {
@@ -101,7 +98,7 @@ export class BookingComponent implements OnInit {
         this.customer,
         newFacilities.rooms,
         this.total,
-        this.getDate(this.startDate),
+        formatDateTime(this.startDate, this.datePipe),
       );
     }
   }

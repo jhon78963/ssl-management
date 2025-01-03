@@ -17,6 +17,7 @@ import {
   CurrentCash,
 } from '../../models/cash.model';
 import { CashService } from '../../services/cash.service';
+import { currentDateTime } from '../../../../utils/dates';
 
 @Component({
   selector: 'app-cash',
@@ -60,13 +61,9 @@ export class CashComponent implements OnInit {
     this.form.get('amount')?.setValue(this.total.source._value);
   }
 
-  currentDate() {
-    return this.datePipe.transform(new Date(), 'yyyy-MM-dd HH:mm:ss');
-  }
-
   getData(cashId: number | undefined) {
     const cash = new CashOperation(this.form.value);
-    cash.date = this.currentDate();
+    cash.date = currentDateTime(this.datePipe);
     cash.cashTypeId = this.cashType.id;
     cash.cashId = cashId;
     return cash;

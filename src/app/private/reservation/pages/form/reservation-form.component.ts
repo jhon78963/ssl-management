@@ -23,6 +23,7 @@ import { ReservationRoomsService } from '../../services/reservation-rooms.servic
 import { ReservationServicesService } from '../../services/reservation-services.service';
 import { ReservationsService } from '../../services/reservations.service';
 import { CashService } from '../../services/cash.service';
+import { currentDateTime } from '../../../../utils/dates';
 
 @Component({
   selector: 'app-reservation-form',
@@ -306,7 +307,7 @@ export class ReservationFormComponent implements OnInit {
       products.forEach(p => (p.isPaid = true));
       services.forEach(s => (s.isPaid = true));
       facilities.forEach(f => (f.isPaid = true));
-      endDate = this.currentDate();
+      endDate = currentDateTime(this.datePipe);
     }
 
     const newProducts = products.filter(p => p.isAdd == true);
@@ -371,7 +372,7 @@ export class ReservationFormComponent implements OnInit {
         error: () => {},
       });
     } else {
-      const startDate = this.currentDate();
+      const startDate = currentDateTime(this.datePipe);
       const reservationData = this.reservationData(
         customer,
         total,
@@ -431,7 +432,7 @@ export class ReservationFormComponent implements OnInit {
         error: () => {},
       });
     } else {
-      const startDate = this.currentDate();
+      const startDate = currentDateTime(this.datePipe);
       const reservationData = this.reservationData(
         customer,
         total,
@@ -455,7 +456,7 @@ export class ReservationFormComponent implements OnInit {
     services: any[],
     total: number,
   ) {
-    const startDate = this.currentDate();
+    const startDate = currentDateTime(this.datePipe);
     const reservationData = this.reservationData(
       customer,
       total,
@@ -736,10 +737,6 @@ export class ReservationFormComponent implements OnInit {
         this.dynamicDialogRef.close({ success: true });
       }
     }
-  }
-
-  currentDate() {
-    return this.datePipe.transform(new Date(), 'yyyy-MM-dd HH:mm:ss');
   }
 
   closeModal() {
