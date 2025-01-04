@@ -25,9 +25,9 @@
         <button
           pButton
           pRipple
-          label="Agregar cliente"
+          [label]="showCustomerForm ? 'Ocultar cliente' : 'Agregar cliente'"
           class="p-button-warning mr-1 ml-1"
-          (click)="addCustomer()"></button>
+          (click)="showCustomers()"></button>
         <button
           pButton
           pRipple
@@ -122,9 +122,15 @@
           }
         </div>
         <p class="m-0 p-0">Cliente</p>
+        <div *ngIf="showCustomerForm">
+          <app-customer (customerChanges)="getCustomer($event)" />
+        </div>
         <p class="m-0 p-0" *ngIf="customer">
           {{ customer.name }} {{ customer.surname }}
         </p>
+        <!-- <p class="m-0 p-0" *ngIf="customerO | async">
+          {{ (customerO | async)?.name }} {{ (customerO | async)?.surname }}
+        </p> -->
         <p class="m-0 p-0">Nota</p>
         <textarea rows="3" cols="10" pInputTextarea [(ngModel)]="notes">
         </textarea>

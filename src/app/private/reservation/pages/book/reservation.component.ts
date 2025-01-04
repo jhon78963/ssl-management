@@ -17,7 +17,7 @@ import { ToastModule } from 'primeng/toast';
 import { Observable } from 'rxjs';
 import { SharedModule } from '../../../../shared/shared.module';
 import { showSuccess } from '../../../../utils/notifications';
-import { CustomerFormComponent } from '../../components/customers/customer-form.component';
+import { CustomerComponent } from '../../components/customers/customer.component';
 import { ProductsComponent } from '../../components/products/products.component';
 import { Customer } from '../../models/customer.model';
 import { Facility, FacilityType } from '../../models/facility.model';
@@ -31,6 +31,7 @@ import { ReservationsService } from '../../services/reservations.service';
 import { ReservationFormComponent } from '../form/reservation-form.component';
 import { CashService } from '../../services/cash.service';
 import { CashType } from '../../models/cash.model';
+import { CustomersService } from '../../services/customers.service';
 
 @Component({
   selector: 'app-reservation.layout',
@@ -46,6 +47,7 @@ import { CashType } from '../../models/cash.model';
     ReactiveFormsModule,
     ButtonClassPipe,
     ProductsComponent,
+    CustomerComponent,
     KeyFilterModule,
   ],
   templateUrl: './reservation.component.html',
@@ -62,6 +64,7 @@ export class ReservationBookComponent implements OnInit {
   total: number = 0;
   customer: Customer | null | undefined;
   showProductsForm: boolean = false;
+  showCustomerForm: boolean = false;
   reservationId: number | null | undefined = null;
   isPaid: boolean = false;
   additionalPeople: number = 0;
@@ -79,13 +82,14 @@ export class ReservationBookComponent implements OnInit {
   constructor(
     private cdr: ChangeDetectorRef,
     private confirmationService: ConfirmationService,
+    private readonly cashService: CashService,
+    private readonly customersService: CustomersService,
     private readonly dialogService: DialogService,
     private readonly facilitiesService: FacilitiesService,
     private readonly messageService: MessageService,
     private readonly reservationProductsService: ReservationProductsService,
     private readonly reservationServicesService: ReservationServicesService,
     private readonly reservationsService: ReservationsService,
-    private readonly cashService: CashService,
   ) {}
 
   ngOnInit(): void {
@@ -105,6 +109,10 @@ export class ReservationBookComponent implements OnInit {
     return this.facilitiesService.getList();
   }
 
+  // get customerO(): Observable<Customer | null> {
+  //   return this.customersService.getObject();
+  // }
+
   isSelected(facility: any): boolean {
     return this.selectedFacilities.includes(facility);
   }
@@ -115,6 +123,7 @@ export class ReservationBookComponent implements OnInit {
     this.total = 0;
     this.customer = null;
     this.showProductsForm = false;
+    this.showCustomerForm = false;
     this.reservationId = null;
     this.isPaid = false;
     this.additionalPeople = 0;
@@ -283,7 +292,7 @@ export class ReservationBookComponent implements OnInit {
   }
 
   addCustomer() {
-    this.modal = this.dialogService.open(CustomerFormComponent, {
+    this.modal = this.dialogService.open(CustomerComponent, {
       header: `Agregar cliente`,
     });
 
@@ -302,6 +311,10 @@ export class ReservationBookComponent implements OnInit {
 
   showProducts() {
     this.showProductsForm = !this.showProductsForm;
+  }
+
+  showCustomers() {
+    this.showCustomerForm = !this.showCustomerForm;
   }
 
   isExists(product: Product): boolean {
@@ -335,6 +348,11 @@ export class ReservationBookComponent implements OnInit {
       this.selectedProducts.push(product);
       this.total += product.price;
     }
+  }
+
+  getCustomer(customer: Customer) {
+    this.customer = customer;
+    this.isPaid = true;
   }
 
   saveReservationButton(

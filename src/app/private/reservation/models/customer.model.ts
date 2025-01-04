@@ -3,10 +3,6 @@ export interface Customer {
   dni: string;
   name: string;
   surname: string;
-  cellphone: string;
-  email: string;
-  genderId: number;
-  gender: string;
 }
 
 export interface CreatedCustomer {

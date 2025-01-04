@@ -1,4 +1,22 @@
-<form
+<div class="mb-3 flex justify-content-center">
+  <span class="p-input-icon-left p-input-icon-right mb-2 w-full">
+    <span class="search-icon">
+      <i class="pi pi-search"></i>
+    </span>
+    <input
+      pinputtext=""
+      type="text"
+      placeholder="Buscar por nombre"
+      class="p-inputtext w-full"
+      [(ngModel)]="nameQuery"
+      (input)="onSearchTermChange($event)" />
+    <span class="clear-icon" *ngIf="nameQuery" (click)="clearFilter()">
+      <i class="pi pi-times" style="font-size: 12px"></i>
+    </span>
+  </span>
+</div>
+
+<!-- <form
   [formGroup]="reservationForm"
   (ngSubmit)="buttonSaveReservation()"
   class="pt-2 mt-3">
@@ -40,4 +58,4 @@
       [disabled]="!isFormValid"></button>
   </div>
 </form>
-<p-toast></p-toast>
+<p-toast></p-toast> -->
