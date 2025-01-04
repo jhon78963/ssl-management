@@ -25,7 +25,7 @@ import { CustomersService } from '../../services/customers.service';
   providers: [DatePipe, MessageService],
 })
 export class CustomerComponent implements OnInit {
-  @Output() customerChanges = new EventEmitter<Customer>();
+  @Output() customerChanges = new EventEmitter<Customer | null>();
   nameQuery: string = '';
   private nameSearchTermSubject = new Subject<string>();
 
@@ -33,9 +33,7 @@ export class CustomerComponent implements OnInit {
 
   ngOnInit(): void {
     this.nameSearchTermSubject.pipe(debounceTime(600)).subscribe(() => {
-      if (this.nameQuery && this.nameQuery.length > 0) {
-        this.getCustomer(this.nameQuery);
-      }
+      this.getCustomer(this.nameQuery);
     });
   }
 
@@ -46,17 +44,14 @@ export class CustomerComponent implements OnInit {
           this.customerChanges.emit(customer);
         },
       });
+    } else {
+      this.customerChanges.emit(null);
     }
   }
-
-  // get customer(): Observable<Customer | null> {
-  //   return this.customersService.getObject();
-  // }
 
   clearFilter() {
     this.nameQuery = '';
     this.nameSearchTermSubject.next('');
-    // this.customersService.updateCustomer(null);
   }
 
   onSearchTermChange(term: any) {

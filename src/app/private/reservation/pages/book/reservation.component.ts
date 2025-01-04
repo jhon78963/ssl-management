@@ -350,9 +350,14 @@ export class ReservationBookComponent implements OnInit {
     }
   }
 
-  getCustomer(customer: Customer) {
-    this.customer = customer;
-    this.isPaid = true;
+  getCustomer(customer: Customer | null) {
+    if (customer) {
+      this.customer = customer;
+      this.isPaid = true;
+    } else {
+      this.customer = null;
+      this.isPaid = false;
+    }
   }
 
   saveReservationButton(
