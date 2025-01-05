@@ -221,6 +221,18 @@ export class ReservationBookComponent implements OnInit {
     this.isBooking = rooms.length > 0;
   }
 
+  message(product: any): string {
+    return `Deseas eliminar este ${this.getTypeLabel(product.type)}?`;
+  }
+
+  header(product: any): string {
+    return `Eliminar ${this.getTypeLabel(product.type)}`;
+  }
+
+  private getTypeLabel(type: FacilityType): string {
+    return type === FacilityType.PRODUCT ? 'producto' : 'servicio';
+  }
+
   removeFacility(
     product: any,
     reservationId: number | null | undefined,
@@ -228,8 +240,8 @@ export class ReservationBookComponent implements OnInit {
   ): void {
     this.confirmationService.confirm({
       target: event.target as EventTarget,
-      message: 'Deseas eliminar este tipo de habitación?',
-      header: 'Eliminar tipo de habitación',
+      message: this.message(product),
+      header: this.header(product),
       icon: 'pi pi-info-circle',
       acceptButtonStyleClass: 'p-button-danger p-button-text',
       rejectButtonStyleClass: 'p-button-text p-button-text',

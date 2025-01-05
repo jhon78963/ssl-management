@@ -25,18 +25,15 @@ export class ReservationPaymentTypesService {
     );
   }
 
-  findAll(reservationId: number): Observable<any[]> {
-    return this.apiService.get(`reservations/${reservationId}/payment-types`);
-  }
-
   remove(
     reservationId: number,
     paymentTypeId: number,
+    payment: number,
     cashPayment: number,
     cardPayment: number,
   ): Observable<void> {
     return this.apiService.delete(
-      `reservations/${reservationId}/payment-types/${paymentTypeId}/cash-payment/${cashPayment}/card-payment/${cardPayment}`,
+      `reservations/${reservationId}/payment-types/${paymentTypeId}/payment/${payment}cash-payment/${cashPayment}/card-payment/${cardPayment}`,
     );
   }
 }

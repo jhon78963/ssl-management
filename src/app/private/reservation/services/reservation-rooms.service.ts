@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
-import { ApiService } from '../../../services/api.service';
 import { Observable } from 'rxjs';
-import { Room } from '../../room/rooms/models/rooms.model';
+import { ApiService } from '../../../services/api.service';
 
 @Injectable({
   providedIn: 'root',
@@ -43,10 +42,6 @@ export class ReservationRoomsService {
         extraHours,
       },
     );
-  }
-
-  findAll(reservationId: number): Observable<Room[]> {
-    return this.apiService.get(`reservations/${reservationId}/rooms`);
   }
 
   remove(
