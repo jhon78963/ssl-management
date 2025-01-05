@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
-import { ApiService } from '../../../services/api.service';
+import { ApiService } from '../../../../services/api.service';
 import { map, Observable } from 'rxjs';
 import {
   ReservationType,
   ReservationTypeResponse,
-} from '../models/reservation-type.model';
+} from '../../models/reservation-type.model';
 
 @Injectable({
   providedIn: 'root',

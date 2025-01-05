@@ -16,12 +16,12 @@ import {
   RoomReservation,
 } from '../../models/reservation.model';
 import { FacilitiesService } from '../../services/facilities.service';
-import { ReservationLockersService } from '../../services/reservation-lockers.service';
-import { ReservationPaymentTypesService } from '../../services/reservation-payment-types.service';
-import { ReservationProductsService } from '../../services/reservation-products.service';
-import { ReservationRoomsService } from '../../services/reservation-rooms.service';
-import { ReservationServicesService } from '../../services/reservation-services.service';
-import { ReservationsService } from '../../services/reservations.service';
+import { ReservationLockersService } from '../../services/reservations/reservation-lockers.service';
+import { ReservationPaymentTypesService } from '../../services/reservations/reservation-payment-types.service';
+import { ReservationProductsService } from '../../services/reservations/reservation-products.service';
+import { ReservationRoomsService } from '../../services/reservations/reservation-rooms.service';
+import { ReservationServicesService } from '../../services/reservations/reservation-services.service';
+import { ReservationsService } from '../../services/reservations/reservations.service';
 import { CashService } from '../../services/cash.service';
 import { currentDateTime } from '../../../../utils/dates';
 

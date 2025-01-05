@@ -27,9 +27,9 @@ import { Service } from '../../models/service.model';
 import { ButtonClassPipe } from '../../pipes/button-class.pipe';
 import { CashService } from '../../services/cash.service';
 import { FacilitiesService } from '../../services/facilities.service';
-import { ReservationProductsService } from '../../services/reservation-products.service';
-import { ReservationServicesService } from '../../services/reservation-services.service';
-import { ReservationsService } from '../../services/reservations.service';
+import { ReservationProductsService } from '../../services/reservations/reservation-products.service';
+import { ReservationServicesService } from '../../services/reservations/reservation-services.service';
+import { ReservationsService } from '../../services/reservations/reservations.service';
 import { ReservationFormComponent } from '../form/reservation-form.component';
 
 @Component({

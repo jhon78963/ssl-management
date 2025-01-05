@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { ApiService } from '../../../services/api.service';
-import { Schedule } from '../models/schedule.model';
+import { ApiService } from '../../../../services/api.service';
+import { Schedule } from '../../models/schedule.model';
 
 @Injectable({
   providedIn: 'root',

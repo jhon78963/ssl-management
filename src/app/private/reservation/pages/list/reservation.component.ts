@@ -8,10 +8,10 @@ import { LoadingService } from '../../../../services/loading.service';
 import { SharedModule } from '../../../../shared/shared.module';
 import { ReservationType } from '../../models/reservation-type.model';
 import { Reservation } from '../../models/reservation.model';
-import { ReservationExportsService } from '../../services/reservation-exports.service';
-import { ReservationTypesService } from '../../services/reservation-types.service';
-import { ReservationsService } from '../../services/reservations.service';
-import { ReservationSchedulesService } from '../../services/reservation-schedules.service';
+import { ReservationExportsService } from '../../services/reservations/reservation-exports.service';
+import { ReservationTypesService } from '../../services/reservations/reservation-types.service';
+import { ReservationsService } from '../../services/reservations/reservations.service';
+import { ReservationSchedulesService } from '../../services/reservations/reservation-schedules.service';
 import { Schedule } from '../../models/schedule.model';
 import { CashService } from '../../services/cash.service';
 

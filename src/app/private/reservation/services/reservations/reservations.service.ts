@@ -8,13 +8,13 @@ import {
   switchMap,
 } from 'rxjs';
 
-import { ApiService } from '../../../services/api.service';
+import { ApiService } from '../../../../services/api.service';
 
 import {
   CreatedReservation,
   Reservation,
   ReservationListResponse,
-} from '../models/reservation.model';
+} from '../../models/reservation.model';
 
 @Injectable({
   providedIn: 'root',
