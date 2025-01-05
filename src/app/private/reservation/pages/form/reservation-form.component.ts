@@ -514,7 +514,6 @@ export class ReservationFormComponent implements OnInit {
           this.roomCreateBookingOrReservation(
             response.reservationId,
             facilities,
-            true,
           );
         },
       });
@@ -596,7 +595,7 @@ export class ReservationFormComponent implements OnInit {
     services: any[],
     isBooking: boolean = false,
   ) {
-    this.addPaymentType(bookingOrReservationId, [], isBooking);
+    this.addPaymentType(bookingOrReservationId, undefined, isBooking);
     if (isBooking) {
       products.forEach((product: any) => {
         this.bookingProductsService

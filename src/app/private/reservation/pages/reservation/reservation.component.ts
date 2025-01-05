@@ -429,7 +429,7 @@ export class ReservationComponent implements OnInit {
     pricePerAdditionalPerson: number,
     notes: string | null,
   ) {
-    this.modal = this.dialogService.open(ReservationFormComponent, {
+    const bookingModal = this.dialogService.open(ReservationFormComponent, {
       header: 'Reservar',
       data: {
         customer,
@@ -444,7 +444,7 @@ export class ReservationComponent implements OnInit {
       },
     });
 
-    this.modal.onClose.subscribe({
+    bookingModal.onClose.subscribe({
       next: value => {
         if (value && value?.success) {
           showSuccess(this.messageService, 'Reservación registrada.');
