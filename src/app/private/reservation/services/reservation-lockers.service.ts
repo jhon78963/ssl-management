@@ -15,10 +15,13 @@ export class ReservationLockersService {
     price: number,
     isPaid: boolean = false,
   ): Observable<void> {
-    return this.apiService.post(`lockers/${reservationId}/add/${lockerId}`, {
-      price,
-      isPaid,
-    });
+    return this.apiService.post(
+      `reservations/${reservationId}/lockers/${lockerId}`,
+      {
+        price,
+        isPaid,
+      },
+    );
   }
 
   modify(
@@ -26,13 +29,16 @@ export class ReservationLockersService {
     lockerId: number,
     isPaid: boolean = false,
   ): Observable<void> {
-    return this.apiService.post(`lockers/${reservationId}/modify/${lockerId}`, {
-      isPaid,
-    });
+    return this.apiService.patch(
+      `reservations/${reservationId}/lockers/${lockerId}`,
+      {
+        isPaid,
+      },
+    );
   }
 
-  findAll(id: number): Observable<Locker[]> {
-    return this.apiService.get(`lockers/${id}/all`);
+  findAll(reservationId: number): Observable<Locker[]> {
+    return this.apiService.get(`reservations/${reservationId}/lockers`);
   }
 
   remove(
@@ -41,7 +47,7 @@ export class ReservationLockersService {
     price: number,
   ): Observable<void> {
     return this.apiService.delete(
-      `lockers/${reservationId}/remove/${lockerId}/price/${price}`,
+      `reservations/${reservationId}/lockers/${lockerId}/price/${price}`,
     );
   }
 }

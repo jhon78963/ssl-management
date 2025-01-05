@@ -19,19 +19,18 @@ import { SharedModule } from '../../../../shared/shared.module';
 import { showSuccess } from '../../../../utils/notifications';
 import { CustomerComponent } from '../../components/customers/customer.component';
 import { ProductsComponent } from '../../components/products/products.component';
+import { CashType } from '../../models/cash.model';
 import { Customer } from '../../models/customer.model';
 import { Facility, FacilityType } from '../../models/facility.model';
 import { Product } from '../../models/product.model';
 import { Service } from '../../models/service.model';
 import { ButtonClassPipe } from '../../pipes/button-class.pipe';
+import { CashService } from '../../services/cash.service';
 import { FacilitiesService } from '../../services/facilities.service';
 import { ReservationProductsService } from '../../services/reservation-products.service';
 import { ReservationServicesService } from '../../services/reservation-services.service';
 import { ReservationsService } from '../../services/reservations.service';
 import { ReservationFormComponent } from '../form/reservation-form.component';
-import { CashService } from '../../services/cash.service';
-import { CashType } from '../../models/cash.model';
-import { CustomersService } from '../../services/customers.service';
 
 @Component({
   selector: 'app-reservation.layout',
@@ -78,12 +77,12 @@ export class ReservationBookComponent implements OnInit {
   brokenThings: number | null = null;
   previousBrokenThings: number = 0;
   notes: string | null = null;
+  isBooking: boolean = false;
 
   constructor(
     private cdr: ChangeDetectorRef,
     private confirmationService: ConfirmationService,
     private readonly cashService: CashService,
-    private readonly customersService: CustomersService,
     private readonly dialogService: DialogService,
     private readonly facilitiesService: FacilitiesService,
     private readonly messageService: MessageService,
@@ -108,10 +107,6 @@ export class ReservationBookComponent implements OnInit {
   get facilities(): Observable<Facility[]> {
     return this.facilitiesService.getList();
   }
-
-  // get customerO(): Observable<Customer | null> {
-  //   return this.customersService.getObject();
-  // }
 
   isSelected(facility: any): boolean {
     return this.selectedFacilities.includes(facility);
@@ -193,6 +188,7 @@ export class ReservationBookComponent implements OnInit {
         this.reservationId = reservation.id;
         this.isPaid = true;
         this.selectedPaymentTypes = reservation.paymentTypes;
+        this.isBooking = false;
         this.cdr.detectChanges();
       },
     });
@@ -218,6 +214,11 @@ export class ReservationBookComponent implements OnInit {
       this.pricePerAdditionalPerson = facility.pricePerAdditionalPerson;
       this.pricePerExtraHour = facility.pricePerExtraHour;
     }
+
+    const rooms = this.selectedFacilities.filter(
+      facility => facility.type == FacilityType.ROOM,
+    );
+    this.isBooking = rooms.length > 0;
   }
 
   removeFacility(
@@ -389,6 +390,7 @@ export class ReservationBookComponent implements OnInit {
         pricePerExtraHour: pricePerExtraHour || 0,
         extraHours: extraHours || 0,
         brokenThings: brokenThings || 0,
+        isBooking: false,
       },
     });
 
@@ -407,7 +409,12 @@ export class ReservationBookComponent implements OnInit {
 
   saveBookingButton(
     customer: Customer | null | undefined,
+    selectedPaymentTypes: any,
     selectedFacilities: any,
+    selectedProducts: any,
+    selectedServices: any,
+    additionalPeople: number,
+    pricePerAdditionalPerson: number,
     notes: string | null,
   ) {
     this.modal = this.dialogService.open(ReservationFormComponent, {
@@ -415,7 +422,13 @@ export class ReservationBookComponent implements OnInit {
       data: {
         customer,
         notes,
+        paymentTypes: selectedPaymentTypes,
         facilities: selectedFacilities,
+        products: selectedProducts,
+        services: selectedServices,
+        additionalPeople: additionalPeople || 0,
+        pricePerAdditionalPerson: pricePerAdditionalPerson || 0,
+        isBooking: true,
       },
     });
 

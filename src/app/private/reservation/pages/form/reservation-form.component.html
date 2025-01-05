@@ -259,14 +259,16 @@
         label="Pagar"
         icon="pi pi-fw pi-check"
         (click)="
-          payment(
-            customer,
-            reservationId,
-            facilities,
-            products,
-            services,
-            total
-          )
+          !isBooking
+            ? payment(
+                customer,
+                reservationId,
+                facilities,
+                products,
+                services,
+                total
+              )
+            : booking(customer, facilities, total)
         "
         [disabled]="validatePaidButton()"></button>
     </div>

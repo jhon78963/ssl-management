@@ -17,12 +17,15 @@ export class ReservationRoomsService {
     additionalPeople: number = 0,
     extraHours: number = 0,
   ): Observable<void> {
-    return this.apiService.post(`rooms/${reservationId}/add/${roomId}`, {
-      price,
-      isPaid,
-      additionalPeople,
-      extraHours,
-    });
+    return this.apiService.post(
+      `reservations/${reservationId}/rooms/${roomId}`,
+      {
+        price,
+        isPaid,
+        additionalPeople,
+        extraHours,
+      },
+    );
   }
 
   modify(
@@ -32,15 +35,18 @@ export class ReservationRoomsService {
     additionalPeople: number = 0,
     extraHours: number = 0,
   ): Observable<void> {
-    return this.apiService.post(`rooms/${reservationId}/modify/${roomId}`, {
-      isPaid,
-      additionalPeople,
-      extraHours,
-    });
+    return this.apiService.patch(
+      `reservations/${reservationId}/rooms/${roomId}`,
+      {
+        isPaid,
+        additionalPeople,
+        extraHours,
+      },
+    );
   }
 
-  findAll(id: number): Observable<Room[]> {
-    return this.apiService.get(`rooms/${id}/all`);
+  findAll(reservationId: number): Observable<Room[]> {
+    return this.apiService.get(`reservations/${reservationId}/rooms`);
   }
 
   remove(
@@ -49,7 +55,7 @@ export class ReservationRoomsService {
     price: number,
   ): Observable<void> {
     return this.apiService.delete(
-      `rooms/${reservationId}/remove/${roomId}/price/${price}`,
+      `reservations/${reservationId}/rooms/${roomId}/price/${price}`,
     );
   }
 }

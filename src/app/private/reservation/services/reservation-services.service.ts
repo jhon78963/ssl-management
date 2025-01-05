@@ -16,11 +16,14 @@ export class ReservationServicesService {
     isPaid: boolean = false,
     isFree: boolean = false,
   ): Observable<void> {
-    return this.apiService.post(`services/${reservationId}/add/${serviceId}`, {
-      quantity,
-      isPaid,
-      isFree,
-    });
+    return this.apiService.post(
+      `reservations/${reservationId}/services/${serviceId}`,
+      {
+        quantity,
+        isPaid,
+        isFree,
+      },
+    );
   }
 
   modify(
@@ -30,8 +33,8 @@ export class ReservationServicesService {
     isPaid: boolean = false,
     isFree: boolean = false,
   ): Observable<void> {
-    return this.apiService.post(
-      `services/${reservationId}/modify/${serviceId}`,
+    return this.apiService.patch(
+      `reservations/${reservationId}/services/${serviceId}`,
       {
         quantity,
         isPaid,
@@ -40,12 +43,12 @@ export class ReservationServicesService {
     );
   }
 
-  findAll(id: number): Observable<Service[]> {
-    return this.apiService.get(`services/${id}/all`);
+  findAll(reservationId: number): Observable<Service[]> {
+    return this.apiService.get(`reservations/${reservationId}/services/all`);
   }
 
-  findLeft(id: number): Observable<Service[]> {
-    return this.apiService.get(`services/${id}/left`);
+  findLeft(reservationId: number): Observable<Service[]> {
+    return this.apiService.get(`reservations/${reservationId}/services/left`);
   }
 
   remove(
@@ -54,7 +57,7 @@ export class ReservationServicesService {
     quantity: number,
   ): Observable<void> {
     return this.apiService.delete(
-      `services/${reservationId}/remove/${serviceId}/quantity/${quantity}`,
+      `reservations/${reservationId}/services/${serviceId}/quantity/${quantity}`,
     );
   }
 }

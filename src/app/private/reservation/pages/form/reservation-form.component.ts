@@ -74,6 +74,8 @@ export class ReservationFormComponent implements OnInit {
   advance: number = 0;
   pending: number = 0;
 
+  isBooking: boolean = false;
+
   constructor(
     private readonly cashService: CashService,
     private readonly datePipe: DatePipe,
@@ -88,6 +90,10 @@ export class ReservationFormComponent implements OnInit {
     private readonly reservationsService: ReservationsService,
   ) {}
 
+  getOperationType() {
+    this.isBooking = this.dynamicDialogConfig.data.isBooking;
+  }
+
   getCustomer() {
     this.reservationId = this.dynamicDialogConfig.data.reservationId;
     this.customer = this.dynamicDialogConfig.data.customer;
@@ -101,41 +107,44 @@ export class ReservationFormComponent implements OnInit {
   }
 
   getProducts() {
-    this.products = this.dynamicDialogConfig.data.products
-      .filter((product: any) => product.type == 'product')
-      .map((product: any) => {
-        if (product.isFree) {
-          product.total = 0;
-        } else {
-          product.total = product.quantity * product.price;
-        }
-        return product;
-      });
-
-    this.totalProducts = this.products
-      ?.filter(product => product.price)
-      .reduce((sum, product) => sum + product.total, 0);
+    if (this.dynamicDialogConfig.data.products) {
+      this.products = this.dynamicDialogConfig.data.products
+        .filter((product: any) => product.type == 'product')
+        .map((product: any) => {
+          if (product.isFree) {
+            product.total = 0;
+          } else {
+            product.total = product.quantity * product.price;
+          }
+          return product;
+        });
+      this.totalProducts = this.products
+        ?.filter(product => product.price)
+        .reduce((sum, product) => sum + product.total, 0);
+    }
   }
 
   getServices() {
-    if (this.dynamicDialogConfig.data.services.lenght > 0) {
-      this.services = this.dynamicDialogConfig.data.services;
-    } else {
-      this.services = this.dynamicDialogConfig.data.products.filter(
-        (product: any) => product.type == 'service',
-      );
-    }
-    this.services = this.services.map((service: any) => {
-      if (service.isFree) {
-        service.total = 0;
+    if (this.dynamicDialogConfig.data.services) {
+      if (this.dynamicDialogConfig.data.services.lenght > 0) {
+        this.services = this.dynamicDialogConfig.data.services;
       } else {
-        service.total = service.quantity * service.price;
+        this.services = this.dynamicDialogConfig.data.products.filter(
+          (product: any) => product.type == 'service',
+        );
       }
-      return service;
-    });
-    this.totalServices = this.services
-      ?.filter(product => product.price)
-      .reduce((sum, product) => sum + product.total, 0);
+      this.services = this.services.map((service: any) => {
+        if (service.isFree) {
+          service.total = 0;
+        } else {
+          service.total = service.quantity * service.price;
+        }
+        return service;
+      });
+      this.totalServices = this.services
+        ?.filter(product => product.price)
+        .reduce((sum, product) => sum + product.total, 0);
+    }
   }
 
   getNotes() {
@@ -143,30 +152,36 @@ export class ReservationFormComponent implements OnInit {
   }
 
   getPricePerAdditionalPerson() {
-    this.additionalPeople = this.dynamicDialogConfig.data.additionalPeople;
-    this.pricePerAdditionalPerson =
-      this.additionalPeople == 0
-        ? 0
-        : this.dynamicDialogConfig.data.pricePerAdditionalPerson *
-          this.additionalPeople;
+    if (this.dynamicDialogConfig.data.additionalPeople) {
+      this.additionalPeople = this.dynamicDialogConfig.data.additionalPeople;
+      this.pricePerAdditionalPerson =
+        this.additionalPeople == 0
+          ? 0
+          : this.dynamicDialogConfig.data.pricePerAdditionalPerson *
+            this.additionalPeople;
+    }
   }
 
   getPriceExtraHours() {
-    this.extraHours = this.dynamicDialogConfig.data.extraHours;
-    this.pricePerExtraHour =
-      this.extraHours == 0
-        ? 0
-        : this.dynamicDialogConfig.data.pricePerExtraHour * this.extraHours;
+    if (this.dynamicDialogConfig.data.extraHours) {
+      this.extraHours = this.dynamicDialogConfig.data.extraHours;
+      this.pricePerExtraHour =
+        this.extraHours == 0
+          ? 0
+          : this.dynamicDialogConfig.data.pricePerExtraHour * this.extraHours;
+    }
   }
 
   getBrokenThings() {
-    this.brokenThings = this.dynamicDialogConfig.data.brokenThings;
+    if (this.dynamicDialogConfig.data.brokenThings) {
+      this.brokenThings = this.dynamicDialogConfig.data.brokenThings;
+    }
   }
 
   getTotal() {
     this.total =
-      this.totalProducts +
-      this.totalServices +
+      (this.totalProducts ?? 0) +
+      (this.totalServices ?? 0) +
       this.lockerPrice +
       (this.pricePerAdditionalPerson ?? 0) +
       (this.pricePerExtraHour ?? 0) +
@@ -207,6 +222,7 @@ export class ReservationFormComponent implements OnInit {
 
   ngOnInit(): void {
     this.clearPayments();
+    this.getOperationType();
     this.getCustomer();
     this.getFacilities();
     this.getProducts();
@@ -259,6 +275,16 @@ export class ReservationFormComponent implements OnInit {
       rooms: facilities.filter(f => f.type == FacilityType.ROOM),
       lockers: facilities.filter(f => f.type == FacilityType.LOCKER),
     };
+  }
+
+  booking(
+    customer: Customer | null | undefined,
+    facilities: any[],
+    total: number,
+  ) {
+    console.log(customer);
+    console.log(facilities);
+    console.log(total);
   }
 
   payment(
