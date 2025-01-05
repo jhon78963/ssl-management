@@ -23,7 +23,18 @@ import { ReservationRoomsService } from '../../services/reservations/reservation
 import { ReservationServicesService } from '../../services/reservations/reservation-services.service';
 import { ReservationsService } from '../../services/reservations/reservations.service';
 import { CashService } from '../../services/cash.service';
-import { currentDateTime } from '../../../../utils/dates';
+import {
+  currentDateTime,
+  formatDateTime,
+  formatDateTimePeru,
+} from '../../../../utils/dates';
+import { Booking } from '../../models/booking.model';
+import { BookingPaymentTypesService } from '../../services/bookings/booking-payment-types.service';
+import { BookingServicesService } from '../../services/bookings/booking-services.service';
+import { BookingProductsService } from '../../services/bookings/booking-products.service';
+import { BookingRoomsService } from '../../services/bookings/booking-rooms.service';
+import { BookingService } from '../../services/bookings/booking.service';
+import { CalendarModule } from 'primeng/calendar';
 
 @Component({
   selector: 'app-reservation-form',
@@ -35,6 +46,7 @@ import { currentDateTime } from '../../../../utils/dates';
     CheckboxModule,
     RadioButtonModule,
     InputNumberModule,
+    CalendarModule,
   ],
   templateUrl: './reservation-form.component.html',
   styleUrl: './reservation-form.component.scss',
@@ -75,6 +87,7 @@ export class ReservationFormComponent implements OnInit {
   pending: number = 0;
 
   isBooking: boolean = false;
+  startDate: Date = new Date();
 
   constructor(
     private readonly cashService: CashService,
@@ -88,6 +101,11 @@ export class ReservationFormComponent implements OnInit {
     private readonly reservationRoomsService: ReservationRoomsService,
     private readonly reservationServicesService: ReservationServicesService,
     private readonly reservationsService: ReservationsService,
+    private readonly bookingPaymentTypesService: BookingPaymentTypesService,
+    private readonly bookingServicesService: BookingServicesService,
+    private readonly bookingProductsService: BookingProductsService,
+    private readonly bookingRoomsService: BookingRoomsService,
+    private readonly bookingService: BookingService,
   ) {}
 
   getOperationType() {
@@ -277,16 +295,6 @@ export class ReservationFormComponent implements OnInit {
     };
   }
 
-  booking(
-    customer: Customer | null | undefined,
-    facilities: any[],
-    total: number,
-  ) {
-    console.log(customer);
-    console.log(facilities);
-    console.log(total);
-  }
-
   payment(
     customer: Customer | null | undefined,
     reservationId: number | null | undefined,
@@ -357,6 +365,31 @@ export class ReservationFormComponent implements OnInit {
     };
   }
 
+  reservationData(
+    customer: Customer | null | undefined,
+    total: number,
+    reservationTypeId: number,
+    startDate?: string | null,
+    endDate?: string | null,
+    brokenThingsImport?: number,
+  ) {
+    return {
+      startDate: startDate,
+      endDate: reservationTypeId == 3 ? startDate : endDate,
+      customerId: customer!.id,
+      total: total,
+      totalPaid: this.paid,
+      peopleExtraImport: this.pricePerAdditionalPerson,
+      hoursExtraImport: this.pricePerExtraHour,
+      facilitiesImport: this.lockerPrice,
+      consumptionsImport: this.totalProducts + this.totalServices,
+      reservationTypeId: reservationTypeId,
+      status: reservationTypeId == 3 ? 'COMPLETED' : 'IN_USE',
+      brokenThingsImport: brokenThingsImport,
+      notes: this.notes,
+    };
+  }
+
   createLockerReservation(
     customer: Customer | null | undefined,
     reservationId: number | null | undefined,
@@ -409,7 +442,11 @@ export class ReservationFormComponent implements OnInit {
       const reservation = new LockerReservation(reservationData);
       this.reservationsService.create(reservation).subscribe({
         next: (response: any) => {
-          this.createReservation(response.reservationId, products, services);
+          this.createBookingOrReservation(
+            response.reservationId,
+            products,
+            services,
+          );
           this.lockerCreateReservation(response.reservationId, facilities);
         },
       });
@@ -469,8 +506,16 @@ export class ReservationFormComponent implements OnInit {
       const reservation = new RoomReservation(reservationData);
       this.reservationsService.create(reservation).subscribe({
         next: (response: any) => {
-          this.createReservation(response.reservationId, products, services);
-          this.roomCreateReservation(response.reservationId, facilities);
+          this.createBookingOrReservation(
+            response.reservationId,
+            products,
+            services,
+          );
+          this.roomCreateBookingOrReservation(
+            response.reservationId,
+            facilities,
+            true,
+          );
         },
       });
     }
@@ -496,38 +541,21 @@ export class ReservationFormComponent implements OnInit {
     const reservation = new PersonalReservation(reservationData);
     this.reservationsService.create(reservation).subscribe({
       next: (response: any) => {
-        this.createReservation(response.reservationId, products, services);
+        this.createBookingOrReservation(
+          response.reservationId,
+          products,
+          services,
+        );
         this.closeModal();
       },
     });
   }
 
-  reservationData(
-    customer: Customer | null | undefined,
-    total: number,
-    reservationTypeId: number,
-    startDate?: string | null,
-    endDate?: string | null,
-    brokenThingsImport?: number,
+  addPaymentType(
+    bookingOrReservationId: number,
+    paidFacilities?: any[],
+    isBooking: boolean = false,
   ) {
-    return {
-      startDate: startDate,
-      endDate: reservationTypeId == 3 ? startDate : endDate,
-      customerId: customer!.id,
-      total: total,
-      totalPaid: this.paid,
-      peopleExtraImport: this.pricePerAdditionalPerson,
-      hoursExtraImport: this.pricePerExtraHour,
-      facilitiesImport: this.lockerPrice,
-      consumptionsImport: this.totalProducts + this.totalServices,
-      reservationTypeId: reservationTypeId,
-      status: reservationTypeId == 3 ? 'COMPLETED' : 'IN_USE',
-      brokenThingsImport: brokenThingsImport,
-      notes: this.notes,
-    };
-  }
-
-  addPaymentType(reservationId: number, paidFacilities?: any[]) {
     const paymentType = {
       payment: this.paid,
       paymentTypeId: this.selectedPaymentType.id,
@@ -535,45 +563,87 @@ export class ReservationFormComponent implements OnInit {
       cardPayment: this.card,
     };
 
-    this.reservationPaymentTypesService
-      .add(
-        reservationId,
-        paymentType.paymentTypeId,
-        paymentType.payment,
-        paymentType.cashPayment,
-        paymentType.cardPayment,
-      )
-      .subscribe();
+    if (isBooking) {
+      this.bookingPaymentTypesService
+        .add(
+          bookingOrReservationId,
+          paymentType.paymentTypeId,
+          paymentType.payment,
+          paymentType.cashPayment,
+          paymentType.cardPayment,
+        )
+        .subscribe();
+    } else {
+      this.reservationPaymentTypesService
+        .add(
+          bookingOrReservationId,
+          paymentType.paymentTypeId,
+          paymentType.payment,
+          paymentType.cashPayment,
+          paymentType.cardPayment,
+        )
+        .subscribe();
+    }
 
     if (paidFacilities && paidFacilities.length == 0) {
       this.closeModal();
     }
   }
 
-  createReservation(reservationId: number, products: any[], services: any[]) {
-    this.addPaymentType(reservationId);
-    products.forEach((product: any) => {
-      this.reservationProductsService
-        .add(
-          reservationId,
-          product.id,
-          product.quantity,
-          product.isPaid,
-          product.isFree,
-        )
-        .subscribe();
-    });
-    services.forEach((service: any) => {
-      this.reservationServicesService
-        .add(
-          reservationId,
-          service.id,
-          service.quantity,
-          service.isPaid,
-          service.isFree,
-        )
-        .subscribe();
-    });
+  createBookingOrReservation(
+    bookingOrReservationId: number,
+    products: any[],
+    services: any[],
+    isBooking: boolean = false,
+  ) {
+    this.addPaymentType(bookingOrReservationId, [], isBooking);
+    if (isBooking) {
+      products.forEach((product: any) => {
+        this.bookingProductsService
+          .add(
+            bookingOrReservationId,
+            product.id,
+            product.quantity,
+            product.isPaid,
+            product.isFree,
+          )
+          .subscribe();
+      });
+      services.forEach((service: any) => {
+        this.bookingServicesService
+          .add(
+            bookingOrReservationId,
+            service.id,
+            service.quantity,
+            service.isPaid,
+            service.isFree,
+          )
+          .subscribe();
+      });
+    } else {
+      products.forEach((product: any) => {
+        this.reservationProductsService
+          .add(
+            bookingOrReservationId,
+            product.id,
+            product.quantity,
+            product.isPaid,
+            product.isFree,
+          )
+          .subscribe();
+      });
+      services.forEach((service: any) => {
+        this.reservationServicesService
+          .add(
+            bookingOrReservationId,
+            service.id,
+            service.quantity,
+            service.isPaid,
+            service.isFree,
+          )
+          .subscribe();
+      });
+    }
   }
 
   lockerCreateReservation(reservationId: number, facilities: any[]) {
@@ -597,32 +667,53 @@ export class ReservationFormComponent implements OnInit {
     });
   }
 
-  roomCreateReservation(reservationId: number, facilities: any[]) {
-    const reservationRequests = facilities.map((facility: any) => {
-      return this.reservationRoomsService
-        .add(
-          reservationId,
+  roomCreateBookingOrReservation(
+    bookingOrReservationId: number,
+    facilities: any[],
+    isBooking: boolean = false,
+  ) {
+    if (isBooking) {
+      const bookingRequests = facilities.map((facility: any) => {
+        return this.bookingRoomsService.add(
+          bookingOrReservationId,
           facility.id,
           facility.price,
           facility.isPaid,
           this.additionalPeople,
-          this.extraHours,
-        )
-        .pipe(
-          switchMap(() => {
-            const body = {
-              id: facility.id,
-              status: 'IN_USE',
-            };
-            return this.facilitiesService.changeRoomStatus(facility.id, body);
-          }),
         );
-    });
-    forkJoin(reservationRequests).subscribe({
-      next: () => {
-        this.closeModal();
-      },
-    });
+      });
+      forkJoin(bookingRequests).subscribe({
+        next: () => {
+          this.closeModal();
+        },
+      });
+    } else {
+      const reservationRequests = facilities.map((facility: any) => {
+        return this.reservationRoomsService
+          .add(
+            bookingOrReservationId,
+            facility.id,
+            facility.price,
+            facility.isPaid,
+            this.additionalPeople,
+            this.extraHours,
+          )
+          .pipe(
+            switchMap(() => {
+              const body = {
+                id: facility.id,
+                status: 'IN_USE',
+              };
+              return this.facilitiesService.changeRoomStatus(facility.id, body);
+            }),
+          );
+      });
+      forkJoin(reservationRequests).subscribe({
+        next: () => {
+          this.closeModal();
+        },
+      });
+    }
   }
 
   updateReservation(
@@ -763,6 +854,81 @@ export class ReservationFormComponent implements OnInit {
         this.dynamicDialogRef.close({ success: true });
       }
     }
+  }
+
+  booking(
+    customer: Customer | null | undefined,
+    facilities: any[],
+    products: any[],
+    services: any[],
+    total: number,
+  ) {
+    const newFacilities = this.validateFacilities(facilities);
+    if (newFacilities.rooms.length > 0) {
+      this.createRoomBooking(
+        customer,
+        newFacilities.rooms,
+        products,
+        services,
+        total,
+      );
+    }
+  }
+
+  bookingData(
+    customer: Customer | null | undefined,
+    total: number,
+    facilityNumbers?: string | null,
+  ) {
+    return {
+      startDate: formatDateTime(this.startDate, this.datePipe),
+      customerId: customer!.id,
+      total: total,
+      totalPaid: this.paid,
+      peopleExtraImport: this.pricePerAdditionalPerson,
+      facilitiesImport: this.lockerPrice,
+      consumptionsImport: this.totalProducts + this.totalServices,
+      status: 'PENDING',
+      notes: this.notes,
+      title: `${customer!.dni} - ${customer!.name} ${customer!.surname}`,
+      description: `Reserva de habitación(es) para la fecha: ${formatDateTimePeru(this.startDate, this.datePipe)}`,
+      location: `Habitaciones: ${facilityNumbers}`,
+    };
+  }
+
+  getFacilityNumbersString(): string {
+    return this.facilities.map((facility: any) => facility.number).join(', ');
+  }
+
+  createRoomBooking(
+    customer: Customer | null | undefined,
+    facilities: any[],
+    products: any[],
+    services: any[],
+    total: number,
+  ) {
+    const facilityNumbers = this.getFacilityNumbersString();
+    const bookingData = this.bookingData(
+      customer,
+      total,
+      facilityNumbers || null,
+    );
+    const booking = new Booking(bookingData);
+    this.bookingService.create(booking).subscribe({
+      next: (response: any) => {
+        this.createBookingOrReservation(
+          response.bookingId,
+          products,
+          services,
+          true,
+        );
+        this.roomCreateBookingOrReservation(
+          response.bookingId,
+          facilities,
+          true,
+        );
+      },
+    });
   }
 
   closeModal() {

@@ -54,7 +54,7 @@ import { ReservationFormComponent } from '../form/reservation-form.component';
   providers: [ConfirmationService, DialogService, MessageService],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ReservationBookComponent implements OnInit {
+export class ReservationComponent implements OnInit {
   modal: DynamicDialogRef | undefined;
   selectedPaymentTypes: any[] = [];
   selectedFacilities: any[] = [];

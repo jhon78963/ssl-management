@@ -5,8 +5,8 @@ const routes: Routes = [
   {
     path: 'book',
     loadComponent: () =>
-      import('./pages/book/reservation.component').then(
-        c => c.ReservationBookComponent,
+      import('./pages/reservation/reservation.component').then(
+        c => c.ReservationComponent,
       ),
   },
   {

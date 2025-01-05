@@ -68,26 +68,62 @@
       }
     }
     @if (facilities && facilities.length > 0) {
-      <div class="pb-3 surface-border">
-        <span class="text-900 text-2xl font-medium block"
-          >Lockers/Habitaciones</span
-        >
-      </div>
-      @for (facility of facilities; track $index) {
+      @if (isBooking) {
+        <div class="pb-3 surface-border">
+          <span class="text-900 text-2xl font-medium block">Habitación</span>
+        </div>
         <div
           class="flex flex-column lg:flex-row flex-wrap lg:align-items-center py-2 surface-border">
           <div class="flex-auto lg:ml-3">
+            @for (facility of facilities; track $index) {
+              <div class="flex align-items-center justify-content-between mb-3">
+                <span class="text-900 font-bold">
+                  Habitación {{ facility.number }}
+                </span>
+                <div class="flex align-items-center gap-1">
+                  <span class="text-900 font-bold"
+                    >S/ {{ facility.price }}</span
+                  >
+                </div>
+              </div>
+            }
             <div class="flex align-items-center justify-content-between">
-              <span class="text-900 font-bold">
-                {{ facility.type === 'locker' ? 'Locker' : 'Habitación' }}
-                {{ facility.number }}
-              </span>
+              <span class="text-900 font-bold"> Fecha de reserva </span>
               <div class="flex align-items-center gap-1">
-                <span class="text-900 font-bold">S/ {{ facility.price }}</span>
+                <p-calendar
+                  appendTo="body"
+                  class="filter-width"
+                  [(ngModel)]="startDate"
+                  [showTime]="true"
+                  dateFormat="dd/mm/yy" />
               </div>
             </div>
           </div>
         </div>
+      } @else {
+        <div class="pb-3 surface-border">
+          <span class="text-900 text-2xl font-medium block"
+            >Lockers/Habitaciones</span
+          >
+        </div>
+        @for (facility of facilities; track $index) {
+          <div
+            class="flex flex-column lg:flex-row flex-wrap lg:align-items-center py-2 surface-border">
+            <div class="flex-auto lg:ml-3">
+              <div class="flex align-items-center justify-content-between">
+                <span class="text-900 font-bold">
+                  {{ facility.type === 'locker' ? 'Locker' : 'Habitación' }}
+                  {{ facility.number }}
+                </span>
+                <div class="flex align-items-center gap-1">
+                  <span class="text-900 font-bold"
+                    >S/ {{ facility.price }}</span
+                  >
+                </div>
+              </div>
+            </div>
+          </div>
+        }
       }
     }
   </div>
@@ -268,7 +304,7 @@
                 services,
                 total
               )
-            : booking(customer, facilities, total)
+            : booking(customer, facilities, products, services, total)
         "
         [disabled]="validatePaidButton()"></button>
     </div>
