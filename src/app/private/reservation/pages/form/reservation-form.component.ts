@@ -214,7 +214,6 @@ export class ReservationFormComponent implements OnInit {
         this.card += payment.card;
         this.advance += payment.paid;
         this.pending = this.total - this.advance;
-        console.log('1', this.paid);
       });
     } else {
       this.paid = this.facilities
@@ -234,7 +233,6 @@ export class ReservationFormComponent implements OnInit {
   validatePaid() {
     if (this.reservationId || this.bookingId) {
       this.paid = this.pending;
-      console.log('2', this.pending);
     }
   }
 
