@@ -1,5 +1,5 @@
-import { CommonModule, DatePipe } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
+import { CommonModule, DatePipe } from '@angular/common';
 import { DialogService } from 'primeng/dynamicdialog';
 import { PaginatorState } from 'primeng/paginator';
 import { Observable } from 'rxjs';
@@ -14,6 +14,7 @@ import { ReservationsService } from '../../services/reservations/reservations.se
 import { ReservationSchedulesService } from '../../services/reservations/reservation-schedules.service';
 import { Schedule } from '../../models/schedule.model';
 import { CashService } from '../../services/cash.service';
+import { formatDate } from '../../../../utils/dates';
 
 @Component({
   selector: 'app-reservation',
@@ -117,8 +118,10 @@ export class ReservationListComponent implements OnInit {
   startDate: Date = new Date();
   endDate: Date = new Date();
   callToAction: CallToAction<Reservation>[] = [];
+
   reservationTypes: ReservationType[] = [{ id: 0, description: 'Todos' }];
   selectedReservationType: ReservationType = this.reservationTypes[0];
+
   schedules: Schedule[] = [{ id: 0, description: 'Todos' }];
   selectedSchedule: Schedule = this.schedules[0];
 
@@ -140,8 +143,8 @@ export class ReservationListComponent implements OnInit {
       this.page,
       this.selectedReservationType.id,
       this.selectedSchedule.id,
-      this.parseDate(this.startDate),
-      this.parseDate(this.endDate),
+      formatDate(this.startDate, this.datePipe),
+      formatDate(this.endDate, this.datePipe),
     );
   }
 
@@ -167,18 +170,14 @@ export class ReservationListComponent implements OnInit {
                 this.page,
                 this.selectedReservationType.id,
                 this.selectedSchedule.id,
-                this.parseDate(this.startDate),
-                this.parseDate(this.endDate),
+                formatDate(this.startDate, this.datePipe),
+                formatDate(this.endDate, this.datePipe),
               );
             },
           });
         }
       },
     });
-  }
-
-  parseDate(startDate: Date) {
-    return this.datePipe.transform(startDate, 'yyyy-MM-dd');
   }
 
   filterReservationType(reservationType: ReservationType) {
@@ -188,8 +187,8 @@ export class ReservationListComponent implements OnInit {
       this.page,
       this.selectedReservationType.id,
       this.selectedSchedule.id,
-      this.parseDate(this.startDate),
-      this.parseDate(this.endDate),
+      formatDate(this.startDate, this.datePipe),
+      formatDate(this.endDate, this.datePipe),
     );
   }
 
@@ -200,8 +199,8 @@ export class ReservationListComponent implements OnInit {
       this.page,
       this.selectedReservationType.id,
       this.selectedSchedule.id,
-      this.parseDate(this.startDate),
-      this.parseDate(this.endDate),
+      formatDate(this.startDate, this.datePipe),
+      formatDate(this.endDate, this.datePipe),
     );
   }
 
@@ -211,8 +210,8 @@ export class ReservationListComponent implements OnInit {
       this.page,
       this.selectedReservationType.id,
       this.selectedSchedule.id,
-      this.parseDate(startDate),
-      this.parseDate(this.endDate),
+      formatDate(startDate, this.datePipe),
+      formatDate(this.endDate, this.datePipe),
     );
   }
 
@@ -222,8 +221,8 @@ export class ReservationListComponent implements OnInit {
       this.page,
       this.selectedReservationType.id,
       this.selectedSchedule.id,
-      this.parseDate(this.startDate),
-      this.parseDate(endDate),
+      formatDate(this.startDate, this.datePipe),
+      formatDate(endDate, this.datePipe),
     );
   }
 
@@ -232,8 +231,8 @@ export class ReservationListComponent implements OnInit {
     page = this.page,
     reservationType = this.selectedReservationType.id,
     schedule = this.selectedSchedule.id,
-    startDate = this.parseDate(this.startDate),
-    endDate = this.parseDate(this.endDate),
+    startDate = formatDate(this.startDate, this.datePipe),
+    endDate = formatDate(this.endDate, this.datePipe),
   ): Promise<void> {
     this.updatePage(page);
     this.reservationsService
@@ -247,8 +246,8 @@ export class ReservationListComponent implements OnInit {
   export() {
     this.reservationExportsService
       .export(
-        this.parseDate(this.startDate),
-        this.parseDate(this.endDate),
+        formatDate(this.startDate, this.datePipe),
+        formatDate(this.endDate, this.datePipe),
         this.selectedReservationType.id.toString(),
         this.selectedSchedule.id!.toString(),
       )

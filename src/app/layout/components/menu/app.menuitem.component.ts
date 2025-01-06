@@ -1,4 +1,12 @@
 import {
+  animate,
+  AnimationEvent,
+  state,
+  style,
+  transition,
+  trigger,
+} from '@angular/animations';
+import {
   AfterViewChecked,
   ChangeDetectorRef,
   Component,
@@ -10,20 +18,12 @@ import {
   ViewChild,
 } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
-import {
-  animate,
-  AnimationEvent,
-  state,
-  style,
-  transition,
-  trigger,
-} from '@angular/animations';
+import { DomHandler } from 'primeng/dom';
 import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
-import { DomHandler } from 'primeng/dom';
 import { LayoutService } from '../../services/app.layout.service';
-import { AppSidebarComponent } from '../sidebar/app.sidebar.component';
 import { MenuService } from '../../services/app.menu.service';
+import { AppSidebarComponent } from '../sidebar/app.sidebar.component';
 
 @Component({
   // eslint-disable-next-line @angular-eslint/component-selector
@@ -68,7 +68,7 @@ import { MenuService } from '../../services/app.menu.service';
               paths: 'exact',
               queryParams: 'ignored',
               matrixParams: 'ignored',
-              fragment: 'ignored'
+              fragment: 'ignored',
             }
           "
           [fragment]="item.fragment"

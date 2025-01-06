@@ -1,3 +1,5 @@
+import { Customer } from './customer.model';
+
 export interface IBooking {
   id?: number;
   startDate?: string | null;
@@ -7,14 +9,12 @@ export interface IBooking {
   facilitiesImport: number;
   peopleExtraImport: number;
   consumptionsImport: number;
-  title: string;
   description: string;
-  location: string;
-  backgroundColor?: string;
-  borderColor?: string;
-  textColor?: string;
+  customer?: Customer;
   products?: any[];
   services?: any[];
+  facilities?: any[];
+  paymentTypes?: any[];
   notes?: string;
 }
 
@@ -27,14 +27,12 @@ export class Booking {
   facilitiesImport: number;
   peopleExtraImport: number;
   consumptionsImport: number;
-  title: string;
   description: string;
-  location: string;
-  backgroundColor?: string;
-  borderColor?: string;
-  textColor?: string;
+  customer?: Customer;
   products?: any[];
   services?: any[];
+  facilities?: any[];
+  paymentTypes?: any[];
   notes?: string;
   constructor(booking: IBooking) {
     this.startDate = booking.startDate;
@@ -44,12 +42,7 @@ export class Booking {
     this.facilitiesImport = booking.facilitiesImport;
     this.peopleExtraImport = booking.peopleExtraImport;
     this.consumptionsImport = booking.consumptionsImport;
-    this.title = booking.title;
     this.description = booking.description;
-    this.location = booking.location;
-    this.backgroundColor = '#ffb340';
-    this.borderColor = '#ffb340';
-    this.textColor = '#000000';
     this.products = booking.products;
     this.services = booking.services;
     this.notes = booking.notes;
@@ -59,4 +52,14 @@ export class Booking {
 export interface CreatedBooking {
   message: string;
   bookingId: number;
+}
+
+export interface Paginate {
+  total: number;
+  pages: number;
+}
+
+export interface BookingListResponse {
+  data: Booking[];
+  paginate: Paginate;
 }

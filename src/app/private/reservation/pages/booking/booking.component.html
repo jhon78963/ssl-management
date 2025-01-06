@@ -1,44 +1,38 @@
 <div class="card">
   <div class="flex align-items-center justify-content-center">
     <div class="flex gap-3">
-      <p-dropdown
-        class="filter-width"
-        [options]="reservationTypes"
-        [(ngModel)]="selectedReservationType"
-        optionLabel="description"
-        placeholder="Seleccione tipo de reserva"
-        (ngModelChange)="filterReservationType($event)" />
-      <p-dropdown
-        class="filter-width"
-        [options]="schedules"
-        [(ngModel)]="selectedSchedule"
-        optionLabel="description"
-        placeholder="Seleccione turno"
-        (ngModelChange)="filterSchedule($event)" />
-
       <p-calendar
         class="filter-width"
         [(ngModel)]="startDate"
         dateFormat="dd/mm/yy"
         (ngModelChange)="filterStartDate($event)" />
 
+      <span class="p-input-icon-left p-input-icon-right mb-2 w-full">
+        <span class="search-icon">
+          <i class="pi pi-search"></i>
+        </span>
+        <input
+          pinputtext=""
+          type="text"
+          placeholder="Buscar por dni"
+          class="p-inputtext w-full"
+          [(ngModel)]="dni"
+          (input)="filterDni($event)" />
+        <span class="clear-icon" *ngIf="dni" (click)="clearFilter()">
+          <i class="pi pi-times" style="font-size: 12px"></i>
+        </span>
+      </span>
+
       <p-calendar
         class="filter-width"
         [(ngModel)]="endDate"
         dateFormat="dd/mm/yy"
         (ngModelChange)="filterEndDate($event)" />
-
-      <button
-        pButton
-        pRipple
-        class="p-button-primary"
-        label="Exportar"
-        (click)="export()"></button>
     </div>
   </div>
 
   <app-table-pagination
-    [data]="(reservations | async) ?? []"
+    [data]="(bookings | async) ?? []"
     [columns]="columns"
     [callToAction]="callToAction"
     [cellToAction]="cellToAction"

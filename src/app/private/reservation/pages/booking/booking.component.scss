@@ -1,15 +1,6 @@
 ::ng-deep {
-  .p-dropdown {
-    width: 13.5rem !important;
-    .p-dropdown-label {
-      text-align: center;
-    }
-  }
-}
-
-::ng-deep {
   .p-calendar {
-    width: 13.5rem;
+    width: 15rem;
     .p-inputtext {
       text-align: center;
     }
@@ -39,4 +30,33 @@
   .p-datepicker .p-datepicker-header {
     padding: 0rem;
   }
+}
+
+.pi.pi-times {
+  z-index: 1;
+}
+
+.pi.pi-times:hover {
+  cursor: pointer;
+}
+
+.search-icon {
+  position: absolute;
+  left: 0.75rem;
+  top: 52%;
+  color: #83888f;
+  transform: translateY(-50%);
+}
+
+.clear-icon {
+  position: absolute;
+  right: 0.75rem;
+  top: 52%;
+  color: #83888f;
+  transform: translateY(-50%);
+}
+
+.p-inputtext {
+  padding-left: 2.5rem;
+  padding-right: 2.5rem;
 }

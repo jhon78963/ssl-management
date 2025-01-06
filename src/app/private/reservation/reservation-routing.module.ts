@@ -17,11 +17,9 @@ const routes: Routes = [
       ),
   },
   {
-    path: 'calendar',
+    path: 'booking',
     loadComponent: () =>
-      import('./pages/calendar/reservation-calendar.component').then(
-        c => c.ReservationCalendarComponent,
-      ),
+      import('./pages/booking/booking.component').then(c => c.BookingComponent),
   },
   { path: '', pathMatch: 'full', redirectTo: 'book' },
 ];

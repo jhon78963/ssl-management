@@ -2,11 +2,14 @@ import { CommonModule, DatePipe } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
+import { CalendarModule } from 'primeng/calendar';
 import { CheckboxModule } from 'primeng/checkbox';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { RadioButtonModule } from 'primeng/radiobutton';
 import { forkJoin, switchMap } from 'rxjs';
+import { currentDateTime, formatDateTime } from '../../../../utils/dates';
+import { Booking } from '../../models/booking.model';
 import { Customer } from '../../models/customer.model';
 import { FacilityType } from '../../models/facility.model';
 import { PaymentType } from '../../models/payment-type.model';
@@ -15,6 +18,12 @@ import {
   PersonalReservation,
   RoomReservation,
 } from '../../models/reservation.model';
+import { BookingPaymentTypesService } from '../../services/bookings/booking-payment-types.service';
+import { BookingProductsService } from '../../services/bookings/booking-products.service';
+import { BookingRoomsService } from '../../services/bookings/booking-rooms.service';
+import { BookingServicesService } from '../../services/bookings/booking-services.service';
+import { BookingsService } from '../../services/bookings/bookings.service';
+import { CashService } from '../../services/cash.service';
 import { FacilitiesService } from '../../services/facilities.service';
 import { ReservationLockersService } from '../../services/reservations/reservation-lockers.service';
 import { ReservationPaymentTypesService } from '../../services/reservations/reservation-payment-types.service';
@@ -22,19 +31,6 @@ import { ReservationProductsService } from '../../services/reservations/reservat
 import { ReservationRoomsService } from '../../services/reservations/reservation-rooms.service';
 import { ReservationServicesService } from '../../services/reservations/reservation-services.service';
 import { ReservationsService } from '../../services/reservations/reservations.service';
-import { CashService } from '../../services/cash.service';
-import {
-  currentDateTime,
-  formatDateTime,
-  formatDateTimePeru,
-} from '../../../../utils/dates';
-import { Booking } from '../../models/booking.model';
-import { BookingPaymentTypesService } from '../../services/bookings/booking-payment-types.service';
-import { BookingServicesService } from '../../services/bookings/booking-services.service';
-import { BookingProductsService } from '../../services/bookings/booking-products.service';
-import { BookingRoomsService } from '../../services/bookings/booking-rooms.service';
-import { BookingService } from '../../services/bookings/booking.service';
-import { CalendarModule } from 'primeng/calendar';
 
 @Component({
   selector: 'app-reservation-form',
@@ -68,6 +64,7 @@ export class ReservationFormComponent implements OnInit {
   extraHours: number = 0;
   brokenThings: number = 0;
   reservationId: number = 0;
+  bookingId: number = 0;
   notes: string = '';
   payments: PaymentType[] = [
     { id: 1, description: 'Efectivo' },
@@ -105,7 +102,7 @@ export class ReservationFormComponent implements OnInit {
     private readonly bookingServicesService: BookingServicesService,
     private readonly bookingProductsService: BookingProductsService,
     private readonly bookingRoomsService: BookingRoomsService,
-    private readonly bookingService: BookingService,
+    private readonly bookingsService: BookingsService,
   ) {}
 
   getOperationType() {
@@ -114,6 +111,7 @@ export class ReservationFormComponent implements OnInit {
 
   getCustomer() {
     this.reservationId = this.dynamicDialogConfig.data.reservationId;
+    this.bookingId = this.dynamicDialogConfig.data.bookingId;
     this.customer = this.dynamicDialogConfig.data.customer;
   }
 
@@ -144,7 +142,7 @@ export class ReservationFormComponent implements OnInit {
 
   getServices() {
     if (this.dynamicDialogConfig.data.services) {
-      if (this.dynamicDialogConfig.data.services.lenght > 0) {
+      if (this.dynamicDialogConfig.data.services.length > 0) {
         this.services = this.dynamicDialogConfig.data.services;
       } else {
         this.services = this.dynamicDialogConfig.data.products.filter(
@@ -216,6 +214,7 @@ export class ReservationFormComponent implements OnInit {
         this.card += payment.card;
         this.advance += payment.paid;
         this.pending = this.total - this.advance;
+        console.log('1', this.paid);
       });
     } else {
       this.paid = this.facilities
@@ -233,8 +232,9 @@ export class ReservationFormComponent implements OnInit {
   }
 
   validatePaid() {
-    if (this.reservationId) {
+    if (this.reservationId || this.bookingId) {
       this.paid = this.pending;
+      console.log('2', this.pending);
     }
   }
 
@@ -874,11 +874,7 @@ export class ReservationFormComponent implements OnInit {
     }
   }
 
-  bookingData(
-    customer: Customer | null | undefined,
-    total: number,
-    facilityNumbers?: string | null,
-  ) {
+  bookingData(customer: Customer | null | undefined, total: number) {
     return {
       startDate: formatDateTime(this.startDate, this.datePipe),
       customerId: customer!.id,
@@ -889,14 +885,8 @@ export class ReservationFormComponent implements OnInit {
       consumptionsImport: this.totalProducts + this.totalServices,
       status: 'PENDING',
       notes: this.notes,
-      title: `${customer!.dni} - ${customer!.name} ${customer!.surname}`,
-      description: `Reserva de habitación(es) para la fecha: ${formatDateTimePeru(this.startDate, this.datePipe)}`,
-      location: `Habitaciones: ${facilityNumbers}`,
+      description: `${customer!.dni} - ${customer!.name} ${customer!.surname}`,
     };
-  }
-
-  getFacilityNumbersString(): string {
-    return this.facilities.map((facility: any) => facility.number).join(', ');
   }
 
   createRoomBooking(
@@ -906,14 +896,9 @@ export class ReservationFormComponent implements OnInit {
     services: any[],
     total: number,
   ) {
-    const facilityNumbers = this.getFacilityNumbersString();
-    const bookingData = this.bookingData(
-      customer,
-      total,
-      facilityNumbers || null,
-    );
+    const bookingData = this.bookingData(customer, total);
     const booking = new Booking(bookingData);
-    this.bookingService.create(booking).subscribe({
+    this.bookingsService.create(booking).subscribe({
       next: (response: any) => {
         this.createBookingOrReservation(
           response.bookingId,
