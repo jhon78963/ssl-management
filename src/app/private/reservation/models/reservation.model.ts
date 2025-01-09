@@ -1,3 +1,5 @@
+import { Customer } from './customer.model';
+
 export interface IReservation {
   id?: number;
   startDate?: string | null;
@@ -9,7 +11,7 @@ export interface IReservation {
   products?: any[];
   services?: any[];
   customerId?: number;
-  customer?: string;
+  customer?: Customer;
   lockerId?: number;
   locker?: string;
   roomId?: number;
@@ -33,10 +35,14 @@ export class Reservation {
   products?: any[];
   services?: any[];
   customerId?: number;
+  customer?: Customer;
   lockerId?: number;
   roomId?: number;
   customers?: any[];
   notes?: any;
+  facilities?: any[];
+  paymentTypes?: any[];
+  statusLabel?: string;
 
   constructor(reservation: IReservation) {
     this.id = reservation.id;

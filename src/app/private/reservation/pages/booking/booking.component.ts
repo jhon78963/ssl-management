@@ -11,7 +11,7 @@ import { SharedModule } from '../../../../shared/shared.module';
 import { KeyFilterModule } from 'primeng/keyfilter';
 import { showSuccess } from '../../../../utils/notifications';
 import { MessageService } from 'primeng/api';
-import { ReservationFormComponent } from '../form/reservation-form.component';
+import { ReservationFormComponent } from '../form/create/reservation-form.component';
 import { DialogService } from 'primeng/dynamicdialog';
 
 @Component({
@@ -74,7 +74,7 @@ export class BookingComponent implements OnInit {
     },
     {
       header: 'Estado',
-      field: 'status',
+      field: 'statusLabel',
       clickable: false,
       image: false,
       money: false,
@@ -95,13 +95,14 @@ export class BookingComponent implements OnInit {
   endDate: Date = new Date();
   dni: string | number | null = null;
   private searchDniSubject = new Subject<any>();
+  status: string = '';
   callToAction: CallToAction<Booking>[] = [
     {
       type: 'button',
       size: 'small',
-      icon: 'pi pi-book',
+      icon: 'pi pi-eye',
       outlined: true,
-      pTooltip: 'Reservar',
+      pTooltip: 'Ver',
       tooltipPosition: 'bottom',
       click: (rowData: Booking) => this.bookingBookButton(rowData),
     },
@@ -121,44 +122,32 @@ export class BookingComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.getBookings(
-      this.limit,
-      this.page,
-      formatDate(this.startDate, this.datePipe),
-      formatDate(this.endDate, this.datePipe),
-      this.dni,
-    );
+    this.getOrupdateBookings();
     this.searchDniSubject.pipe(debounceTime(600)).subscribe((dni: any) => {
       this.dni = dni.target.value;
       this.loadingService.sendLoadingState(true);
-      this.getBookings(
-        this.limit,
-        this.page,
-        formatDate(this.startDate, this.datePipe),
-        formatDate(this.endDate, this.datePipe),
-        this.dni,
-      );
+      this.getOrupdateBookings();
     });
   }
 
-  filterStartDate(startDate: Date) {
+  getOrupdateBookings() {
     this.getBookings(
       this.limit,
       this.page,
-      formatDate(startDate, this.datePipe),
+      formatDate(this.startDate, this.datePipe),
       formatDate(this.endDate, this.datePipe),
       this.dni,
     );
   }
 
+  filterStartDate(startDate: Date) {
+    this.startDate = startDate;
+    this.getOrupdateBookings();
+  }
+
   filterEndDate(endDate: Date) {
-    this.getBookings(
-      this.limit,
-      this.page,
-      formatDate(this.startDate, this.datePipe),
-      formatDate(endDate, this.datePipe),
-      this.dni,
-    );
+    this.endDate = endDate;
+    this.getOrupdateBookings();
   }
 
   filterDni(dni: any) {
@@ -168,13 +157,7 @@ export class BookingComponent implements OnInit {
   clearFilter() {
     this.dni = '';
     this.searchDniSubject.next('');
-    this.getBookings(
-      this.limit,
-      this.page,
-      formatDate(this.startDate, this.datePipe),
-      formatDate(this.endDate, this.datePipe),
-      this.dni,
-    );
+    this.getOrupdateBookings();
   }
 
   async getBookings(
@@ -221,20 +204,35 @@ export class BookingComponent implements OnInit {
         pricePerAdditionalPerson:
           booking.facilities![0].pricePerAdditionalPerson || 0,
         isBooking: false,
+        status: booking.status,
       },
     });
 
     modal.onClose.subscribe({
       next: (value: any) => {
         if (value && value?.success) {
+          this.updateBooking(booking.id);
           showSuccess(this.messageService, 'Reservación registrada.');
-          //this.clearReservation();
         } else {
           null;
         }
         this.cdr.detectChanges();
       },
     });
+  }
+
+  updateBooking(bookingId: number | undefined) {
+    if (bookingId) {
+      this.bookingsService.changeStatus(bookingId, 'COMPLETED').subscribe({
+        next: () => {
+          this.getOrupdateBookings();
+        },
+      });
+    }
+  }
+
+  bookingEditButton(id: number | undefined) {
+    console.log(id);
   }
 
   private updatePage(value: number): void {

@@ -1,54 +1,65 @@
 import { CommonModule, DatePipe } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { CalendarModule } from 'primeng/calendar';
 import { CheckboxModule } from 'primeng/checkbox';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { RadioButtonModule } from 'primeng/radiobutton';
+import { TooltipModule } from 'primeng/tooltip';
 import { forkJoin, switchMap } from 'rxjs';
-import { currentDateTime, formatDateTime } from '../../../../utils/dates';
-import { Booking } from '../../models/booking.model';
-import { Customer } from '../../models/customer.model';
-import { FacilityType } from '../../models/facility.model';
-import { PaymentType } from '../../models/payment-type.model';
+import {
+  currentDateTime,
+  formatDateTime,
+  formatDateTimeFromLocal,
+} from '../../../../../utils/dates';
+import { Booking, CheckSchedule } from '../../../models/booking.model';
+import { Customer } from '../../../models/customer.model';
+import { FacilityType } from '../../../models/facility.model';
+import { PaymentType } from '../../../models/payment-type.model';
 import {
   LockerReservation,
   PersonalReservation,
   RoomReservation,
-} from '../../models/reservation.model';
-import { BookingPaymentTypesService } from '../../services/bookings/booking-payment-types.service';
-import { BookingProductsService } from '../../services/bookings/booking-products.service';
-import { BookingRoomsService } from '../../services/bookings/booking-rooms.service';
-import { BookingServicesService } from '../../services/bookings/booking-services.service';
-import { BookingsService } from '../../services/bookings/bookings.service';
-import { CashService } from '../../services/cash.service';
-import { FacilitiesService } from '../../services/facilities.service';
-import { ReservationLockersService } from '../../services/reservations/reservation-lockers.service';
-import { ReservationPaymentTypesService } from '../../services/reservations/reservation-payment-types.service';
-import { ReservationProductsService } from '../../services/reservations/reservation-products.service';
-import { ReservationRoomsService } from '../../services/reservations/reservation-rooms.service';
-import { ReservationServicesService } from '../../services/reservations/reservation-services.service';
-import { ReservationsService } from '../../services/reservations/reservations.service';
+} from '../../../models/reservation.model';
+import { BookingPaymentTypesService } from '../../../services/bookings/booking-payment-types.service';
+import { BookingProductsService } from '../../../services/bookings/booking-products.service';
+import { BookingRoomsService } from '../../../services/bookings/booking-rooms.service';
+import { BookingServicesService } from '../../../services/bookings/booking-services.service';
+import { BookingsService } from '../../../services/bookings/bookings.service';
+import { CashService } from '../../../services/cash.service';
+import { FacilitiesService } from '../../../services/facilities.service';
+import { ReservationLockersService } from '../../../services/reservations/reservation-lockers.service';
+import { ReservationPaymentTypesService } from '../../../services/reservations/reservation-payment-types.service';
+import { ReservationProductsService } from '../../../services/reservations/reservation-products.service';
+import { ReservationRoomsService } from '../../../services/reservations/reservation-rooms.service';
+import { ReservationServicesService } from '../../../services/reservations/reservation-services.service';
+import { ReservationsService } from '../../../services/reservations/reservations.service';
+import { MessagesModule } from 'primeng/messages';
+import { showToastWarn } from '../../../../../utils/notifications';
 
 @Component({
   selector: 'app-reservation-form',
   standalone: true,
   imports: [
     ButtonModule,
+    CalendarModule,
+    CheckboxModule,
     CommonModule,
     FormsModule,
-    CheckboxModule,
-    RadioButtonModule,
     InputNumberModule,
-    CalendarModule,
+    MessagesModule,
+    RadioButtonModule,
+    TooltipModule,
   ],
   templateUrl: './reservation-form.component.html',
   styleUrl: './reservation-form.component.scss',
-  providers: [DatePipe],
+  providers: [DatePipe, MessageService],
 })
 export class ReservationFormComponent implements OnInit {
+  [x: string]: any;
   products: any[] = [];
   services: any[] = [];
   facilities: any[] = [];
@@ -66,6 +77,7 @@ export class ReservationFormComponent implements OnInit {
   reservationId: number = 0;
   bookingId: number = 0;
   notes: string = '';
+  status: string = '';
   payments: PaymentType[] = [
     { id: 1, description: 'Efectivo' },
     { id: 2, description: 'Tarjeta' },
@@ -84,11 +96,15 @@ export class ReservationFormComponent implements OnInit {
   pending: number = 0;
 
   isBooking: boolean = false;
+  isList: boolean = false;
   startDate: Date = new Date();
+
+  conflict: boolean = false;
 
   constructor(
     private readonly cashService: CashService,
     private readonly datePipe: DatePipe,
+    private readonly messageService: MessageService,
     private readonly dynamicDialogConfig: DynamicDialogConfig,
     private readonly dynamicDialogRef: DynamicDialogRef,
     private readonly facilitiesService: FacilitiesService,
@@ -107,6 +123,7 @@ export class ReservationFormComponent implements OnInit {
 
   getOperationType() {
     this.isBooking = this.dynamicDialogConfig.data.isBooking;
+    this.isList = this.dynamicDialogConfig.data.isList;
   }
 
   getCustomer() {
@@ -236,6 +253,10 @@ export class ReservationFormComponent implements OnInit {
     }
   }
 
+  getStatus() {
+    this.status = this.dynamicDialogConfig.data.status;
+  }
+
   ngOnInit(): void {
     this.clearPayments();
     this.getOperationType();
@@ -250,6 +271,7 @@ export class ReservationFormComponent implements OnInit {
     this.getTotal();
     this.getPaymentTypes();
     this.validatePaid();
+    this.getStatus();
   }
 
   plusTotalPayment(event: any, price: number) {
@@ -275,6 +297,10 @@ export class ReservationFormComponent implements OnInit {
       if (this.cash + this.card != this.paid) {
         return true;
       }
+    }
+
+    if (this.conflict) {
+      return true;
     }
 
     if (this.selectedPaymentType.id == 1 || this.selectedPaymentType.id == 2) {
@@ -911,6 +937,53 @@ export class ReservationFormComponent implements OnInit {
         );
       },
     });
+  }
+
+  checkScgedule(roomId: number, startDate: string | null) {
+    this.bookingsService.checkSchedule(roomId, startDate).subscribe({
+      next: (resp: CheckSchedule) => {
+        if (resp.conflict) {
+          this.messageService.clear();
+          this.conflict = resp.conflict;
+          showToastWarn(
+            this.messageService,
+            `El horario seleccionado (${resp.conflictingStartDate} - ${resp.conflictingEndDate}) ya está reservado. Por favor, elija otro.`,
+          );
+        } else {
+          this.conflict = false;
+          this.messageService.clear();
+        }
+      },
+    });
+  }
+
+  onDateSelectFrom(event: any) {
+    const roomId = this.facilities[0].id;
+    const dateAdjusted = this.adjustMinutes(event);
+    const startDate = formatDateTime(dateAdjusted, this.datePipe);
+    this.checkScgedule(roomId, startDate);
+  }
+
+  onDateInputFrom(event: any) {
+    if (event.target.value.length == 16) {
+      const roomId = this.facilities[0].id;
+      const startDate = formatDateTimeFromLocal(
+        event.target.value,
+        this.datePipe,
+      );
+      this.checkScgedule(roomId, startDate);
+    }
+  }
+
+  adjustMinutes(date: any) {
+    if (this.startDate) {
+      this.startDate = date;
+      const minutes = this.startDate.getMinutes();
+      const adjustedMinutes = Math.round(minutes / 10) * 10;
+      this.startDate.setMinutes(adjustedMinutes);
+      console.log(this.startDate);
+    }
+    return this.startDate;
   }
 
   closeModal() {

@@ -97,3 +97,9 @@
       padding: 0rem;
   }
 }
+
+::ng-deep {
+  .p-message {
+    margin: 0;
+  }
+}

@@ -16,6 +16,8 @@ export interface IBooking {
   facilities?: any[];
   paymentTypes?: any[];
   notes?: string;
+  status?: string;
+  statusLabel?: string;
 }
 
 export class Booking {
@@ -34,6 +36,8 @@ export class Booking {
   facilities?: any[];
   paymentTypes?: any[];
   notes?: string;
+  status?: string;
+  statuslabel?: string;
   constructor(booking: IBooking) {
     this.startDate = booking.startDate;
     this.total = booking.total;
@@ -62,4 +66,10 @@ export interface Paginate {
 export interface BookingListResponse {
   data: Booking[];
   paginate: Paginate;
+}
+
+export interface CheckSchedule {
+  conflict: boolean;
+  conflictingStartDate: Date;
+  conflictingEndDate: Date;
 }

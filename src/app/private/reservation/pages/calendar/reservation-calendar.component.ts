@@ -32,11 +32,11 @@ import { currentDateTime } from '../../../../utils/dates';
     RippleModule,
     FullCalendarModule,
   ],
-  templateUrl: './reservation-calendar-legacy.component.html',
-  styleUrls: ['./reservation-calendar-legacy.component.scss'],
+  templateUrl: './reservation-calendar.component.html',
+  styleUrls: ['./reservation-calendar.component.scss'],
   providers: [DatePipe, DialogModule],
 })
-export class ReservationCalendarLegacyComponent implements OnInit {
+export class ReservationCalendarComponent implements OnInit {
   events: any[] = [];
 
   today: string | null = '';

@@ -23,3 +23,15 @@ export function showError(
     life: 3000,
   });
 }
+
+export function showToastWarn(
+  messageService: MessageService,
+  message: string,
+): void {
+  messageService.add({
+    severity: 'warn',
+    summary: 'Conflicto',
+    detail: message,
+    life: 15000,
+  });
+}

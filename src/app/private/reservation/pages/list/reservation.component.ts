@@ -1,20 +1,21 @@
-import { Component, OnInit } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
+import { Component, OnInit } from '@angular/core';
 import { DialogService } from 'primeng/dynamicdialog';
 import { PaginatorState } from 'primeng/paginator';
 import { Observable } from 'rxjs';
 import { CallToAction, Column } from '../../../../interfaces/table.interface';
 import { LoadingService } from '../../../../services/loading.service';
 import { SharedModule } from '../../../../shared/shared.module';
+import { formatDate } from '../../../../utils/dates';
 import { ReservationType } from '../../models/reservation-type.model';
 import { Reservation } from '../../models/reservation.model';
-import { ReservationExportsService } from '../../services/reservations/reservation-exports.service';
-import { ReservationTypesService } from '../../services/reservations/reservation-types.service';
-import { ReservationsService } from '../../services/reservations/reservations.service';
-import { ReservationSchedulesService } from '../../services/reservations/reservation-schedules.service';
 import { Schedule } from '../../models/schedule.model';
 import { CashService } from '../../services/cash.service';
-import { formatDate } from '../../../../utils/dates';
+import { ReservationExportsService } from '../../services/reservations/reservation-exports.service';
+import { ReservationSchedulesService } from '../../services/reservations/reservation-schedules.service';
+import { ReservationTypesService } from '../../services/reservations/reservation-types.service';
+import { ReservationsService } from '../../services/reservations/reservations.service';
+import { ReservationFormComponent } from '../form/create/reservation-form.component';
 
 @Component({
   selector: 'app-reservation',
@@ -105,7 +106,14 @@ export class ReservationListComponent implements OnInit {
     },
     {
       header: 'Estado',
-      field: 'status',
+      field: 'statusLabel',
+      clickable: false,
+      image: false,
+      money: false,
+    },
+    {
+      field: 'button',
+      header: 'Acción',
       clickable: false,
       image: false,
       money: false,
@@ -117,7 +125,26 @@ export class ReservationListComponent implements OnInit {
   page: number = 1;
   startDate: Date = new Date();
   endDate: Date = new Date();
-  callToAction: CallToAction<Reservation>[] = [];
+  callToAction: CallToAction<Reservation>[] = [
+    {
+      type: 'button',
+      size: 'small',
+      icon: 'pi pi-eye',
+      outlined: true,
+      pTooltip: 'Ver',
+      tooltipPosition: 'bottom',
+      click: (rowData: Reservation) => this.reservationBookButton(rowData),
+    },
+    // {
+    //   type: 'button',
+    //   size: 'small',
+    //   icon: 'pi pi-pencil',
+    //   outlined: true,
+    //   pTooltip: 'Editar',
+    //   tooltipPosition: 'bottom',
+    //   click: (rowData: Reservation) => this.reservationEditButton(rowData),
+    // },
+  ];
 
   reservationTypes: ReservationType[] = [{ id: 0, description: 'Todos' }];
   selectedReservationType: ReservationType = this.reservationTypes[0];
@@ -127,6 +154,7 @@ export class ReservationListComponent implements OnInit {
 
   constructor(
     private readonly datePipe: DatePipe,
+    private readonly dialogService: DialogService,
     private readonly reservationsService: ReservationsService,
     private readonly reservationTypesService: ReservationTypesService,
     private readonly reservationSchedulesService: ReservationSchedulesService,
@@ -283,4 +311,46 @@ export class ReservationListComponent implements OnInit {
   private updatePage(value: number): void {
     this.page = value;
   }
+
+  reservationBookButton(reservation: Reservation) {
+    this.dialogService.open(ReservationFormComponent, {
+      header: 'Ejecutar reserva',
+      data: {
+        reservationId: reservation.id,
+        customer: reservation.customer,
+        notes: reservation.notes,
+        facilities: reservation.facilities,
+        products: reservation.products,
+        services: reservation.services,
+        paymentTypes: reservation.paymentTypes,
+        additionalPeople: reservation.facilities![0].additionalPeople || 0,
+        pricePerAdditionalPerson:
+          reservation.facilities![0].pricePerAdditionalPerson || 0,
+        isBooking: false,
+        isList: true,
+        status: reservation.status,
+      },
+    });
+  }
+
+  // reservationEditButton(reservation: Reservation) {
+  //   this.dialogService.open(ReservationFormComponent, {
+  //     header: 'Editar reserva',
+  //     data: {
+  //       reservationId: reservation.id,
+  //       customer: reservation.customer,
+  //       notes: reservation.notes,
+  //       facilities: reservation.facilities,
+  //       products: reservation.products,
+  //       services: reservation.services,
+  //       paymentTypes: reservation.paymentTypes,
+  //       additionalPeople: reservation.facilities![0].additionalPeople || 0,
+  //       pricePerAdditionalPerson:
+  //         reservation.facilities![0].pricePerAdditionalPerson || 0,
+  //       isBooking: false,
+  //       isList: false,
+  //       status: reservation.status,
+  //     },
+  //   });
+  // }
 }

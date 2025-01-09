@@ -30,7 +30,7 @@ import { FacilitiesService } from '../../services/facilities.service';
 import { ReservationProductsService } from '../../services/reservations/reservation-products.service';
 import { ReservationServicesService } from '../../services/reservations/reservation-services.service';
 import { ReservationsService } from '../../services/reservations/reservations.service';
-import { ReservationFormComponent } from '../form/reservation-form.component';
+import { ReservationFormComponent } from '../form/create/reservation-form.component';
 
 @Component({
   selector: 'app-reservation.layout',

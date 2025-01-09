@@ -4,6 +4,7 @@ import { ApiService } from '../../../../services/api.service';
 import {
   Booking,
   BookingListResponse,
+  CheckSchedule,
   CreatedBooking,
 } from '../../models/booking.model';
 
@@ -65,6 +66,19 @@ export class BookingsService {
 
   update(id: number, data: Booking): Observable<void> {
     return this.apiService.patch(`bookings/${id}`, data);
+  }
+
+  changeStatus(id: number, status: string): Observable<void> {
+    return this.apiService.patch(`bookings/change-status/${id}`, { status });
+  }
+
+  checkSchedule(
+    roomId: number,
+    startDate: string | null,
+  ): Observable<CheckSchedule> {
+    return this.apiService.post(`bookings/check-schedule/room/${roomId}`, {
+      startDate,
+    });
   }
 
   delete(id: number): Observable<void> {
