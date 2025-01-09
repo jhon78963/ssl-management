@@ -3,12 +3,8 @@ import { CommonModule } from '@angular/common';
 
 import { CashRoutingModule } from './cash-routing.module';
 
-
 @NgModule({
   declarations: [],
-  imports: [
-    CommonModule,
-    CashRoutingModule
-  ]
+  imports: [CommonModule, CashRoutingModule],
 })
-export class CashModule { }
+export class CashModule {}
