@@ -13,6 +13,7 @@ import { showSuccess } from '../../../../utils/notifications';
 import { MessageService } from 'primeng/api';
 import { ReservationFormComponent } from '../form/create/reservation-form.component';
 import { DialogService } from 'primeng/dynamicdialog';
+import { BookingPaymentTypesService } from '../../services/bookings/booking-payment-types.service';
 
 @Component({
   standalone: true,
@@ -112,6 +113,7 @@ export class BookingComponent implements OnInit {
     private cdr: ChangeDetectorRef,
     private readonly datePipe: DatePipe,
     private readonly bookingsService: BookingsService,
+    private readonly bookingPaymentTypesService: BookingPaymentTypesService,
     private loadingService: LoadingService,
     private readonly messageService: MessageService,
     private readonly dialogService: DialogService,
@@ -195,6 +197,9 @@ export class BookingComponent implements OnInit {
       data: {
         bookingId: booking.id,
         customer: booking.customer,
+        startDate: booking.startDate,
+        totalPaid: booking.totalPaid || 0,
+        endDate: booking.endDate,
         notes: booking.notes,
         facilities: booking.facilities,
         products: booking.products,
@@ -211,7 +216,13 @@ export class BookingComponent implements OnInit {
     modal.onClose.subscribe({
       next: (value: any) => {
         if (value && value?.success) {
-          this.updateBooking(booking.id);
+          this.updateBooking(
+            booking.id,
+            value.paid,
+            value.selectedPaymentTypeId,
+            value.cash,
+            value.card,
+          );
           showSuccess(this.messageService, 'Reservación registrada.');
         } else {
           null;
@@ -221,13 +232,54 @@ export class BookingComponent implements OnInit {
     });
   }
 
-  updateBooking(bookingId: number | undefined) {
+  addPaymentType(
+    bookingId: number,
+    selectedPaymentTypeId: number,
+    paid: number = 0,
+    cash: number = 0,
+    card: number = 0,
+  ) {
+    const paymentType = {
+      payment: paid,
+      paymentTypeId: selectedPaymentTypeId,
+      cashPayment: cash,
+      cardPayment: card,
+    };
+
+    this.bookingPaymentTypesService
+      .add(
+        bookingId,
+        paymentType.paymentTypeId,
+        paymentType.payment,
+        paymentType.cashPayment,
+        paymentType.cardPayment,
+      )
+      .subscribe();
+  }
+
+  updateBooking(
+    bookingId: number | undefined,
+    paid: number = 0,
+    selectedPaymentTypeId: number = 0,
+    cash: number = 0,
+    card: number = 0,
+  ) {
     if (bookingId) {
-      this.bookingsService.changeStatus(bookingId, 'COMPLETED').subscribe({
-        next: () => {
-          this.getOrupdateBookings();
-        },
-      });
+      console.log(paid, selectedPaymentTypeId, cash, card);
+      this.bookingsService
+        .changeStatus(bookingId, 'COMPLETED', paid)
+        .subscribe({
+          next: () => {
+            this.getOrupdateBookings();
+            this.addPaymentType(
+              bookingId,
+              selectedPaymentTypeId,
+              paid,
+              cash,
+              card,
+            );
+          },
+        });
     }
   }
 

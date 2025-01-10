@@ -23,6 +23,7 @@ export interface IReservation {
   hoursExtraImport?: number;
   brokenThingsImport?: number;
   notes?: string;
+  totalPaidCash?: number;
 }
 
 export class Reservation {
@@ -80,12 +81,14 @@ export class RoomReservation {
   hoursExtraImport?: number;
   brokenThingsImport?: number;
   notes?: string;
+  totalPaidCash?: number;
   constructor(reservation: IReservation) {
     this.id = reservation.id;
     this.startDate = reservation.startDate;
     this.endDate = reservation.endDate;
     this.total = reservation.total;
     this.totalPaid = reservation.totalPaid;
+    this.totalPaidCash = reservation.totalPaidCash;
     this.customerId = reservation.customerId;
     this.products = reservation.products;
     this.services = reservation.services;

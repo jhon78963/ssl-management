@@ -68,8 +68,12 @@ export class BookingsService {
     return this.apiService.patch(`bookings/${id}`, data);
   }
 
-  changeStatus(id: number, status: string): Observable<void> {
-    return this.apiService.patch(`bookings/change-status/${id}`, { status });
+  changeStatus(
+    id: number,
+    status: string,
+    totalPaid: number,
+  ): Observable<void> {
+    return this.apiService.patch(`bookings/${id}`, { status, totalPaid });
   }
 
   checkSchedule(

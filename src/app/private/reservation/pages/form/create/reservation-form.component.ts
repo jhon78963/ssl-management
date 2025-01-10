@@ -99,6 +99,10 @@ export class ReservationFormComponent implements OnInit {
   isList: boolean = false;
   startDate: Date = new Date();
 
+  startDateBooking: string | null = null;
+  endDateBooking: string | null = null;
+  totalPaidBooking: number = 0;
+
   conflict: boolean = false;
 
   constructor(
@@ -257,6 +261,15 @@ export class ReservationFormComponent implements OnInit {
     this.status = this.dynamicDialogConfig.data.status;
   }
 
+  getDate() {
+    if (this.dynamicDialogConfig.data.startDate) {
+      this.startDateBooking = this.dynamicDialogConfig.data.startDate;
+      this.endDateBooking = this.dynamicDialogConfig.data.endDate;
+      this.totalPaidBooking = this.dynamicDialogConfig.data.totalPaid;
+      // this.paid += this.totalPaidBooking;
+    }
+  }
+
   ngOnInit(): void {
     this.clearPayments();
     this.getOperationType();
@@ -272,6 +285,7 @@ export class ReservationFormComponent implements OnInit {
     this.getPaymentTypes();
     this.validatePaid();
     this.getStatus();
+    this.getDate();
   }
 
   plusTotalPayment(event: any, price: number) {
@@ -402,7 +416,8 @@ export class ReservationFormComponent implements OnInit {
       endDate: reservationTypeId == 3 ? startDate : endDate,
       customerId: customer!.id,
       total: total,
-      totalPaid: this.paid,
+      totalPaidCash: this.paid,
+      totalPaid: this.paid + this.totalPaidBooking,
       peopleExtraImport: this.pricePerAdditionalPerson,
       hoursExtraImport: this.pricePerExtraHour,
       facilitiesImport: this.lockerPrice,
@@ -527,6 +542,10 @@ export class ReservationFormComponent implements OnInit {
         startDate || null,
         null,
       );
+      if (this.startDateBooking) {
+        reservationData.startDate = this.startDateBooking;
+        reservationData.endDate = this.endDateBooking;
+      }
       const reservation = new RoomReservation(reservationData);
       this.reservationsService.create(reservation).subscribe({
         next: (response: any) => {
@@ -580,7 +599,7 @@ export class ReservationFormComponent implements OnInit {
     isBooking: boolean = false,
   ) {
     const paymentType = {
-      payment: this.paid,
+      payment: this.paid + this.totalPaidBooking,
       paymentTypeId: this.selectedPaymentType.id,
       cashPayment: this.cash,
       cardPayment: this.card,
@@ -733,7 +752,12 @@ export class ReservationFormComponent implements OnInit {
       });
       forkJoin(reservationRequests).subscribe({
         next: () => {
-          this.closeModal();
+          this.closeModal(
+            this.paid,
+            this.selectedPaymentType.id,
+            this.cash,
+            this.card,
+          );
         },
       });
     }
@@ -939,7 +963,7 @@ export class ReservationFormComponent implements OnInit {
     });
   }
 
-  checkScgedule(roomId: number, startDate: string | null) {
+  checkSchedule(roomId: number, startDate: string | null) {
     this.bookingsService.checkSchedule(roomId, startDate).subscribe({
       next: (resp: CheckSchedule) => {
         if (resp.conflict) {
@@ -961,7 +985,7 @@ export class ReservationFormComponent implements OnInit {
     const roomId = this.facilities[0].id;
     const dateAdjusted = this.adjustMinutes(event);
     const startDate = formatDateTime(dateAdjusted, this.datePipe);
-    this.checkScgedule(roomId, startDate);
+    this.checkSchedule(roomId, startDate);
   }
 
   onDateInputFrom(event: any) {
@@ -971,7 +995,7 @@ export class ReservationFormComponent implements OnInit {
         event.target.value,
         this.datePipe,
       );
-      this.checkScgedule(roomId, startDate);
+      this.checkSchedule(roomId, startDate);
     }
   }
 
@@ -981,14 +1005,24 @@ export class ReservationFormComponent implements OnInit {
       const minutes = this.startDate.getMinutes();
       const adjustedMinutes = Math.round(minutes / 10) * 10;
       this.startDate.setMinutes(adjustedMinutes);
-      console.log(this.startDate);
     }
     return this.startDate;
   }
 
-  closeModal() {
+  closeModal(
+    paid: number = 0,
+    selectedPaymentTypeId: number = 0,
+    cash: number = 0,
+    card: number = 0,
+  ) {
     this.clearPayments();
-    this.dynamicDialogRef.close({ success: true });
+    this.dynamicDialogRef.close({
+      success: true,
+      paid,
+      selectedPaymentTypeId,
+      cash,
+      card,
+    });
   }
 
   clearPayments() {

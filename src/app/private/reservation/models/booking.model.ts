@@ -3,6 +3,7 @@ import { Customer } from './customer.model';
 export interface IBooking {
   id?: number;
   startDate?: string | null;
+  endDate?: string | null;
   total: number;
   totalPaid: number;
   customerId: number;
@@ -23,6 +24,7 @@ export interface IBooking {
 export class Booking {
   id?: number;
   startDate?: string | null;
+  endDate?: string | null;
   total: number;
   totalPaid: number;
   customerId: number;

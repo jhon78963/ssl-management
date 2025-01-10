@@ -105,6 +105,13 @@ export class ReservationListComponent implements OnInit {
       money: true,
     },
     {
+      header: 'Total Pagado',
+      field: 'totalPaid',
+      clickable: false,
+      image: false,
+      money: true,
+    },
+    {
       header: 'Estado',
       field: 'statusLabel',
       clickable: false,
