@@ -109,6 +109,7 @@ export class LockerReservation {
   endDate?: string | null;
   total: number;
   totalPaid: number;
+  totalPaidCash?: number;
   customerId?: number;
   products?: any[];
   services?: any[];
@@ -126,6 +127,7 @@ export class LockerReservation {
     this.endDate = reservation.endDate;
     this.total = reservation.total;
     this.totalPaid = reservation.totalPaid;
+    this.totalPaidCash = reservation.totalPaidCash;
     this.customerId = reservation.customerId;
     this.products = reservation.products;
     this.services = reservation.services;
