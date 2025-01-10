@@ -118,9 +118,9 @@ export class BookingComponent implements OnInit {
     private readonly messageService: MessageService,
     private readonly dialogService: DialogService,
   ) {
-    const currentYear = this.startDate.getFullYear();
-    const currentMonth = this.startDate.getMonth();
-    this.endDate = new Date(currentYear, currentMonth + 1, 0);
+    // const currentYear = this.startDate.getFullYear();
+    // const currentMonth = this.startDate.getMonth();
+    // this.endDate = new Date(currentYear, currentMonth + 1, 0);
   }
 
   ngOnInit(): void {
