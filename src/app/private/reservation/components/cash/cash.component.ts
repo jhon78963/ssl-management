@@ -72,7 +72,7 @@ export class CashComponent implements OnInit {
   createOperation(cashId: number | undefined) {
     this.cashService.createOperation(this.getData(cashId)).subscribe({
       next: () => {
-        if (this.cashType.id == 3) {
+        if (this.cashType.id == 4) {
           this.cashService.updateCashTotal(0);
           const body = {
             status: 'CLOSE',
@@ -81,6 +81,7 @@ export class CashComponent implements OnInit {
           this.cashService.updateCash(cashId!, cash).subscribe();
         }
         this.cashService.getCashValidate().subscribe();
+        this.clearData();
         this.dialogRef.close();
       },
     });
@@ -107,6 +108,12 @@ export class CashComponent implements OnInit {
         }
       },
     });
+  }
+
+  clearData() {
+    this.form.get('amount')?.setValue(null);
+    this.form.get('pettyCashAmount')?.setValue(null);
+    this.form.get('name')?.setValue(null);
   }
 
   get isFormValid(): boolean {

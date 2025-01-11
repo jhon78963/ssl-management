@@ -45,6 +45,12 @@ const routes: Routes = [
       import('./reservation/reservation.module').then(m => m.ReservationModule),
   },
   {
+    path: 'cash',
+    title: 'Caja',
+    data: { breadcrumb: 'Caja' },
+    loadChildren: () => import('./cash/cash.module').then(m => m.CashModule),
+  },
+  {
     path: '',
     pathMatch: 'full',
     redirectTo: 'home',

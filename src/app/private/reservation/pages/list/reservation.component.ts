@@ -142,15 +142,6 @@ export class ReservationListComponent implements OnInit {
       tooltipPosition: 'bottom',
       click: (rowData: Reservation) => this.reservationBookButton(rowData),
     },
-    // {
-    //   type: 'button',
-    //   size: 'small',
-    //   icon: 'pi pi-pencil',
-    //   outlined: true,
-    //   pTooltip: 'Editar',
-    //   tooltipPosition: 'bottom',
-    //   click: (rowData: Reservation) => this.reservationEditButton(rowData),
-    // },
   ];
 
   reservationTypes: ReservationType[] = [{ id: 0, description: 'Todos' }];
@@ -170,9 +161,7 @@ export class ReservationListComponent implements OnInit {
     private loadingService: LoadingService,
   ) {}
 
-  ngOnInit(): void {
-    this.getReservationTypes();
-    this.getSchedules();
+  getReservationsData(): void {
     this.getReservations(
       this.limit,
       this.page,
@@ -181,6 +170,12 @@ export class ReservationListComponent implements OnInit {
       formatDate(this.startDate, this.datePipe),
       formatDate(this.endDate, this.datePipe),
     );
+  }
+
+  ngOnInit(): void {
+    this.getReservationTypes();
+    this.getSchedules();
+    this.getReservationsData();
   }
 
   getReservationTypes() {
@@ -200,14 +195,7 @@ export class ReservationListComponent implements OnInit {
           this.cashService.currentSchedule().subscribe({
             next: (schedule: Schedule) => {
               this.selectedSchedule = schedule;
-              this.getReservations(
-                this.limit,
-                this.page,
-                this.selectedReservationType.id,
-                this.selectedSchedule.id,
-                formatDate(this.startDate, this.datePipe),
-                formatDate(this.endDate, this.datePipe),
-              );
+              this.getReservationsData();
             },
           });
         }
@@ -217,48 +205,22 @@ export class ReservationListComponent implements OnInit {
 
   filterReservationType(reservationType: ReservationType) {
     this.selectedReservationType = reservationType;
-    this.getReservations(
-      this.limit,
-      this.page,
-      this.selectedReservationType.id,
-      this.selectedSchedule.id,
-      formatDate(this.startDate, this.datePipe),
-      formatDate(this.endDate, this.datePipe),
-    );
+    this.getReservationsData();
   }
 
   filterSchedule(schedule: Schedule) {
     this.selectedSchedule = schedule;
-    this.getReservations(
-      this.limit,
-      this.page,
-      this.selectedReservationType.id,
-      this.selectedSchedule.id,
-      formatDate(this.startDate, this.datePipe),
-      formatDate(this.endDate, this.datePipe),
-    );
+    this.getReservationsData();
   }
 
   filterStartDate(startDate: Date) {
-    this.getReservations(
-      this.limit,
-      this.page,
-      this.selectedReservationType.id,
-      this.selectedSchedule.id,
-      formatDate(startDate, this.datePipe),
-      formatDate(this.endDate, this.datePipe),
-    );
+    this.startDate = startDate;
+    this.getReservationsData();
   }
 
   filterEndDate(endDate: Date) {
-    this.getReservations(
-      this.limit,
-      this.page,
-      this.selectedReservationType.id,
-      this.selectedSchedule.id,
-      formatDate(this.startDate, this.datePipe),
-      formatDate(endDate, this.datePipe),
-    );
+    this.endDate = endDate;
+    this.getReservationsData();
   }
 
   async getReservations(
@@ -339,25 +301,4 @@ export class ReservationListComponent implements OnInit {
       },
     });
   }
-
-  // reservationEditButton(reservation: Reservation) {
-  //   this.dialogService.open(ReservationFormComponent, {
-  //     header: 'Editar reserva',
-  //     data: {
-  //       reservationId: reservation.id,
-  //       customer: reservation.customer,
-  //       notes: reservation.notes,
-  //       facilities: reservation.facilities,
-  //       products: reservation.products,
-  //       services: reservation.services,
-  //       paymentTypes: reservation.paymentTypes,
-  //       additionalPeople: reservation.facilities![0].additionalPeople || 0,
-  //       pricePerAdditionalPerson:
-  //         reservation.facilities![0].pricePerAdditionalPerson || 0,
-  //       isBooking: false,
-  //       isList: false,
-  //       status: reservation.status,
-  //     },
-  //   });
-  // }
 }

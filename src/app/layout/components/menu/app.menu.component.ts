@@ -84,6 +84,17 @@ export class AppMenuComponent implements OnInit {
             },
           ],
         },
+        {
+          label: 'Caja',
+          icon: 'pi pi-home',
+          items: [
+            {
+              label: 'Listado',
+              icon: 'pi pi-fw pi-list',
+              routerLink: ['/cash/list'],
+            },
+          ],
+        },
       ];
     } else {
       this.model = [
@@ -105,6 +116,17 @@ export class AppMenuComponent implements OnInit {
               label: 'Reservas',
               icon: 'pi pi-fw pi-calendar',
               routerLink: ['/reservation/booking'],
+            },
+          ],
+        },
+        {
+          label: 'Caja',
+          icon: 'pi pi-home',
+          items: [
+            {
+              label: 'Listado',
+              icon: 'pi pi-fw pi-list',
+              routerLink: ['/cash/list'],
             },
           ],
         },
