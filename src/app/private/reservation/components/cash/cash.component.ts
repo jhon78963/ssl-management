@@ -18,6 +18,7 @@ import {
 } from '../../models/cash.model';
 import { CashService } from '../../services/cash.service';
 import { currentDateTime } from '../../../../utils/dates';
+import { CashesService } from '../../../cash/services/cashes.service';
 
 @Component({
   selector: 'app-cash',
@@ -44,6 +45,7 @@ export class CashComponent implements OnInit {
     private readonly dialogRef: DynamicDialogRef,
     private readonly dynamicDialogConfig: DynamicDialogConfig,
     private readonly cashService: CashService,
+    private readonly cashesService: CashesService,
   ) {}
 
   form: FormGroup = this.formBuilder.group({
@@ -66,6 +68,8 @@ export class CashComponent implements OnInit {
     cash.date = currentDateTime(this.datePipe);
     cash.cashTypeId = this.cashType.id;
     cash.cashId = cashId;
+    cash.description =
+      this.cashType.id == 4 ? 'Cierre de caja' : 'Apertura de caja';
     return cash;
   }
 
@@ -81,6 +85,7 @@ export class CashComponent implements OnInit {
           this.cashService.updateCash(cashId!, cash).subscribe();
         }
         this.cashService.getCashValidate().subscribe();
+        this.cashesService.callGetList().subscribe();
         this.clearData();
         this.dialogRef.close();
       },

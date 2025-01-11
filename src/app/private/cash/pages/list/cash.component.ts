@@ -12,6 +12,9 @@ import { PaginatorState } from 'primeng/paginator';
 import { Schedule } from '../../../reservation/models/schedule.model';
 import { ReservationSchedulesService } from '../../../reservation/services/reservations/reservation-schedules.service';
 import { CashService } from '../../../reservation/services/cash.service';
+import { CashFormComponent } from '../form/cash-form.component';
+import { showSuccess } from '../../../../utils/notifications';
+import { MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-cash',
@@ -19,7 +22,7 @@ import { CashService } from '../../../reservation/services/cash.service';
   imports: [CommonModule, SharedModule],
   templateUrl: './cash.component.html',
   styleUrl: './cash.component.scss',
-  providers: [DatePipe, DialogService],
+  providers: [DatePipe, DialogService, MessageService],
 })
 export class CashListComponent implements OnInit {
   columns: Column[] = [
@@ -39,7 +42,7 @@ export class CashListComponent implements OnInit {
     },
     {
       header: 'Movimiento',
-      field: 'cashType',
+      field: 'cash',
       clickable: false,
       image: false,
       money: false,
@@ -62,7 +65,7 @@ export class CashListComponent implements OnInit {
   ];
   cellToAction: any;
   data: any[] = [];
-  limit: number = 10;
+  limit: number = 100;
   page: number = 1;
   startDate: Date = new Date();
   endDate: Date = new Date();
@@ -74,9 +77,11 @@ export class CashListComponent implements OnInit {
   constructor(
     private loadingService: LoadingService,
     private readonly cashesService: CashesService,
+    private readonly dialogService: DialogService,
     private readonly cashService: CashService,
     private readonly datePipe: DatePipe,
     private readonly reservationSchedulesService: ReservationSchedulesService,
+    private readonly messageService: MessageService,
   ) {}
 
   getCashesData(): void {
@@ -146,7 +151,7 @@ export class CashListComponent implements OnInit {
     this.getCashes(event.rows, this.page);
   }
 
-  get reservations(): Observable<Cash[]> {
+  get cashes(): Observable<Cash[]> {
     return this.cashesService.getList();
   }
 
@@ -156,5 +161,41 @@ export class CashListComponent implements OnInit {
 
   private updatePage(value: number): void {
     this.page = value;
+  }
+
+  incomeCashCreate() {
+    const modal = this.dialogService.open(CashFormComponent, {
+      header: 'Registrar ingreso',
+      data: {
+        type: 2,
+      },
+    });
+
+    modal.onClose.subscribe({
+      next: value => {
+        if (value && value?.success) {
+          showSuccess(this.messageService, 'Ingreso registrado.');
+          this.getCashesData();
+        }
+      },
+    });
+  }
+
+  expenseCashCreate() {
+    const modal = this.dialogService.open(CashFormComponent, {
+      header: 'Registrar salida',
+      data: {
+        type: 3,
+      },
+    });
+
+    modal.onClose.subscribe({
+      next: value => {
+        if (value && value?.success) {
+          showSuccess(this.messageService, 'Salida registrada.');
+          this.getCashesData();
+        }
+      },
+    });
   }
 }

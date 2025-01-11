@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, debounceTime, map, Observable } from 'rxjs';
 import { Cash, CashListResponse } from '../models/cash.model';
 import { ApiService } from '../../../services/api.service';
+import { CashOperation } from '../../reservation/models/cash.model';
 
 @Injectable({
   providedIn: 'root',
@@ -49,12 +50,16 @@ export class CashesService {
     return this.total$.asObservable();
   }
 
-  private updateCashes(cash: Cash[]): void {
+  create(cashOperation: CashOperation): Observable<void> {
+    return this.apiService.post(`cash-operations`, cashOperation);
+  }
+
+  public updateCashes(cash: Cash[]): void {
     this.cashes = cash;
     this.cashes$.next(this.cashes);
   }
 
-  private updateTotalCashes(total: number): void {
+  public updateTotalCashes(total: number): void {
     this.total = total;
     this.total$.next(this.total);
   }

@@ -13,6 +13,7 @@ export interface ICashOperation {
   cashId: number;
   cashTypeId: number;
   date: string;
+  description: string;
   amount: number;
 }
 
@@ -21,6 +22,7 @@ export class CashOperation {
   cashId?: number;
   cashTypeId: number;
   date: string | null;
+  description: string;
   amount: number;
   constructor(cash: ICashOperation) {
     this.id = cash.id;
@@ -28,6 +30,7 @@ export class CashOperation {
     this.cashTypeId = cash.cashTypeId;
     this.date = cash.date;
     this.amount = cash.amount;
+    this.description = cash.description;
   }
 }
 

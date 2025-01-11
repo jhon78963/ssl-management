@@ -266,7 +266,6 @@ export class ReservationFormComponent implements OnInit {
       this.startDateBooking = this.dynamicDialogConfig.data.startDate;
       this.endDateBooking = this.dynamicDialogConfig.data.endDate;
       this.totalPaidBooking = this.dynamicDialogConfig.data.totalPaid;
-      // this.paid += this.totalPaidBooking;
     }
   }
 

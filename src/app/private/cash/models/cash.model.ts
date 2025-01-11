@@ -1,32 +1,26 @@
-export interface ICash {
-  id: number;
+export interface Cash {
+  id?: number;
+  date: string;
   cash: string;
   cashType: string;
-  cashTypeKey: string;
+  cashTypeId: number;
   schedule: string;
   pettyCash: number;
+  description: string;
   amount: number;
   employee: string;
 }
 
-export class Cash {
-  id: number;
-  cash: string;
-  cashType: string;
-  cashTypeKey: string;
-  schedule: string;
-  pettyCash: number;
+export class CashOperation {
+  cashTypeId: number;
+  date: string;
+  description: string;
   amount: number;
-  employee: string;
-  constructor(cash: ICash) {
-    this.id = cash.id;
-    this.cash = cash.cash;
-    this.cashType = cash.cashType;
-    this.cashTypeKey = cash.cashTypeKey;
-    this.schedule = cash.schedule;
-    this.pettyCash = cash.pettyCash;
+  constructor(cash: Cash) {
+    this.cashTypeId = cash.cashTypeId;
+    this.date = cash.date;
+    this.description = cash.description;
     this.amount = cash.amount;
-    this.employee = cash.employee;
   }
 }
 
