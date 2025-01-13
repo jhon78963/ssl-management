@@ -10,7 +10,7 @@ import {
 
 import { ApiService } from '../../../../services/api.service';
 
-import { Room, RoomListResponse } from '../models/rooms.model';
+import { CRoom, Room, RoomListResponse } from '../models/rooms.model';
 
 @Injectable({
   providedIn: 'root',
@@ -18,6 +18,11 @@ import { Room, RoomListResponse } from '../models/rooms.model';
 export class RoomsService {
   rooms: Room[] = [];
   rooms$: BehaviorSubject<Room[]> = new BehaviorSubject<Room[]>(this.rooms);
+
+  roomsToChange: CRoom[] = [];
+  roomsToChange$: BehaviorSubject<CRoom[]> = new BehaviorSubject<CRoom[]>(
+    this.roomsToChange,
+  );
 
   total: number = 0;
   total$: BehaviorSubject<number> = new BehaviorSubject<number>(this.total);
@@ -82,9 +87,38 @@ export class RoomsService {
       .pipe(switchMap(() => this.callGetList()));
   }
 
+  getRoomsAvailable(): Observable<void> {
+    return this.apiService.get<any>(`rooms/available`).pipe(
+      debounceTime(600),
+      map((response: any) => {
+        this.updateRoomsToChange(response);
+      }),
+    );
+  }
+
+  getAvailableList(): Observable<CRoom[]> {
+    return this.roomsToChange$.asObservable();
+  }
+
+  change(
+    reservationId: number,
+    roomId: number,
+    newRoomId: number,
+  ): Observable<void> {
+    return this.apiService.post(
+      `reservations/${reservationId}/rooms/${roomId}/new-rooms/${newRoomId}`,
+      {},
+    );
+  }
+
   private updateRooms(value: Room[]): void {
     this.rooms = value;
     this.rooms$.next(this.rooms);
+  }
+
+  private updateRoomsToChange(room: CRoom[]): void {
+    this.roomsToChange = room;
+    this.roomsToChange$.next(this.roomsToChange);
   }
 
   private updateTotalRooms(value: number): void {

@@ -53,7 +53,7 @@ export class CashListComponent implements OnInit {
       field: 'amount',
       clickable: false,
       image: false,
-      money: false,
+      money: true,
     },
     // {
     //   field: 'button',
@@ -65,7 +65,7 @@ export class CashListComponent implements OnInit {
   ];
   cellToAction: any;
   data: any[] = [];
-  limit: number = 100;
+  limit: number = 50;
   page: number = 1;
   startDate: Date = new Date();
   endDate: Date = new Date();
@@ -175,6 +175,7 @@ export class CashListComponent implements OnInit {
       next: value => {
         if (value && value?.success) {
           showSuccess(this.messageService, 'Ingreso registrado.');
+          this.cashService.getCashTotal().subscribe();
           this.getCashesData();
         }
       },
@@ -193,6 +194,7 @@ export class CashListComponent implements OnInit {
       next: value => {
         if (value && value?.success) {
           showSuccess(this.messageService, 'Salida registrada.');
+          this.cashService.getCashTotal().subscribe();
           this.getCashesData();
         }
       },

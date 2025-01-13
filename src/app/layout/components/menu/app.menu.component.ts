@@ -36,30 +36,35 @@ export class AppMenuComponent implements OnInit {
             },
           ],
         },
+        // {
+        //   label: 'Gestión',
+        //   icon: 'pi pi-home',
+        //   items: [
+        //     {
+        //       label: 'Empresa',
+        //       icon: 'pi pi-fw pi-cog',
+        //       routerLink: ['/management/company'],
+        //     },
+        //     {
+        //       label: 'Redes Sociales',
+        //       icon: 'pi pi-fw pi-users',
+        //       routerLink: ['/management/social-network'],
+        //     },
+        //   ],
+        // },
         {
-          label: 'Gestión',
-          icon: 'pi pi-home',
-          items: [
-            {
-              label: 'Empresa',
-              icon: 'pi pi-fw pi-cog',
-              routerLink: ['/management/company'],
-            },
-            {
-              label: 'Redes Sociales',
-              icon: 'pi pi-fw pi-users',
-              routerLink: ['/management/social-network'],
-            },
-          ],
-        },
-        {
-          label: 'Habitaciones',
+          label: 'Instalaciones',
           icon: 'pi pi-home',
           items: [
             {
               label: 'Habitaciones',
               icon: 'pi pi-fw pi-cog',
               routerLink: ['/room/rooms'],
+            },
+            {
+              label: 'Lockers',
+              icon: 'pi pi-fw pi-cog',
+              routerLink: ['/locker/list'],
             },
           ],
         },

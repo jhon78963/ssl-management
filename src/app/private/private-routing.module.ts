@@ -51,6 +51,13 @@ const routes: Routes = [
     loadChildren: () => import('./cash/cash.module').then(m => m.CashModule),
   },
   {
+    path: 'locker',
+    title: 'Locker',
+    data: { breadcrumb: 'Locker' },
+    loadChildren: () =>
+      import('./locker/locker.module').then(m => m.LockerModule),
+  },
+  {
     path: '',
     pathMatch: 'full',
     redirectTo: 'home',

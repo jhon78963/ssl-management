@@ -19,13 +19,18 @@
       </div>
       <div class="flex flex-column text-center">
         <span class="font-size">Reservas</span>
+        <span class="font-size">activas</span>
         <span class="font-size">{{ countFacilities | async }} </span>
       </div>
     }
     <button
       pButton
       pRipple
-      class="p-button-primary bt-width"
+      [class]="
+        (cashType | async)?.id !== 1
+          ? 'p-button-primary bt-width'
+          : 'bt-width-1'
+      "
       [label]="(cashType | async)?.label ?? ''"
       (click)="cash()"
       [disabled]="(countFacilities | async) !== 0"></button>

@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Facility, FacilityCount } from '../models/facility.model';
 import { BehaviorSubject, debounceTime, map, Observable } from 'rxjs';
 import { ApiService } from '../../../services/api.service';
-import { StatusLocker } from '../models/locker.model';
+import { StatusLocker } from '../../locker/models/locker.model';
 
 @Injectable({
   providedIn: 'root',

@@ -1,0 +1,12 @@
+<div class="facilities-width">
+  @for (locker of lockers | async; track $index) {
+    <button
+      pButton
+      pRipple
+      class="mr-1 mt-1 p-width p-button-rounded p-button-warning"
+      [label]="locker.number"
+      (click)="changeLocker(locker)"
+      [disabled]="locker.status !== 'AVAILABLE'"></button>
+  }
+</div>
+<p-confirmDialog />

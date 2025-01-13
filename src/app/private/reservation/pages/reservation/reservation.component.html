@@ -2,11 +2,25 @@
   <div class="grid p-fluid text-center">
     <div class="col-12 md:col-2">
       @for (facility of selectedFacilities; track $index) {
-        <button
-          pButton
-          pRipple
-          [label]="facility.number"
-          class="mr-2 mt-2 p-width p-button-rounded"></button>
+        @if (reservationId && facility.type === 'locker') {
+          <button
+            pButton
+            pRipple
+            [label]="facility.number"
+            class="mr-2 mt-2 p-width p-button-rounded"
+            (click)="
+              reservationId ? changeLocker(reservationId, facility.id) : null
+            "></button>
+        } @else {
+          <button
+            pButton
+            pRipple
+            [label]="facility.number"
+            class="mr-2 mt-2 p-width p-button-rounded"></button>
+          <!-- (click)="
+              reservationId ? changeRoom(reservationId, facility.id) : null
+            " -->
+        }
       }
       <p-divider *ngIf="selectedFacilities.length > 0" />
       <p class="text-left m-0 p-0" *ngIf="startDateParsed">Fecha de inicio</p>

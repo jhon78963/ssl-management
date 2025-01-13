@@ -136,11 +136,21 @@ export class ReservationFormComponent implements OnInit {
     this.customer = this.dynamicDialogConfig.data.customer;
   }
 
-  getFacilities() {
+  getFacilities(): void {
     this.facilities = this.dynamicDialogConfig.data.facilities;
-    this.lockerPrice = this.facilities
-      ?.filter(facility => facility.price)
-      .reduce((sum, facility) => sum + facility.price, 0);
+    if (this.facilities?.length) {
+      const totalLockers = this.facilities.length;
+      const unitPrice = this.facilities[0].price;
+      if (totalLockers <= 3) {
+        this.lockerPrice = totalLockers * unitPrice;
+      } else {
+        const promoPrice = 100;
+        const extraLockers = totalLockers - 4;
+        this.lockerPrice = promoPrice + extraLockers * unitPrice;
+      }
+    } else {
+      this.lockerPrice = 0;
+    }
   }
 
   getProducts() {
@@ -282,7 +292,7 @@ export class ReservationFormComponent implements OnInit {
     this.getBrokenThings();
     this.getTotal();
     this.getPaymentTypes();
-    this.validatePaid();
+    // this.validatePaid();
     this.getStatus();
     this.getDate();
   }

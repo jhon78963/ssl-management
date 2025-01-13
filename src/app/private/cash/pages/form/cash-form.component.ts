@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { CommonModule, DatePipe } from '@angular/common';
+import { Component } from '@angular/core';
 import {
   FormBuilder,
   FormGroup,
@@ -7,12 +8,10 @@ import {
 } from '@angular/forms';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { KeyFilterModule } from 'primeng/keyfilter';
-import { currentDateTime } from '../../../../utils/dates';
-import { CommonModule, DatePipe } from '@angular/common';
 import { SharedModule } from '../../../../shared/shared.module';
-import { CashesService } from '../../services/cashes.service';
+import { currentDateTime } from '../../../../utils/dates';
 import { CashOperation } from '../../models/cash.model';
-import { CashService } from '../../../reservation/services/cash.service';
+import { CashesService } from '../../services/cashes.service';
 
 @Component({
   selector: 'app-cash-form',
@@ -22,14 +21,13 @@ import { CashService } from '../../../reservation/services/cash.service';
   styleUrl: './cash-form.component.scss',
   providers: [DatePipe],
 })
-export class CashFormComponent implements OnInit {
+export class CashFormComponent {
   constructor(
     private readonly datePipe: DatePipe,
     private readonly formBuilder: FormBuilder,
     private readonly dynamicDialogRef: DynamicDialogRef,
     private readonly dynamicDialogConfig: DynamicDialogConfig,
     private readonly cashesService: CashesService,
-    private readonly cashService: CashService,
   ) {}
 
   form: FormGroup = this.formBuilder.group({
@@ -39,16 +37,11 @@ export class CashFormComponent implements OnInit {
     amount: [null, Validators.required],
   });
 
-  ngOnInit(): void {
-    console.log(this.form.value);
-  }
-
   cashSaveButton() {
     const cashOperation = new CashOperation(this.form.value);
     this.cashesService.create(cashOperation).subscribe({
       next: () => {
-        this.cashService.getCashTotal().subscribe();
-        this.dynamicDialogRef.close();
+        this.dynamicDialogRef.close({ success: true });
       },
     });
   }

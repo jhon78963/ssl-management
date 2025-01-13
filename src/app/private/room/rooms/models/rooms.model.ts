@@ -64,3 +64,11 @@ export interface RoomListResponse {
   data: Room[];
   paginate: Paginate;
 }
+
+export interface CRoom {
+  id?: number;
+  number: string;
+  price: number;
+  status: string;
+  type: string;
+}

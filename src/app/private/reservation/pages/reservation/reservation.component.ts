@@ -31,6 +31,8 @@ import { ReservationProductsService } from '../../services/reservations/reservat
 import { ReservationServicesService } from '../../services/reservations/reservation-services.service';
 import { ReservationsService } from '../../services/reservations/reservations.service';
 import { ReservationFormComponent } from '../form/create/reservation-form.component';
+import { ChangeLockersComponent } from '../../components/lockers/lockers.component';
+import { ChangeRoomsComponent } from '../../components/rooms/rooms.component';
 
 @Component({
   selector: 'app-reservation.layout',
@@ -211,6 +213,9 @@ export class ReservationComponent implements OnInit {
     } else {
       this.selectedFacilities.push(facility);
       this.total += facility.price;
+      if (this.selectedFacilities.length == 4) {
+        this.total = 100;
+      }
       this.pricePerAdditionalPerson = facility.pricePerAdditionalPerson;
       this.pricePerExtraHour = facility.pricePerExtraHour;
     }
@@ -302,6 +307,52 @@ export class ReservationComponent implements OnInit {
         this.total += this.selectedProducts[index].total;
       }
     }
+  }
+
+  changeLocker(reservationId: number, lockerId: number) {
+    const modal = this.dialogService.open(ChangeLockersComponent, {
+      header: 'Cambiar Locker',
+      data: {
+        reservationId,
+        lockerId,
+      },
+    });
+
+    modal.onClose.subscribe({
+      next: (response: any) => {
+        if (response && response.success) {
+          const index = this.selectedFacilities.findIndex(
+            locker => locker.id === response.oldLockerId,
+          );
+          this.selectedFacilities.splice(index, 1);
+          this.selectedFacilities.push(response.newLocker);
+          this.getFacilities();
+        }
+      },
+    });
+  }
+
+  changeRoom(reservationId: number, roomId: number) {
+    const modal = this.dialogService.open(ChangeRoomsComponent, {
+      header: 'Cambiar Habitación',
+      data: {
+        reservationId,
+        roomId,
+      },
+    });
+
+    modal.onClose.subscribe({
+      next: (response: any) => {
+        if (response && response.success) {
+          const index = this.selectedFacilities.findIndex(
+            room => room.id === response.oldRoomId,
+          );
+          this.selectedFacilities.splice(index, 1);
+          this.selectedFacilities.push(response.newRoom);
+          this.getFacilities();
+        }
+      },
+    });
   }
 
   addCustomer() {
