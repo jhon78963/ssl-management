@@ -18,7 +18,7 @@ export class RateLayoutComponent {
     {
       id: '1',
       label: 'Tarifarios',
-      routerLink: ['./rates'],
+      routerLink: ['./list'],
     },
     {
       id: '2',

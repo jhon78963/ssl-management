@@ -18,7 +18,7 @@ export class RoomLayoutComponent {
     {
       id: '1',
       label: 'Habitaciones',
-      routerLink: ['./rooms'],
+      routerLink: ['./list'],
     },
     {
       id: '2',

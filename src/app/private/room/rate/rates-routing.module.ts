@@ -8,7 +8,7 @@ const routes: Routes = [
     component: RateLayoutComponent,
     children: [
       {
-        path: 'rates',
+        path: 'list',
         loadComponent: () =>
           import('./rates/pages/list/rates.component').then(
             c => c.RatesComponent,
@@ -28,7 +28,7 @@ const routes: Routes = [
       },
       {
         path: '',
-        redirectTo: 'rates',
+        redirectTo: 'list',
         pathMatch: 'full',
       },
     ],

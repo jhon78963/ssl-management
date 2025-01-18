@@ -8,7 +8,7 @@ const routes: Routes = [
     component: RoomLayoutComponent,
     children: [
       {
-        path: 'rooms',
+        path: 'list',
         loadComponent: () =>
           import('./rooms/pages/list/rooms.component').then(
             c => c.RoomsComponent,
