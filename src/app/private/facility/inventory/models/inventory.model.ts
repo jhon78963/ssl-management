@@ -10,6 +10,7 @@ export class Inventory {
   description: string;
   stock: number;
   stockInUse?: number;
+  quantity?: number;
   constructor(inventory: IInventory) {
     this.description = inventory.description;
     this.stock = inventory.stock;

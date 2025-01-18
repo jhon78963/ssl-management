@@ -39,6 +39,8 @@ import { ReservationServicesService } from '../../../services/reservations/reser
 import { ReservationsService } from '../../../services/reservations/reservations.service';
 import { MessagesModule } from 'primeng/messages';
 import { showToastWarn } from '../../../../../utils/notifications';
+import { ReservationInventoriesService } from '../../../services/reservations/reservation-inventories.service';
+import { Inventory } from '../../../../facility/inventory/models/inventory.model';
 
 @Component({
   selector: 'app-reservation-form',
@@ -63,6 +65,7 @@ export class ReservationFormComponent implements OnInit {
   products: any[] = [];
   services: any[] = [];
   facilities: any[] = [];
+  inventories: any[] = [];
   paymentTypes: any[] = [];
   customer: any;
   totalProducts: number = 0;
@@ -117,6 +120,7 @@ export class ReservationFormComponent implements OnInit {
     private readonly reservationProductsService: ReservationProductsService,
     private readonly reservationRoomsService: ReservationRoomsService,
     private readonly reservationServicesService: ReservationServicesService,
+    private readonly reservationInventoriesService: ReservationInventoriesService,
     private readonly reservationsService: ReservationsService,
     private readonly bookingPaymentTypesService: BookingPaymentTypesService,
     private readonly bookingServicesService: BookingServicesService,
@@ -151,6 +155,10 @@ export class ReservationFormComponent implements OnInit {
     } else {
       this.lockerPrice = 0;
     }
+  }
+
+  getInventories(): void {
+    this.inventories = this.dynamicDialogConfig.data.inventories;
   }
 
   getProducts() {
@@ -284,6 +292,7 @@ export class ReservationFormComponent implements OnInit {
     this.getOperationType();
     this.getCustomer();
     this.getFacilities();
+    this.getInventories();
     this.getProducts();
     this.getServices();
     this.getNotes();
@@ -412,6 +421,16 @@ export class ReservationFormComponent implements OnInit {
     };
   }
 
+  createInventory(reservationId: number, inventories: Inventory[]) {
+    inventories.forEach((inventory: Inventory) => {
+      if (inventory.id && inventory.quantity) {
+        this.reservationInventoriesService
+          .add(reservationId, inventory.id, inventory.quantity)
+          .subscribe();
+      }
+    });
+  }
+
   reservationData(
     customer: Customer | null | undefined,
     total: number,
@@ -462,6 +481,7 @@ export class ReservationFormComponent implements OnInit {
       const reservation = new LockerReservation(reservationData);
       this.reservationsService.update(reservationId, reservation).subscribe({
         next: () => {
+          this.createInventory(reservationId, this.inventories);
           this.updateReservation(
             reservationId,
             reservationSummary.newProducts,
@@ -490,6 +510,7 @@ export class ReservationFormComponent implements OnInit {
       const reservation = new LockerReservation(reservationData);
       this.reservationsService.create(reservation).subscribe({
         next: (response: any) => {
+          this.createInventory(response.reservationId, this.inventories);
           this.createBookingOrReservation(
             response.reservationId,
             products,
@@ -526,6 +547,7 @@ export class ReservationFormComponent implements OnInit {
       const reservation = new RoomReservation(reservationData);
       this.reservationsService.update(reservationId, reservation).subscribe({
         next: () => {
+          this.createInventory(reservationId, this.inventories);
           this.updateReservation(
             reservationId,
             reservationSummary.newProducts,
@@ -558,6 +580,7 @@ export class ReservationFormComponent implements OnInit {
       const reservation = new RoomReservation(reservationData);
       this.reservationsService.create(reservation).subscribe({
         next: (response: any) => {
+          this.createInventory(response.reservationId, this.inventories);
           this.createBookingOrReservation(
             response.reservationId,
             products,
@@ -592,6 +615,7 @@ export class ReservationFormComponent implements OnInit {
     const reservation = new PersonalReservation(reservationData);
     this.reservationsService.create(reservation).subscribe({
       next: (response: any) => {
+        this.createInventory(response.reservationId, this.inventories);
         this.createBookingOrReservation(
           response.reservationId,
           products,

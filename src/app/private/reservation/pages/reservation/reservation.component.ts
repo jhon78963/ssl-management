@@ -33,6 +33,8 @@ import { ReservationsService } from '../../services/reservations/reservations.se
 import { ReservationFormComponent } from '../form/create/reservation-form.component';
 import { ChangeLockersComponent } from '../../components/lockers/lockers.component';
 import { ChangeRoomsComponent } from '../../components/rooms/rooms.component';
+import { InventoriesService } from '../../../facility/inventory/services/inventories.service';
+import { Inventory } from '../../../facility/inventory/models/inventory.model';
 
 @Component({
   selector: 'app-reservation.layout',
@@ -62,6 +64,7 @@ export class ReservationComponent implements OnInit {
   selectedFacilities: any[] = [];
   selectedProducts: Product[] = [];
   selectedServices: Service[] = [];
+  selectedInventories: Inventory[] = [];
   total: number = 0;
   customer: Customer | null | undefined;
   showProductsForm: boolean = false;
@@ -91,11 +94,22 @@ export class ReservationComponent implements OnInit {
     private readonly reservationProductsService: ReservationProductsService,
     private readonly reservationServicesService: ReservationServicesService,
     private readonly reservationsService: ReservationsService,
+    private readonly inventoriesService: InventoriesService,
   ) {}
 
   ngOnInit(): void {
     this.getFacilities();
+    this.getInventories();
     this.cashService.getCashTotal().subscribe();
+  }
+
+  getInventories(): void {
+    this.inventoriesService.callGetList().subscribe();
+    this.inventoriesService.getList().subscribe({
+      next: (inventories: Inventory[]) => {
+        this.selectedInventories = inventories;
+      },
+    });
   }
 
   get cashType(): Observable<CashType> {
@@ -110,6 +124,10 @@ export class ReservationComponent implements OnInit {
     return this.facilitiesService.getList();
   }
 
+  get inventories(): Observable<Inventory[]> {
+    return this.inventoriesService.getList();
+  }
+
   isSelected(facility: any): boolean {
     return this.selectedFacilities.includes(facility);
   }
@@ -117,6 +135,9 @@ export class ReservationComponent implements OnInit {
   clearSelections(): void {
     this.selectedFacilities = [];
     this.selectedProducts = [];
+    this.selectedInventories.forEach((inventory: any) => {
+      inventory.quantity = null;
+    });
     this.total = 0;
     this.customer = null;
     this.showProductsForm = false;
@@ -168,6 +189,20 @@ export class ReservationComponent implements OnInit {
         this.rentedTime = rented.time;
         this.endDate = reservation.endDate;
         this.selectedFacilities = reservation.facilities;
+        this.selectedInventories = this.selectedInventories.map(
+          existingInventory => {
+            const updatedInventory = reservation.inventories.find(
+              (newInventory: any) => newInventory.id === existingInventory.id,
+            );
+            return updatedInventory
+              ? {
+                  ...existingInventory,
+                  ...updatedInventory,
+                  quantity: updatedInventory.stockInUse,
+                }
+              : existingInventory;
+          },
+        );
         this.additionalPeople = reservation.facilities[0].additionalPeople;
         this.pricePerAdditionalPerson =
           reservation.facilities[0].pricePerAdditionalPerson;
@@ -431,6 +466,7 @@ export class ReservationComponent implements OnInit {
     selectedFacilities: any,
     selectedProducts: any,
     selectedServices: any,
+    selectedInventories: any,
     additionalPeople: number,
     pricePerAdditionalPerson: number,
     extraHours: number,
@@ -438,6 +474,7 @@ export class ReservationComponent implements OnInit {
     brokenThings: number | null,
     notes: string | null,
   ) {
+    console.log(selectedInventories);
     this.modal = this.dialogService.open(ReservationFormComponent, {
       header: reservationId ? 'Pago total' : 'Pago',
       data: {
@@ -447,6 +484,7 @@ export class ReservationComponent implements OnInit {
         facilities: selectedFacilities,
         products: selectedProducts,
         services: selectedServices,
+        inventories: selectedInventories,
         paymentTypes: selectedPaymentTypes,
         additionalPeople: additionalPeople || 0,
         pricePerAdditionalPerson: pricePerAdditionalPerson || 0,

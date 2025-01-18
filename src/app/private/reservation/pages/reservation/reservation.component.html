@@ -27,6 +27,21 @@
       <p class="text-left p-size">{{ startDateParsed }}</p>
       <p class="text-left m-0 p-0" *ngIf="rentedTime">Horas transcurridas</p>
       <p class="text-left">{{ rentedTime }}</p>
+
+      @for (inventory of selectedInventories; track $index) {
+        <div class="flex justify-content-between align-items-center mb-3">
+          <p class="m-0 p-0 paragraph">
+            {{ inventory.description }}
+          </p>
+          <p-inputNumber
+            class="input-number-custom text-center"
+            placeholder="{{ inventory.stock }} u."
+            inputId="integeronly"
+            [(ngModel)]="inventory.quantity"
+            [min]="0"
+            [max]="inventory.stock" />
+        </div>
+      }
     </div>
     <div class="col-12 md:col-8">
       <div class="flex">
@@ -57,6 +72,7 @@
               selectedFacilities,
               selectedProducts,
               selectedServices,
+              selectedInventories,
               additionalPeople,
               pricePerAdditionalPerson,
               extraHours,
