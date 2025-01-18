@@ -59,12 +59,17 @@ export class AppMenuComponent implements OnInit {
             {
               label: 'Habitaciones',
               icon: 'pi pi-fw pi-cog',
-              routerLink: ['/room/list'],
+              routerLink: ['/facility/room/list'],
             },
             {
               label: 'Lockers',
               icon: 'pi pi-fw pi-cog',
-              routerLink: ['/locker/list'],
+              routerLink: ['/facility/locker/list'],
+            },
+            {
+              label: 'Inventario',
+              icon: 'pi pi-fw pi-cog',
+              routerLink: ['/facility/inventory/list'],
             },
           ],
         },

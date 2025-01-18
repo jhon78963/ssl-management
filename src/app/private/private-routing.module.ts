@@ -32,10 +32,11 @@ const routes: Routes = [
       import('./management/management.module').then(m => m.ManagementModule),
   },
   {
-    path: 'room',
-    title: 'Habitaciones',
-    data: { breadcrumb: 'Habitaciones' },
-    loadChildren: () => import('./room/room.module').then(m => m.RoomModule),
+    path: 'facility',
+    title: 'Instalaciones',
+    data: { breadcrumb: 'Instalaciones' },
+    loadChildren: () =>
+      import('./facility/facility.module').then(m => m.FacilityModule),
   },
   {
     path: 'reservation',
@@ -49,13 +50,6 @@ const routes: Routes = [
     title: 'Caja',
     data: { breadcrumb: 'Caja' },
     loadChildren: () => import('./cash/cash.module').then(m => m.CashModule),
-  },
-  {
-    path: 'locker',
-    title: 'Locker',
-    data: { breadcrumb: 'Locker' },
-    loadChildren: () =>
-      import('./locker/locker.module').then(m => m.LockerModule),
   },
   {
     path: '',

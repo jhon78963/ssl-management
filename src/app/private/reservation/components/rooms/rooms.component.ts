@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { ConfirmationService } from 'primeng/api';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
-import { RoomsService } from '../../../room/rooms/services/rooms.service';
+import { RoomsService } from '../../../facility/room/rooms/services/rooms.service';
 import { FacilitiesService } from '../../services/facilities.service';
-import { CRoom } from '../../../room/rooms/models/rooms.model';
+import { CRoom } from '../../../facility/room/rooms/models/rooms.model';
 import { Observable } from 'rxjs';
 import { ButtonModule } from 'primeng/button';
 import { CommonModule } from '@angular/common';
