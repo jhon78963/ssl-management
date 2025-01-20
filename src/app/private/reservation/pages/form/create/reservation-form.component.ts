@@ -422,13 +422,15 @@ export class ReservationFormComponent implements OnInit {
   }
 
   createInventory(reservationId: number, inventories: Inventory[]) {
-    inventories.forEach((inventory: Inventory) => {
-      if (inventory.id && inventory.quantity) {
-        this.reservationInventoriesService
-          .add(reservationId, inventory.id, inventory.quantity)
-          .subscribe();
-      }
-    });
+    if (inventories) {
+      inventories.forEach((inventory: Inventory) => {
+        if (inventory.id && inventory.quantity) {
+          this.reservationInventoriesService
+            .add(reservationId, inventory.id, inventory.quantity)
+            .subscribe();
+        }
+      });
+    }
   }
 
   reservationData(

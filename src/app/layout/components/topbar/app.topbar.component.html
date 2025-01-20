@@ -32,8 +32,8 @@
           : 'bt-width-1'
       "
       [label]="(cashType | async)?.label ?? ''"
-      (click)="cash()"
-      [disabled]="(countFacilities | async) !== 0"></button>
+      (click)="cash()"></button>
+    <!-- [disabled]="(countFacilities | async) !== 0"></button> -->
     <ul class="topbar-menu">
       <li class="topbar-item">
         <a

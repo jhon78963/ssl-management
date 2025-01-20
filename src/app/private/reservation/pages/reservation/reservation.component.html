@@ -248,7 +248,9 @@
       (click)="
         facility.status === 'AVAILABLE'
           ? addFacility(facility)
-          : showFacility(facility)
+          : facility.status === 'BOOKED'
+            ? bookedFacility(facility)
+            : showFacility(facility)
       "
       [ngClass]="facility | buttonClass: isSelected(facility)"
       [disabled]="(cashType | async)?.id === 1"></button>

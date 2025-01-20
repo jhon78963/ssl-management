@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
@@ -16,7 +16,7 @@ import { TabViewModule } from 'primeng/tabview';
 import { ToastModule } from 'primeng/toast';
 import { Observable } from 'rxjs';
 import { SharedModule } from '../../../../shared/shared.module';
-import { showSuccess } from '../../../../utils/notifications';
+import { showSuccess, showToastWarn } from '../../../../utils/notifications';
 import { CustomerComponent } from '../../components/customers/customer.component';
 import { ProductsComponent } from '../../components/products/products.component';
 import { CashType } from '../../models/cash.model';
@@ -35,6 +35,9 @@ import { ChangeLockersComponent } from '../../components/lockers/lockers.compone
 import { ChangeRoomsComponent } from '../../components/rooms/rooms.component';
 import { InventoriesService } from '../../../facility/inventory/services/inventories.service';
 import { Inventory } from '../../../facility/inventory/models/inventory.model';
+import { BookingsService } from '../../services/bookings/bookings.service';
+import { CheckSchedule } from '../../models/booking.model';
+import { currentDateTime } from '../../../../utils/dates';
 
 @Component({
   selector: 'app-reservation.layout',
@@ -55,7 +58,7 @@ import { Inventory } from '../../../facility/inventory/models/inventory.model';
   ],
   templateUrl: './reservation.component.html',
   styleUrl: './reservation.component.scss',
-  providers: [ConfirmationService, DialogService, MessageService],
+  providers: [ConfirmationService, DatePipe, DialogService, MessageService],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ReservationComponent implements OnInit {
@@ -83,9 +86,11 @@ export class ReservationComponent implements OnInit {
   previousBrokenThings: number = 0;
   notes: string | null = null;
   isBooking: boolean = false;
+  conflict: boolean = false;
 
   constructor(
     private cdr: ChangeDetectorRef,
+    private datePipe: DatePipe,
     private confirmationService: ConfirmationService,
     private readonly cashService: CashService,
     private readonly dialogService: DialogService,
@@ -94,6 +99,7 @@ export class ReservationComponent implements OnInit {
     private readonly reservationProductsService: ReservationProductsService,
     private readonly reservationServicesService: ReservationServicesService,
     private readonly reservationsService: ReservationsService,
+    private readonly bookingsService: BookingsService,
     private readonly inventoriesService: InventoriesService,
   ) {}
 
@@ -179,6 +185,25 @@ export class ReservationComponent implements OnInit {
     }
   }
 
+  async bookedFacility(facility: any) {
+    const isSelected = this.isSelected(facility);
+
+    if (!isSelected) {
+      if (facility.type == FacilityType.ROOM) {
+        const startDate = currentDateTime(this.datePipe);
+        const hasConflict = await this.checkScheduleAndAct(
+          facility.id,
+          startDate,
+        );
+
+        if (!hasConflict) {
+          this.pushFacility(facility);
+          this.cdr.detectChanges();
+        }
+      }
+    }
+  }
+
   showFacility(facility: any) {
     this.clearSelections();
     this.reservationsService.getOne(facility.reservationId).subscribe({
@@ -231,9 +256,10 @@ export class ReservationComponent implements OnInit {
     });
   }
 
-  addFacility(facility: any): void {
-    this.selectedFacilities.some(facility => facility.status === 'IN_USE') &&
+  async addFacility(facility: any): Promise<void> {
+    if (this.selectedFacilities.some(f => f.status === 'IN_USE')) {
       this.clearSelections();
+    }
 
     const isSelected = this.isSelected(facility);
     const index = this.selectedFacilities.findIndex(
@@ -246,19 +272,58 @@ export class ReservationComponent implements OnInit {
       this.pricePerAdditionalPerson = 0;
       this.pricePerExtraHour = 0;
     } else {
-      this.selectedFacilities.push(facility);
-      this.total += facility.price;
-      if (this.selectedFacilities.length == 4) {
-        this.total = 100;
+      if (facility.type == FacilityType.ROOM) {
+        const startDate = currentDateTime(this.datePipe);
+        const hasConflict = await this.checkScheduleAndAct(
+          facility.id,
+          startDate,
+        );
+
+        if (!hasConflict) {
+          this.pushFacility(facility);
+          this.cdr.detectChanges();
+        }
+      } else {
+        this.pushFacility(facility);
       }
-      this.pricePerAdditionalPerson = facility.pricePerAdditionalPerson;
-      this.pricePerExtraHour = facility.pricePerExtraHour;
     }
 
     const rooms = this.selectedFacilities.filter(
-      facility => facility.type == FacilityType.ROOM,
+      facility => facility.type === FacilityType.ROOM,
     );
     this.isBooking = rooms.length > 0;
+  }
+
+  pushFacility(facility: any) {
+    this.selectedFacilities.push(facility);
+    this.total += facility.price;
+    if (this.selectedFacilities.length === 4) {
+      this.total = 100;
+    }
+
+    this.pricePerAdditionalPerson = facility.pricePerAdditionalPerson;
+    this.pricePerExtraHour = facility.pricePerExtraHour;
+  }
+
+  async checkScheduleAndAct(
+    roomId: number,
+    startDate: string | null,
+  ): Promise<boolean> {
+    return new Promise(resolve => {
+      this.bookingsService.checkSchedule(roomId, startDate).subscribe({
+        next: (resp: CheckSchedule) => {
+          if (resp.conflict) {
+            this.messageService.clear();
+            showToastWarn(
+              this.messageService,
+              `El horario seleccionado (${resp.conflictingStartDate} - ${resp.conflictingEndDate}) ya está reservado. Por favor, elija otro.`,
+            );
+          }
+          this.cdr.detectChanges();
+          resolve(resp.conflict); // Resolver directamente si hay conflicto o no
+        },
+      });
+    });
   }
 
   message(product: any): string {

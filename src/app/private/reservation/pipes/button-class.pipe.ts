@@ -12,6 +12,8 @@ export class ButtonClassPipe implements PipeTransform {
       return 'p-button-danger';
     } else if (facility.status === 'IN_CLEANING') {
       return 'p-button-secondary';
+    } else if (facility.status === 'BOOKED') {
+      return 'p-button-help';
     }
     return 'p-button-warning';
   }

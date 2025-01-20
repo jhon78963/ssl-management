@@ -265,7 +265,6 @@ export class BookingComponent implements OnInit {
     card: number = 0,
   ) {
     if (bookingId) {
-      console.log(paid, selectedPaymentTypeId, cash, card);
       this.bookingsService
         .changeStatus(bookingId, 'COMPLETED', paid)
         .subscribe({
