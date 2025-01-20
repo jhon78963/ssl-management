@@ -141,6 +141,8 @@ export class ReservationComponent implements OnInit {
   clearSelections(): void {
     this.selectedFacilities = [];
     this.selectedProducts = [];
+    this.selectedServices = [];
+    this.selectedPaymentTypes = [];
     this.selectedInventories.forEach((inventory: any) => {
       inventory.quantity = null;
     });

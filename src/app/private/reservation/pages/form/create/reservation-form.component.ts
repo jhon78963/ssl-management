@@ -247,6 +247,7 @@ export class ReservationFormComponent implements OnInit {
     this.paymentTypes = this.dynamicDialogConfig.data.paymentTypes;
     if (this.paymentTypes.length > 0) {
       this.paymentTypes.forEach((payment: any) => {
+        console.log(payment.paid);
         this.selectedPaymentType = this.payments[payment.id - 1];
         this.paid += payment.paid;
         this.cash += payment.cash;
@@ -1066,6 +1067,7 @@ export class ReservationFormComponent implements OnInit {
     this.card = 0;
     this.advance = 0;
     this.pending = 0;
+    this.paymentTypes = [];
     this.cashService.getCashTotal().subscribe();
     this.facilitiesService.countFacilities().subscribe();
   }
