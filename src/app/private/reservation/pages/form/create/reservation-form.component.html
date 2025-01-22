@@ -303,13 +303,15 @@
     <div
       class="flex flex-column lg:flex-row justify-content-center align-items-center lg:justify-content-end">
       @if (status !== 'COMPLETED' && !isList) {
-        <p class="m-0 p-0 mr-1">Cerrar</p>
-        <p-checkbox
-          class="mr-2"
-          [(ngModel)]="isFinish"
-          [binary]="true"
-          [inputId]="'binary'"
-          (ngModelChange)="finishReservation($event)" />
+        @if (reservationId > 0) {
+          <p class="m-0 p-0 mr-1">Cerrar</p>
+          <p-checkbox
+            class="mr-2"
+            [(ngModel)]="isFinish"
+            [binary]="true"
+            [inputId]="'binary'"
+            (ngModelChange)="finishReservation($event)" />
+        }
         <button
           pButton
           pRipple

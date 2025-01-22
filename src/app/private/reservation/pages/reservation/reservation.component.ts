@@ -238,6 +238,7 @@ export class ReservationComponent implements OnInit {
           reservation.facilities[0].pricePerAdditionalPerson;
         this.extraHours = reservation.facilities[0].extraHours;
         this.pricePerExtraHour = reservation.facilities[0].pricePerExtraHour;
+        this.brokenThings = reservation.brokenThingsImport;
 
         this.total = reservation.total;
         this.total = reservation.totalLeft;
