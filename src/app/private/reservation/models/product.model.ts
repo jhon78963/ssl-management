@@ -9,6 +9,7 @@ export interface Product {
   quantityPivote: number;
   total: number;
   isPaid: boolean;
+  isPaidBd: boolean;
   isFree: boolean;
   type: string;
   isAdd: boolean;

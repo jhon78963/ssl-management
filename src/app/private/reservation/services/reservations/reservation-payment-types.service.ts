@@ -29,11 +29,9 @@ export class ReservationPaymentTypesService {
     reservationId: number,
     paymentTypeId: number,
     payment: number,
-    cashPayment: number,
-    cardPayment: number,
   ): Observable<void> {
     return this.apiService.delete(
-      `reservations/${reservationId}/payment-types/${paymentTypeId}/payment/${payment}cash-payment/${cashPayment}/card-payment/${cardPayment}`,
+      `reservations/${reservationId}/payment-types/${paymentTypeId}/payment/${payment}`,
     );
   }
 }

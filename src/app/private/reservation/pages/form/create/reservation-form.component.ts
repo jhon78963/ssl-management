@@ -108,6 +108,9 @@ export class ReservationFormComponent implements OnInit {
 
   conflict: boolean = false;
 
+  isFinish: boolean = false;
+  originalPaid: number | null = null;
+
   constructor(
     private readonly cashService: CashService,
     private readonly datePipe: DatePipe,
@@ -180,14 +183,10 @@ export class ReservationFormComponent implements OnInit {
   }
 
   getServices() {
-    if (this.dynamicDialogConfig.data.services) {
-      if (this.dynamicDialogConfig.data.services.length > 0) {
-        this.services = this.dynamicDialogConfig.data.services;
-      } else {
-        this.services = this.dynamicDialogConfig.data.products.filter(
-          (product: any) => product.type == 'service',
-        );
-      }
+    if (this.dynamicDialogConfig.data.products) {
+      this.services = this.dynamicDialogConfig.data.products.filter(
+        (product: any) => product.type == 'service',
+      );
       this.services = this.services.map((service: any) => {
         if (service.isFree) {
           service.total = 0;
@@ -243,36 +242,66 @@ export class ReservationFormComponent implements OnInit {
       (Number(this.brokenThings) ?? 0);
   }
 
+  calculateTotalPaid(): void {
+    const calculateSum = (
+      items: any[],
+      filters: ((item: any) => boolean)[],
+    ): number => {
+      return filters
+        .map(
+          filter =>
+            items?.filter(filter).reduce((sum, item) => sum + item.total, 0) ||
+            0,
+        )
+        .reduce((total, current) => total + current, 0);
+    };
+
+    this.paid += calculateSum(this.facilities || [], [
+      facility => facility.isPaid,
+    ]);
+
+    this.paid += calculateSum(this.products || [], [
+      product => product.isPaid && product.isAdd,
+      product => product.isPaid && product.isBd && !product.isPaidBd,
+    ]);
+
+    this.paid += calculateSum(this.services || [], [
+      service => service.isPaid && service.isAdd,
+      service => service.isPaid && service.isBd && !service.isPaidBd,
+    ]);
+  }
+
   getPaymentTypes() {
     this.paymentTypes = this.dynamicDialogConfig.data.paymentTypes;
-    if (this.paymentTypes.length > 0) {
+    if (this.reservationId && this.paymentTypes.length > 0) {
       this.paymentTypes.forEach((payment: any) => {
-        console.log(payment.paid);
-        this.selectedPaymentType = this.payments[payment.id - 1];
-        this.paid += payment.paid;
-        this.cash += payment.cash;
-        this.card += payment.card;
+        this.paid = 0;
+        this.cash = 0;
+        this.card = 0;
         this.advance += payment.paid;
         this.pending = this.total - this.advance;
       });
-    } else {
-      this.paid = this.facilities
-        ?.filter(facility => facility.isPaid)
-        .reduce((sum, facility) => sum + facility.price, 0);
-
-      this.paid += this.products
-        ?.filter(product => product.isPaid)
-        .reduce((sum, product) => sum + product.price, 0);
-
-      this.paid += this.services
-        ?.filter(service => service.isPaid)
-        .reduce((sum, service) => sum + service.price, 0);
     }
+    this.calculateTotalPaid();
   }
 
   validatePaid() {
     if (this.reservationId || this.bookingId) {
       this.paid = this.pending;
+    }
+  }
+
+  finishReservation(isFinish: boolean): void {
+    if (isFinish) {
+      if (this.originalPaid === null) {
+        this.originalPaid = this.paid;
+      }
+      this.paid = this.pending;
+    } else {
+      if (this.originalPaid !== null) {
+        this.paid = this.originalPaid;
+        this.originalPaid = null;
+      }
     }
   }
 
@@ -393,7 +422,7 @@ export class ReservationFormComponent implements OnInit {
     services: any[],
     facilities: any[],
   ) {
-    if (this.paid == this.pending) {
+    if (this.paid == this.pending && this.isFinish) {
       status = 'COMPLETED';
       products.forEach(p => (p.isPaid = true));
       services.forEach(s => (s.isPaid = true));

@@ -103,3 +103,9 @@
     margin: 0;
   }
 }
+
+::ng-deep {
+  .p-inputtext {
+    text-align: end;
+  }
+}

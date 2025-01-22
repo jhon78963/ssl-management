@@ -6,4 +6,5 @@ export interface Service {
   priceString?: string;
   total: number;
   isBd: boolean;
+  isPaidBd: boolean;
 }

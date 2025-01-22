@@ -38,6 +38,7 @@ import { Inventory } from '../../../facility/inventory/models/inventory.model';
 import { BookingsService } from '../../services/bookings/bookings.service';
 import { CheckSchedule } from '../../models/booking.model';
 import { currentDateTime } from '../../../../utils/dates';
+import { ReservationPaymentTypesService } from '../../services/reservations/reservation-payment-types.service';
 
 @Component({
   selector: 'app-reservation.layout',
@@ -69,6 +70,7 @@ export class ReservationComponent implements OnInit {
   selectedServices: Service[] = [];
   selectedInventories: Inventory[] = [];
   total: number = 0;
+  totalLeft: number = 0;
   customer: Customer | null | undefined;
   showProductsForm: boolean = false;
   showCustomerForm: boolean = false;
@@ -98,6 +100,7 @@ export class ReservationComponent implements OnInit {
     private readonly messageService: MessageService,
     private readonly reservationProductsService: ReservationProductsService,
     private readonly reservationServicesService: ReservationServicesService,
+    private readonly reservationPaymentTypesService: ReservationPaymentTypesService,
     private readonly reservationsService: ReservationsService,
     private readonly bookingsService: BookingsService,
     private readonly inventoriesService: InventoriesService,
@@ -237,6 +240,7 @@ export class ReservationComponent implements OnInit {
         this.pricePerExtraHour = reservation.facilities[0].pricePerExtraHour;
 
         this.total = reservation.total;
+        this.total = reservation.totalLeft;
         if (rented.hours > 0) {
           this.extraHours = rented.hours;
           this.total +=
@@ -340,7 +344,7 @@ export class ReservationComponent implements OnInit {
     return type === FacilityType.PRODUCT ? 'producto' : 'servicio';
   }
 
-  removeFacility(
+  removeProduct(
     product: any,
     reservationId: number | null | undefined,
     event: Event,
@@ -359,12 +363,32 @@ export class ReservationComponent implements OnInit {
           this.reservationProductsService
             .remove(reservationId, product.id, product.quantity)
             .subscribe();
+          this.reservationPaymentTypesService
+            .remove(reservationId, 1, product.total)
+            .subscribe({
+              next: () => {
+                this.getFacilities();
+                this.getInventories();
+                this.cashService.getCashTotal().subscribe();
+                this.cdr.detectChanges();
+              },
+            });
         }
 
         if (reservationId && product.type == FacilityType.SERVICE) {
           this.reservationServicesService
             .remove(reservationId, product.id, product.quantity)
             .subscribe();
+          this.reservationPaymentTypesService
+            .remove(reservationId, 1, product.total)
+            .subscribe({
+              next: () => {
+                this.clearReservation();
+                this.getInventories();
+                this.cashService.getCashTotal().subscribe();
+                this.cdr.detectChanges();
+              },
+            });
         }
 
         this.removeItem(product);
@@ -383,7 +407,11 @@ export class ReservationComponent implements OnInit {
 
     if (index != -1) {
       this.selectedProducts.splice(index, 1);
-      this.total -= product.price;
+      this.getFacilities();
+      this.getInventories();
+      this.cashService.getCashTotal().subscribe();
+      this.cdr.detectChanges();
+      // this.total -= product.price;
     }
   }
 
@@ -541,7 +569,6 @@ export class ReservationComponent implements OnInit {
     brokenThings: number | null,
     notes: string | null,
   ) {
-    console.log(selectedInventories);
     this.modal = this.dialogService.open(ReservationFormComponent, {
       header: reservationId ? 'Pago total' : 'Pago',
       data: {
@@ -559,6 +586,7 @@ export class ReservationComponent implements OnInit {
         extraHours: extraHours || 0,
         brokenThings: brokenThings || 0,
         isBooking: false,
+        total: this.total,
       },
     });
 

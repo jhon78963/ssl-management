@@ -135,7 +135,7 @@
                     [(ngModel)]="product.isPaid"
                     [binary]="true"
                     [inputId]="'binary-' + $index"
-                    [disabled]="product.isBd" />
+                    [disabled]="product.isBd && product.isPaidBd" />
                   <p
                     class="m-0 p-0 mr-1"
                     [ngClass]="
@@ -149,14 +149,14 @@
                     (ngModelChange)="changeFreeProduct($event, product)"
                     [binary]="true"
                     [inputId]="'binary-' + $index"
-                    [disabled]="product.isBd" />
+                    [disabled]="product.isBd && product.isPaidBd" />
                   <button
                     pButton
                     pRipple
                     class="p-button-primary p-button-rounded b-width"
                     icon="pi pi-fw pi-trash"
                     (click)="
-                      removeFacility(product, reservationId, $event)
+                      removeProduct(product, reservationId, $event)
                     "></button>
                 </div>
               </div>
