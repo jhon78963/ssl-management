@@ -28,7 +28,6 @@ export class CashService {
   getCashTotal(): Observable<void> {
     return this.apiService.get<CashTotal>(`cash-operations/total`).pipe(
       map((cash: CashTotal) => {
-        console.log(cash);
         this.updateCashTotal(cash.total);
       }),
     );
