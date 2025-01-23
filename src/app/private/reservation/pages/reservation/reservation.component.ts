@@ -367,12 +367,7 @@ export class ReservationComponent implements OnInit {
           this.reservationPaymentTypesService
             .remove(reservationId, 1, product.total)
             .subscribe({
-              next: () => {
-                this.getFacilities();
-                this.getInventories();
-                this.cashService.getCashTotal().subscribe();
-                this.cdr.detectChanges();
-              },
+              next: () => {},
             });
         }
 
@@ -383,12 +378,7 @@ export class ReservationComponent implements OnInit {
           this.reservationPaymentTypesService
             .remove(reservationId, 1, product.total)
             .subscribe({
-              next: () => {
-                this.clearReservation();
-                this.getInventories();
-                this.cashService.getCashTotal().subscribe();
-                this.cdr.detectChanges();
-              },
+              next: () => {},
             });
         }
 
@@ -408,11 +398,13 @@ export class ReservationComponent implements OnInit {
 
     if (index != -1) {
       this.selectedProducts.splice(index, 1);
-      this.getFacilities();
-      this.getInventories();
-      this.cashService.getCashTotal().subscribe();
-      this.cdr.detectChanges();
-      // this.total -= product.price;
+      if (!this.reservationId) {
+        this.total -= product.price;
+      } else {
+        this.clearSelections();
+        this.cashService.getCashTotal().subscribe();
+        this.cdr.detectChanges();
+      }
     }
   }
 
