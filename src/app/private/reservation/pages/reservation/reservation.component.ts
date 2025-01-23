@@ -669,7 +669,7 @@ export class ReservationComponent implements OnInit {
   clearReservation() {
     this.getFacilities();
     this.clearSelections();
-    // this.cashService.getCashTotal().subscribe();
-    // this.facilitiesService.countFacilities().subscribe();
+    this.cashService.getCashTotal().subscribe();
+    this.facilitiesService.countFacilities().subscribe();
   }
 }
