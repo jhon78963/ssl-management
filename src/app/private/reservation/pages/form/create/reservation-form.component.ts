@@ -1,5 +1,5 @@
 import { CommonModule, DatePipe } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
@@ -112,6 +112,7 @@ export class ReservationFormComponent implements OnInit {
   originalPaid: number | null = null;
 
   constructor(
+    private cdr: ChangeDetectorRef,
     private readonly cashService: CashService,
     private readonly datePipe: DatePipe,
     private readonly messageService: MessageService,
@@ -691,7 +692,6 @@ export class ReservationFormComponent implements OnInit {
         )
         .subscribe();
     }
-
     if (paidFacilities && paidFacilities.length == 0) {
       this.closeModal();
     }
@@ -1097,7 +1097,5 @@ export class ReservationFormComponent implements OnInit {
     this.advance = 0;
     this.pending = 0;
     this.paymentTypes = [];
-    this.cashService.getCashTotal().subscribe();
-    this.facilitiesService.countFacilities().subscribe();
   }
 }
