@@ -562,6 +562,14 @@ export class ReservationComponent implements OnInit {
     brokenThings: number | null,
     notes: string | null,
   ) {
+    if (!customer) {
+      customer = {
+        id: 1,
+        dni: '99999999',
+        name: 'Clientes',
+        surname: 'Varios',
+      } as Customer;
+    }
     this.modal = this.dialogService.open(ReservationFormComponent, {
       header: reservationId ? 'Pago total' : 'Pago',
       data: {

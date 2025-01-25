@@ -80,8 +80,7 @@
               brokenThings,
               notes
             )
-          "
-          [disabled]="!isPaid"></button>
+          "></button>
         @if (isBooking) {
           <button
             pButton
@@ -238,6 +237,7 @@
     </div>
   </div>
 </div>
+
 <div class="facilities-width">
   @for (facility of facilities | async; track $index) {
     <button
@@ -265,5 +265,6 @@
     icon="pi pi-refresh"
     (click)="clearSelections()"></button>
 </div>
+
 <p-confirmDialog />
 <p-toast />
