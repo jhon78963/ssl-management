@@ -14,6 +14,7 @@ export class ReservationPaymentTypesService {
     payment: number,
     cashPayment: number,
     cardPayment: number,
+    isReservationPayment: boolean,
   ): Observable<void> {
     return this.apiService.post(
       `reservations/${reservationId}/payment-types/${paymentTypeId}`,
@@ -21,6 +22,7 @@ export class ReservationPaymentTypesService {
         payment,
         cashPayment,
         cardPayment,
+        isReservationPayment,
       },
     );
   }

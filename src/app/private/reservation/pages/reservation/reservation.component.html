@@ -82,24 +82,26 @@
             )
           "
           [disabled]="(cashType | async)?.id === 1"></button>
-        <button
-          pButton
-          pRipple
-          label="Reservar"
-          class="ml-1"
-          (click)="
-            saveBookingButton(
-              customer,
-              selectedPaymentTypes,
-              selectedFacilities,
-              selectedProducts,
-              selectedServices,
-              additionalPeople,
-              pricePerAdditionalPerson,
-              notes
-            )
-          "
-          [disabled]="(cashType | async)?.id === 1"></button>
+        @if (!reservationId) {
+          <button
+            pButton
+            pRipple
+            label="Reservar"
+            class="ml-1"
+            (click)="
+              saveBookingButton(
+                customer,
+                selectedPaymentTypes,
+                selectedFacilities,
+                selectedProducts,
+                selectedServices,
+                additionalPeople,
+                pricePerAdditionalPerson,
+                notes
+              )
+            "
+            [disabled]="(cashType | async)?.id === 1"></button>
+        }
       </div>
 
       <div class="card">

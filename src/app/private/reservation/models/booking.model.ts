@@ -6,6 +6,7 @@ export interface IBooking {
   endDate?: string | null;
   total: number;
   totalPaid: number;
+  totalLeft?: number;
   customerId: number;
   facilitiesImport: number;
   peopleExtraImport: number;
@@ -27,6 +28,7 @@ export class Booking {
   endDate?: string | null;
   total: number;
   totalPaid: number;
+  totalLeft?: number;
   customerId: number;
   facilitiesImport: number;
   peopleExtraImport: number;

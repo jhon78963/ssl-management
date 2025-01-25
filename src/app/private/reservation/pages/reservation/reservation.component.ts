@@ -36,9 +36,10 @@ import { ChangeRoomsComponent } from '../../components/rooms/rooms.component';
 import { InventoriesService } from '../../../facility/inventory/services/inventories.service';
 import { Inventory } from '../../../facility/inventory/models/inventory.model';
 import { BookingsService } from '../../services/bookings/bookings.service';
-import { CheckSchedule } from '../../models/booking.model';
+import { Booking, CheckSchedule } from '../../models/booking.model';
 import { currentDateTime } from '../../../../utils/dates';
 import { ReservationPaymentTypesService } from '../../services/reservations/reservation-payment-types.service';
+import { BookingPaymentTypesService } from '../../services/bookings/booking-payment-types.service';
 
 @Component({
   selector: 'app-reservation.layout',
@@ -103,6 +104,7 @@ export class ReservationComponent implements OnInit {
     private readonly reservationPaymentTypesService: ReservationPaymentTypesService,
     private readonly reservationsService: ReservationsService,
     private readonly bookingsService: BookingsService,
+    private readonly bookingPaymentTypesService: BookingPaymentTypesService,
     private readonly inventoriesService: InventoriesService,
   ) {}
 
@@ -190,23 +192,119 @@ export class ReservationComponent implements OnInit {
     }
   }
 
-  async bookedFacility(facility: any) {
-    const isSelected = this.isSelected(facility);
+  addPaymentType(
+    bookingId: number,
+    selectedPaymentTypeId: number,
+    paid: number = 0,
+    cash: number = 0,
+    card: number = 0,
+  ) {
+    const paymentType = {
+      payment: paid,
+      paymentTypeId: selectedPaymentTypeId,
+      cashPayment: cash,
+      cardPayment: card,
+    };
 
-    if (!isSelected) {
-      if (facility.type == FacilityType.ROOM) {
-        const startDate = currentDateTime(this.datePipe);
-        const hasConflict = await this.checkScheduleAndAct(
-          facility.id,
-          startDate,
-        );
+    this.bookingPaymentTypesService
+      .add(
+        bookingId,
+        paymentType.paymentTypeId,
+        paymentType.payment,
+        paymentType.cashPayment,
+        paymentType.cardPayment,
+      )
+      .subscribe();
+  }
 
-        if (!hasConflict) {
-          this.pushFacility(facility);
-          this.cdr.detectChanges();
-        }
-      }
+  updateBooking(
+    bookingId: number | undefined,
+    paid: number = 0,
+    selectedPaymentTypeId: number = 0,
+    cash: number = 0,
+    card: number = 0,
+  ) {
+    if (bookingId) {
+      this.bookingsService
+        .changeStatus(bookingId, 'COMPLETED', paid)
+        .subscribe({
+          next: () => {
+            this.addPaymentType(
+              bookingId,
+              selectedPaymentTypeId,
+              paid,
+              cash,
+              card,
+            );
+          },
+        });
     }
+  }
+
+  async bookedFacility(facility: any) {
+    this.bookingsService.getOne(facility.bookingId).subscribe({
+      next: (booking: Booking) => {
+        this.modal = this.dialogService.open(ReservationFormComponent, {
+          header: 'Ejecutar reserva',
+          data: {
+            bookingId: booking.id,
+            customer: booking.customer,
+            startDate: booking.startDate,
+            total: booking.total || 0,
+            totalPaid: booking.totalPaid || 0,
+            totalLeft: booking.totalLeft || 0,
+            endDate: booking.endDate,
+            notes: booking.notes,
+            facilities: booking.facilities,
+            products: booking.products,
+            services: booking.services,
+            paymentTypes: booking.paymentTypes,
+            additionalPeople: booking.facilities![0].additionalPeople || 0,
+            pricePerAdditionalPerson:
+              booking.facilities![0].pricePerAdditionalPerson || 0,
+            isBooking: false,
+            isReservationPayment: false,
+            isBookingView: true,
+            status: booking.status,
+          },
+        });
+
+        this.modal.onClose.subscribe({
+          next: (value: any) => {
+            if (value && value?.success) {
+              this.updateBooking(
+                booking.id,
+                value.paid,
+                value.selectedPaymentTypeId,
+                value.cash,
+                value.card,
+              );
+              showSuccess(this.messageService, 'Reservación registrada.');
+              this.clearReservation();
+            } else {
+              null;
+            }
+            this.cdr.detectChanges();
+          },
+        });
+      },
+    });
+    // const isSelected = this.isSelected(facility);
+
+    // if (!isSelected) {
+    //   if (facility.type == FacilityType.ROOM) {
+    //     const startDate = currentDateTime(this.datePipe);
+    //     const hasConflict = await this.checkScheduleAndAct(
+    //       facility.id,
+    //       startDate,
+    //     );
+
+    //     if (!hasConflict) {
+    //       this.pushFacility(facility);
+    //       this.cdr.detectChanges();
+    //     }
+    //   }
+    // }
   }
 
   showFacility(facility: any) {
@@ -622,7 +720,7 @@ export class ReservationComponent implements OnInit {
         surname: 'Varios',
       } as Customer;
     }
-    const bookingModal = this.dialogService.open(ReservationFormComponent, {
+    this.modal = this.dialogService.open(ReservationFormComponent, {
       header: 'Reservar',
       data: {
         customer,
@@ -637,7 +735,7 @@ export class ReservationComponent implements OnInit {
       },
     });
 
-    bookingModal.onClose.subscribe({
+    this.modal.onClose.subscribe({
       next: value => {
         if (value && value?.success) {
           showSuccess(this.messageService, 'Reservación registrada.');

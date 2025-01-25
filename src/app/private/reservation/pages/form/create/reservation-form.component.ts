@@ -99,6 +99,8 @@ export class ReservationFormComponent implements OnInit {
   pending: number = 0;
 
   isBooking: boolean = false;
+  isBookingView: boolean = false;
+  isReservationPayment: boolean = true;
   isList: boolean = false;
   startDate: Date = new Date();
 
@@ -141,6 +143,8 @@ export class ReservationFormComponent implements OnInit {
   getCustomer() {
     this.reservationId = this.dynamicDialogConfig.data.reservationId;
     this.bookingId = this.dynamicDialogConfig.data.bookingId;
+    this.isReservationPayment =
+      this.dynamicDialogConfig.data.isReservationPayment;
     this.customer = this.dynamicDialogConfig.data.customer;
   }
 
@@ -184,21 +188,42 @@ export class ReservationFormComponent implements OnInit {
   }
 
   getServices() {
-    if (this.dynamicDialogConfig.data.products) {
-      this.services = this.dynamicDialogConfig.data.products.filter(
-        (product: any) => product.type == 'service',
-      );
-      this.services = this.services.map((service: any) => {
-        if (service.isFree) {
-          service.total = 0;
-        } else {
-          service.total = service.quantity * service.price;
-        }
-        return service;
-      });
-      this.totalServices = this.services
-        ?.filter(product => product.price)
-        .reduce((sum, product) => sum + product.total, 0);
+    this.isBookingView = this.dynamicDialogConfig.data.isBookingView;
+    if (this.isBookingView) {
+      const services = this.dynamicDialogConfig.data.services;
+      if (services.length > 0) {
+        this.services = services.filter(
+          (product: any) => product.type == 'service',
+        );
+        this.services = this.services.map((service: any) => {
+          if (service.isFree) {
+            service.total = 0;
+          } else {
+            service.total = service.quantity * service.price;
+          }
+          return service;
+        });
+        this.totalServices = this.services
+          ?.filter(product => product.price)
+          .reduce((sum, product) => sum + product.total, 0);
+      }
+    } else {
+      if (this.dynamicDialogConfig.data.products) {
+        this.services = this.dynamicDialogConfig.data.products.filter(
+          (product: any) => product.type == 'service',
+        );
+        this.services = this.services.map((service: any) => {
+          if (service.isFree) {
+            service.total = 0;
+          } else {
+            service.total = service.quantity * service.price;
+          }
+          return service;
+        });
+        this.totalServices = this.services
+          ?.filter(product => product.price)
+          .reduce((sum, product) => sum + product.total, 0);
+      }
     }
   }
 
@@ -274,7 +299,10 @@ export class ReservationFormComponent implements OnInit {
 
   getPaymentTypes() {
     this.paymentTypes = this.dynamicDialogConfig.data.paymentTypes;
-    if (this.reservationId && this.paymentTypes.length > 0) {
+    if (
+      (this.reservationId || this.bookingId) &&
+      this.paymentTypes.length > 0
+    ) {
       this.paymentTypes.forEach((payment: any) => {
         this.paid = 0;
         this.cash = 0;
@@ -689,6 +717,7 @@ export class ReservationFormComponent implements OnInit {
           paymentType.payment,
           paymentType.cashPayment,
           paymentType.cardPayment,
+          this.isReservationPayment,
         )
         .subscribe();
     }
