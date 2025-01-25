@@ -33,8 +33,7 @@
           id="amount"
           placeholder="Ingrese monto"
           controlName="amount"
-          pKeyFilter="num"
-          [readonly]="cashType.id !== 1"></app-input-text>
+          pKeyFilter="num"></app-input-text>
       </div>
       <div class="field col-12 md:col-6" *ngIf="cashType.id !== 1">
         <app-input-text
@@ -45,8 +44,7 @@
           id="cashAmount"
           placeholder="Ingrese monto"
           controlName="cashAmount"
-          pKeyFilter="num"
-          [readonly]="cashType.id !== 1"></app-input-text>
+          pKeyFilter="num"></app-input-text>
       </div>
       <div class="field col-12 md:col-6" *ngIf="cashType.id !== 1">
         <app-input-text
@@ -57,8 +55,7 @@
           id="cardAmount"
           placeholder="Ingrese monto"
           controlName="cardAmount"
-          pKeyFilter="num"
-          [readonly]="cashType.id !== 1"></app-input-text>
+          pKeyFilter="num"></app-input-text>
       </div>
       <div class="field col-12" *ngIf="cashType.id !== 1">
         <app-input-text

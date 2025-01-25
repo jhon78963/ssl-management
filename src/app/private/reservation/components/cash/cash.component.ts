@@ -136,8 +136,12 @@ export class CashComponent implements OnInit {
 
   clearData() {
     this.form.get('amount')?.setValue(null);
+    this.form.get('cashAmount')?.setValue(null);
+    this.form.get('cardAmount')?.setValue(null);
     this.form.get('pettyCashAmount')?.setValue(null);
+    this.form.get('total')?.setValue(null);
     this.form.get('name')?.setValue(null);
+    this.form.reset;
   }
 
   get isFormValid(): boolean {
