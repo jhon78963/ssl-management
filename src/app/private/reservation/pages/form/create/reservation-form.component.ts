@@ -143,8 +143,10 @@ export class ReservationFormComponent implements OnInit {
   getCustomer() {
     this.reservationId = this.dynamicDialogConfig.data.reservationId;
     this.bookingId = this.dynamicDialogConfig.data.bookingId;
-    this.isReservationPayment =
-      this.dynamicDialogConfig.data.isReservationPayment;
+    if (this.dynamicDialogConfig.data.isReservationPayment) {
+      this.isReservationPayment =
+        this.dynamicDialogConfig.data.isReservationPayment;
+    }
     this.customer = this.dynamicDialogConfig.data.customer;
   }
 
@@ -710,6 +712,7 @@ export class ReservationFormComponent implements OnInit {
         )
         .subscribe();
     } else {
+      console.log(this.isReservationPayment);
       this.reservationPaymentTypesService
         .add(
           bookingOrReservationId,
