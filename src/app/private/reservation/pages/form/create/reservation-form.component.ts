@@ -712,7 +712,6 @@ export class ReservationFormComponent implements OnInit {
         )
         .subscribe();
     } else {
-      console.log(this.isReservationPayment);
       this.reservationPaymentTypesService
         .add(
           bookingOrReservationId,
