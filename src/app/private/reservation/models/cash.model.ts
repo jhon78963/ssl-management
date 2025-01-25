@@ -5,9 +5,12 @@ export interface CashType {
 }
 
 export interface CashTotal {
+  employee: string;
   amount: number;
   cashAmount: number;
   cardAmount: number;
+  pettyCash: number;
+  total: number;
 }
 
 export interface ICashOperation {

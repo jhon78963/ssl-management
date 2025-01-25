@@ -37,9 +37,13 @@ export class CashComponent implements OnInit {
     name: '',
     pettyCashAmount: 0,
   };
+
+  employee: any;
+  amount: any;
+  cashAmount: any;
+  cardAmount: any;
+  pettyCash: any;
   total: any;
-  cashTotal: any;
-  cardTotal: any;
 
   constructor(
     private readonly datePipe: DatePipe,
@@ -59,16 +63,23 @@ export class CashComponent implements OnInit {
     amount: [null, Validators.required],
     cashAmount: [0, Validators.required],
     cardAmount: [0, Validators.required],
+    total: [0, Validators.required],
   });
 
   ngOnInit(): void {
     this.cashType = this.dynamicDialogConfig.data.cashType;
+    this.amount = this.dynamicDialogConfig.data.amount;
+    this.cashAmount = this.dynamicDialogConfig.data.cashAmount;
+    this.cardAmount = this.dynamicDialogConfig.data.cardAmount;
+    this.pettyCash = this.dynamicDialogConfig.data.pettyCash;
     this.total = this.dynamicDialogConfig.data.total;
-    this.cashTotal = this.dynamicDialogConfig.data.cashTotal;
-    this.cardTotal = this.dynamicDialogConfig.data.cardTotal;
-    this.form.get('amount')?.setValue(this.total.source._value);
-    this.form.get('cashAmount')?.setValue(this.cashTotal.source._value);
-    this.form.get('cardAmount')?.setValue(this.cardTotal.source._value);
+    this.employee = this.dynamicDialogConfig.data.employee;
+    this.form.get('amount')?.setValue(this.amount.source._value);
+    this.form.get('cashAmount')?.setValue(this.cashAmount.source._value);
+    this.form.get('cardAmount')?.setValue(this.cardAmount.source._value);
+    this.form.get('pettyCashAmount')?.setValue(this.pettyCash.source._value);
+    this.form.get('total')?.setValue(this.total.source._value);
+    this.form.get('name')?.setValue(this.employee.source._value);
   }
 
   getData(cashId: number | undefined) {
@@ -85,7 +96,7 @@ export class CashComponent implements OnInit {
     this.cashService.createOperation(this.getData(cashId)).subscribe({
       next: () => {
         if (this.cashType.id == 4) {
-          this.cashService.updateCashTotal(0);
+          this.cashService.updateAmount(0);
           const body = {
             status: 'CLOSE',
           };

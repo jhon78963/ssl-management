@@ -39,16 +39,28 @@ export class AppTopbarComponent implements OnInit {
     this.facilitiesService.countFacilities().subscribe();
   }
 
+  get employee(): Observable<string> {
+    return this.cashService.getmployee();
+  }
+
+  get pettyCash(): Observable<number> {
+    return this.cashService.getPettyCash();
+  }
+
+  get amount(): Observable<number> {
+    return this.cashService.getAmount();
+  }
+
+  get cashAmount(): Observable<number> {
+    return this.cashService.getCashAmount();
+  }
+
+  get cardAmount(): Observable<number> {
+    return this.cashService.getCardAmount();
+  }
+
   get total(): Observable<number> {
     return this.cashService.getTotal();
-  }
-
-  get cashTotal(): Observable<number> {
-    return this.cashService.getCashTotalAmount();
-  }
-
-  get cardTotal(): Observable<number> {
-    return this.cashService.getCardTotalAmount();
   }
 
   get cashType(): Observable<CashType> {
@@ -66,9 +78,12 @@ export class AppTopbarComponent implements OnInit {
           header: cashType.label,
           data: {
             cashType,
+            employee: this.employee,
+            pettyCash: this.pettyCash,
+            amount: this.amount,
+            cashAmount: this.cashAmount,
+            cardAmount: this.cardAmount,
             total: this.total,
-            cashTotal: this.cashTotal,
-            cardTotal: this.cardTotal,
           },
         });
       },

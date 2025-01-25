@@ -15,18 +15,31 @@ import { Schedule } from '../models/schedule.model';
   providedIn: 'root',
 })
 export class CashService {
+  employee: string = '';
+  employee$: BehaviorSubject<string> = new BehaviorSubject<string>(
+    this.employee,
+  );
+
+  pettyCash: number = 0;
+  pettyCash$: BehaviorSubject<number> = new BehaviorSubject<number>(
+    this.pettyCash,
+  );
+
+  amount: number = 0;
+  amount$: BehaviorSubject<number> = new BehaviorSubject<number>(this.amount);
+
+  cashAmount: number = 0;
+  cashAmount$: BehaviorSubject<number> = new BehaviorSubject<number>(
+    this.cashAmount,
+  );
+
+  cardAmount: number = 0;
+  cardAmount$: BehaviorSubject<number> = new BehaviorSubject<number>(
+    this.cardAmount,
+  );
+
   total: number = 0;
   total$: BehaviorSubject<number> = new BehaviorSubject<number>(this.total);
-
-  cashTotal: number = 0;
-  cashTotal$: BehaviorSubject<number> = new BehaviorSubject<number>(
-    this.cashTotal,
-  );
-
-  cardTotal: number = 0;
-  cardTotal$: BehaviorSubject<number> = new BehaviorSubject<number>(
-    this.cardTotal,
-  );
 
   cashType: CashType = { id: 0, key: '', label: '' };
   cashType$: BehaviorSubject<CashType> = new BehaviorSubject<CashType>(
@@ -38,23 +51,38 @@ export class CashService {
   getCashTotal(): Observable<void> {
     return this.apiService.get<CashTotal>(`cash-operations/total`).pipe(
       map((cash: CashTotal) => {
-        this.updateCashTotal(cash.amount);
-        this.updateCashCashTotal(cash.cashAmount);
-        this.updateCardCashTotal(cash.cardAmount);
+        this.updateEmployee(cash.employee);
+        this.updatePettyCash(cash.pettyCash);
+        this.updateAmount(cash.amount);
+        this.updateCashAmount(cash.cashAmount);
+        this.updateCardAmount(cash.cardAmount);
+        this.updateTotal(cash.total);
       }),
     );
   }
 
+  getmployee(): Observable<string> {
+    return this.employee$.asObservable();
+  }
+
+  getPettyCash(): Observable<number> {
+    return this.pettyCash$.asObservable();
+  }
+
+  getAmount(): Observable<number> {
+    return this.amount$.asObservable();
+  }
+
+  getCashAmount(): Observable<number> {
+    return this.cashAmount$.asObservable();
+  }
+
+  getCardAmount(): Observable<number> {
+    return this.cardAmount$.asObservable();
+  }
+
   getTotal(): Observable<number> {
     return this.total$.asObservable();
-  }
-
-  getCashTotalAmount(): Observable<number> {
-    return this.cashTotal$.asObservable();
-  }
-
-  getCardTotalAmount(): Observable<number> {
-    return this.cardTotal$.asObservable();
   }
 
   getCashValidate(): Observable<void> {
@@ -69,19 +97,34 @@ export class CashService {
     return this.cashType$.asObservable();
   }
 
-  updateCashTotal(mount: number): void {
-    this.total = mount;
-    this.total$.next(mount);
+  updateEmployee(employee: string): void {
+    this.employee = employee;
+    this.employee$.next(employee);
   }
 
-  updateCashCashTotal(mount: number): void {
-    this.cashTotal = mount;
-    this.cashTotal$.next(mount);
+  updatePettyCash(pettyCash: number): void {
+    this.pettyCash = pettyCash;
+    this.pettyCash$.next(pettyCash);
   }
 
-  updateCardCashTotal(mount: number): void {
-    this.cardTotal = mount;
-    this.cardTotal$.next(mount);
+  updateAmount(amount: number): void {
+    this.amount = amount;
+    this.amount$.next(amount);
+  }
+
+  updateCashAmount(cashAmount: number): void {
+    this.cashAmount = cashAmount;
+    this.cashAmount$.next(cashAmount);
+  }
+
+  updateCardAmount(cardAmount: number): void {
+    this.cardAmount = cardAmount;
+    this.cardAmount$.next(cardAmount);
+  }
+
+  updateTotal(total: number): void {
+    this.total = total;
+    this.total$.next(total);
   }
 
   updateCashType(cashType: CashType): void {
