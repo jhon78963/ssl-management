@@ -17,7 +17,7 @@ export class CashesService {
   constructor(private apiService: ApiService) {}
 
   callGetList(
-    limit: number = 10,
+    limit: number = 50,
     page: number = 1,
     schedule: number = 0,
     startDate: string | null = null,

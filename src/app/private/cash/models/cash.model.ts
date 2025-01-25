@@ -7,8 +7,10 @@ export interface Cash {
   schedule: string;
   pettyCash: number;
   description: string;
-  amount: number;
   employee: string;
+  amount: number;
+  cashAmount: number;
+  cardAmount: number;
 }
 
 export class CashOperation {
@@ -16,11 +18,15 @@ export class CashOperation {
   date: string;
   description: string;
   amount: number;
+  cashAmount: number;
+  cardAmount: number;
   constructor(cash: Cash) {
     this.cashTypeId = cash.cashTypeId;
     this.date = cash.date;
     this.description = cash.description;
     this.amount = cash.amount;
+    this.cashAmount = cash.cashAmount;
+    this.cardAmount = cash.cardAmount;
   }
 }
 

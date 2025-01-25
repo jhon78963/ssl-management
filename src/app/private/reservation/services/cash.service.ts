@@ -18,6 +18,16 @@ export class CashService {
   total: number = 0;
   total$: BehaviorSubject<number> = new BehaviorSubject<number>(this.total);
 
+  cashTotal: number = 0;
+  cashTotal$: BehaviorSubject<number> = new BehaviorSubject<number>(
+    this.cashTotal,
+  );
+
+  cardTotal: number = 0;
+  cardTotal$: BehaviorSubject<number> = new BehaviorSubject<number>(
+    this.cardTotal,
+  );
+
   cashType: CashType = { id: 0, key: '', label: '' };
   cashType$: BehaviorSubject<CashType> = new BehaviorSubject<CashType>(
     this.cashType,
@@ -28,13 +38,23 @@ export class CashService {
   getCashTotal(): Observable<void> {
     return this.apiService.get<CashTotal>(`cash-operations/total`).pipe(
       map((cash: CashTotal) => {
-        this.updateCashTotal(cash.total);
+        this.updateCashTotal(cash.amount);
+        this.updateCashCashTotal(cash.cashAmount);
+        this.updateCardCashTotal(cash.cardAmount);
       }),
     );
   }
 
   getTotal(): Observable<number> {
     return this.total$.asObservable();
+  }
+
+  getCashTotalAmount(): Observable<number> {
+    return this.cashTotal$.asObservable();
+  }
+
+  getCardTotalAmount(): Observable<number> {
+    return this.cardTotal$.asObservable();
   }
 
   getCashValidate(): Observable<void> {
@@ -52,6 +72,16 @@ export class CashService {
   updateCashTotal(mount: number): void {
     this.total = mount;
     this.total$.next(mount);
+  }
+
+  updateCashCashTotal(mount: number): void {
+    this.cashTotal = mount;
+    this.cashTotal$.next(mount);
+  }
+
+  updateCardCashTotal(mount: number): void {
+    this.cardTotal = mount;
+    this.cardTotal$.next(mount);
   }
 
   updateCashType(cashType: CashType): void {

@@ -80,7 +80,8 @@
               brokenThings,
               notes
             )
-          "></button>
+          "
+          [disabled]="(cashType | async)?.id === 1"></button>
         @if (isBooking) {
           <button
             pButton

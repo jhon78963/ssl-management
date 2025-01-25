@@ -35,6 +35,8 @@ export class CashFormComponent {
     date: [currentDateTime(this.datePipe), Validators.required],
     description: [null, Validators.required],
     amount: [null, Validators.required],
+    cashAmount: [0, Validators.nullValidator],
+    cardAmount: [0, Validators.nullValidator],
   });
 
   cashSaveButton() {

@@ -12,8 +12,17 @@
           controlName="pettyCashAmount"
           pKeyFilter="num"></app-input-text>
       </div>
-      <div
-        [class]="cashType.id === 1 ? 'field col-12 md:col-6' : 'field col-12'">
+      <div class="field col-12 md:col-6" *ngIf="cashType.id === 1">
+        <app-input-text
+          class="w-full"
+          label="Personal"
+          for="name"
+          type="text"
+          id="name"
+          placeholder="Ingrese nombre del personal"
+          controlName="name"></app-input-text>
+      </div>
+      <div class="field col-12">
         <app-input-text
           class="w-full"
           label="Monto"
@@ -24,15 +33,27 @@
           controlName="amount"
           pKeyFilter="num"></app-input-text>
       </div>
-      <div class="field col-12" *ngIf="cashType.id === 1">
+      <div class="col-12 md:col-6" *ngIf="cashType.id !== 1">
         <app-input-text
           class="w-full"
-          label="Personal"
-          for="name"
+          label="Efectivo"
+          for="cashAmount"
           type="text"
-          id="name"
-          placeholder="Ingrese nombre del personal"
-          controlName="name"></app-input-text>
+          id="cashAmount"
+          placeholder="Ingrese monto"
+          controlName="cashAmount"
+          pKeyFilter="num"></app-input-text>
+      </div>
+      <div class="col-12 md:col-6" *ngIf="cashType.id !== 1">
+        <app-input-text
+          class="w-full"
+          label="Tarjeta"
+          for="cardAmount"
+          type="text"
+          id="cardAmount"
+          placeholder="Ingrese monto"
+          controlName="cardAmount"
+          pKeyFilter="num"></app-input-text>
       </div>
       <button
         type="submit"

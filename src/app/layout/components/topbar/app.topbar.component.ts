@@ -43,6 +43,14 @@ export class AppTopbarComponent implements OnInit {
     return this.cashService.getTotal();
   }
 
+  get cashTotal(): Observable<number> {
+    return this.cashService.getCashTotalAmount();
+  }
+
+  get cardTotal(): Observable<number> {
+    return this.cashService.getCardTotalAmount();
+  }
+
   get cashType(): Observable<CashType> {
     return this.cashService.getCashType();
   }
@@ -59,6 +67,8 @@ export class AppTopbarComponent implements OnInit {
           data: {
             cashType,
             total: this.total,
+            cashTotal: this.cashTotal,
+            cardTotal: this.cardTotal,
           },
         });
       },

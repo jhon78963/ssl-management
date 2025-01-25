@@ -5,7 +5,9 @@ export interface CashType {
 }
 
 export interface CashTotal {
-  total: number;
+  amount: number;
+  cashAmount: number;
+  cardAmount: number;
 }
 
 export interface ICashOperation {
@@ -15,6 +17,8 @@ export interface ICashOperation {
   date: string;
   description: string;
   amount: number;
+  cashAmount: number;
+  cardAmount: number;
 }
 
 export class CashOperation {
@@ -24,13 +28,17 @@ export class CashOperation {
   date: string | null;
   description: string;
   amount: number;
+  cashAmount: number;
+  cardAmount: number;
   constructor(cash: ICashOperation) {
     this.id = cash.id;
     this.cashId = cash.cashId;
     this.cashTypeId = cash.cashTypeId;
     this.date = cash.date;
-    this.amount = cash.amount;
     this.description = cash.description;
+    this.amount = cash.amount;
+    this.cashAmount = cash.cashAmount;
+    this.cardAmount = cash.cardAmount;
   }
 }
 

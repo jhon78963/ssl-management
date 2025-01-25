@@ -282,19 +282,20 @@ export class ReservationListComponent implements OnInit {
   }
 
   reservationBookButton(reservation: Reservation) {
+    const facilities = reservation.facilities ?? []; // Usar un arreglo vacío si facilities es undefined
+
     this.dialogService.open(ReservationFormComponent, {
       header: 'Ejecutar reserva',
       data: {
         reservationId: reservation.id,
         customer: reservation.customer,
         notes: reservation.notes,
-        facilities: reservation.facilities,
+        facilities: facilities, // Ahora siempre es un arreglo (vacío si es undefined)
         products: reservation.products,
         services: reservation.services,
         paymentTypes: reservation.paymentTypes,
-        additionalPeople: reservation.facilities![0].additionalPeople || 0,
-        pricePerAdditionalPerson:
-          reservation.facilities![0].pricePerAdditionalPerson || 0,
+        additionalPeople: facilities[0]?.additionalPeople || 0, // Accede de manera segura
+        pricePerAdditionalPerson: facilities[0]?.pricePerAdditionalPerson || 0, // Accede de manera segura
         isBooking: false,
         isList: true,
         status: reservation.status,

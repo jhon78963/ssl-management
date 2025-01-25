@@ -38,6 +38,8 @@ export class CashComponent implements OnInit {
     pettyCashAmount: 0,
   };
   total: any;
+  cashTotal: any;
+  cardTotal: any;
 
   constructor(
     private readonly datePipe: DatePipe,
@@ -53,14 +55,20 @@ export class CashComponent implements OnInit {
     cashTypeId: [null],
     date: [null],
     pettyCashAmount: [null],
-    amount: [null, Validators.required],
     name: [null],
+    amount: [null, Validators.required],
+    cashAmount: [0, Validators.required],
+    cardAmount: [0, Validators.required],
   });
 
   ngOnInit(): void {
     this.cashType = this.dynamicDialogConfig.data.cashType;
     this.total = this.dynamicDialogConfig.data.total;
+    this.cashTotal = this.dynamicDialogConfig.data.cashTotal;
+    this.cardTotal = this.dynamicDialogConfig.data.cardTotal;
     this.form.get('amount')?.setValue(this.total.source._value);
+    this.form.get('cashAmount')?.setValue(this.cashTotal.source._value);
+    this.form.get('cardAmount')?.setValue(this.cardTotal.source._value);
   }
 
   getData(cashId: number | undefined) {
