@@ -614,6 +614,14 @@ export class ReservationComponent implements OnInit {
     pricePerAdditionalPerson: number,
     notes: string | null,
   ) {
+    if (!customer) {
+      customer = {
+        id: 1,
+        dni: '99999999',
+        name: 'Clientes',
+        surname: 'Varios',
+      } as Customer;
+    }
     const bookingModal = this.dialogService.open(ReservationFormComponent, {
       header: 'Reservar',
       data: {
