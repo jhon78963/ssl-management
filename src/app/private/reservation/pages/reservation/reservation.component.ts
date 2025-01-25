@@ -123,6 +123,14 @@ export class ReservationComponent implements OnInit {
     });
   }
 
+  get isLocker() {
+    const lockers = this.selectedFacilities.filter(
+      locker => locker.type == FacilityType.ROOM,
+    );
+
+    return lockers.length > 0 ? true : false;
+  }
+
   get cashType(): Observable<CashType> {
     return this.cashService.getCashType();
   }

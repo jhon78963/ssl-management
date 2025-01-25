@@ -243,7 +243,7 @@
               inputId="integeronly"
               [(ngModel)]="paid"
               [min]="0"
-              [max]="reservationId ? pending : total"
+              [max]="reservationId || bookingId ? pending : total"
               [disabled]="status === 'COMPLETED' || isList" />
           </span>
         </div>
@@ -256,7 +256,7 @@
               inputId="integeronly"
               [(ngModel)]="paid"
               [min]="0"
-              [max]="reservationId ? pending : total"
+              [max]="reservationId || bookingId ? pending : total"
               [disabled]="status === 'COMPLETED' || isList" />
           </span>
         </div>
@@ -269,7 +269,7 @@
               inputId="integeronly"
               [(ngModel)]="paid"
               [min]="0"
-              [max]="reservationId ? pending : total"
+              [max]="reservationId || bookingId ? pending : total"
               [disabled]="status === 'COMPLETED' || isList" />
           </span>
         </div>

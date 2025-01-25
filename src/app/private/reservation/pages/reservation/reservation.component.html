@@ -82,7 +82,7 @@
             )
           "
           [disabled]="(cashType | async)?.id === 1"></button>
-        @if (!reservationId) {
+        @if (!reservationId && isLocker) {
           <button
             pButton
             pRipple
