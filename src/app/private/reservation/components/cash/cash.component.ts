@@ -97,6 +97,10 @@ export class CashComponent implements OnInit {
       next: () => {
         if (this.cashType.id == 4) {
           this.cashService.updateAmount(0);
+          this.cashService.updatePettyCash(0);
+          this.cashService.updateCardAmount(0);
+          this.cashService.updateCashAmount(0);
+          this.cashService.updateEmployee('');
           const body = {
             status: 'CLOSE',
           };

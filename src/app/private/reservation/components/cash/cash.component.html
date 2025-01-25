@@ -1,6 +1,17 @@
 @if (form) {
   <form [formGroup]="form" (ngSubmit)="cashSaveButton()" class="mt-1">
     <div class="p-fluid p-formgrid grid mt-3">
+      <div class="field col-12">
+        <app-input-text
+          class="w-full"
+          label="Personal"
+          for="name"
+          type="text"
+          id="name"
+          placeholder="Ingrese nombre del personal"
+          controlName="name"
+          [readonly]="cashType.id !== 1"></app-input-text>
+      </div>
       <div class="field col-12 md:col-6">
         <app-input-text
           class="w-full"
@@ -14,17 +25,6 @@
           [readonly]="cashType.id !== 1"></app-input-text>
       </div>
       <div class="field col-12 md:col-6">
-        <app-input-text
-          class="w-full"
-          label="Personal"
-          for="name"
-          type="text"
-          id="name"
-          placeholder="Ingrese nombre del personal"
-          controlName="name"
-          [readonly]="cashType.id !== 1"></app-input-text>
-      </div>
-      <div class="field col-12">
         <app-input-text
           class="w-full"
           label="Monto"
