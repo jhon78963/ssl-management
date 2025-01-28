@@ -380,8 +380,12 @@ export class ReservationComponent implements OnInit {
     );
 
     if (isSelected) {
+      if (this.selectedFacilities.length % 4 === 0) {
+        this.total -= 10;
+      } else {
+        this.total -= facility.price;
+      }
       this.selectedFacilities.splice(index, 1);
-      this.total -= facility.price;
       this.pricePerAdditionalPerson = 0;
       this.pricePerExtraHour = 0;
     } else {
@@ -405,15 +409,21 @@ export class ReservationComponent implements OnInit {
       facility => facility.type === FacilityType.ROOM,
     );
     this.isBooking = rooms.length > 0;
+
+    this.selectedProducts.forEach((product: any) => {
+      product.selectedFacilities = this.selectedFacilities.map(facility => ({
+        ...facility,
+      }));
+    });
   }
 
   pushFacility(facility: any) {
     this.selectedFacilities.push(facility);
-    this.total += facility.price;
-    if (this.selectedFacilities.length === 4) {
-      this.total = 100;
+    if (this.selectedFacilities.length % 4 === 0) {
+      this.total += 10;
+    } else {
+      this.total += facility.price;
     }
-
     this.pricePerAdditionalPerson = facility.pricePerAdditionalPerson;
     this.pricePerExtraHour = facility.pricePerExtraHour;
   }
@@ -638,6 +648,9 @@ export class ReservationComponent implements OnInit {
     } else {
       ++product.quantity;
       product.total = product.quantity * product.price;
+      product.selectedFacilities = this.selectedFacilities.map(facility => ({
+        ...facility,
+      }));
       this.selectedProducts.push(product);
       this.total += product.price;
     }
@@ -668,6 +681,7 @@ export class ReservationComponent implements OnInit {
     brokenThings: number | null,
     notes: string | null,
   ) {
+    console.log(selectedProducts);
     if (!customer) {
       customer = {
         id: 1,

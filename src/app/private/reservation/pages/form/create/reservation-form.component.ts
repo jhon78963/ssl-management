@@ -153,15 +153,13 @@ export class ReservationFormComponent implements OnInit {
   getFacilities(): void {
     this.facilities = this.dynamicDialogConfig.data.facilities;
     if (this.facilities?.length) {
-      const totalLockers = this.facilities.length;
-      const unitPrice = this.facilities[0].price;
-      if (totalLockers <= 3) {
-        this.lockerPrice = totalLockers * unitPrice;
-      } else {
-        const promoPrice = 100;
-        const extraLockers = totalLockers - 4;
-        this.lockerPrice = promoPrice + extraLockers * unitPrice;
-      }
+      this.facilities.forEach((facility: any, index: number) => {
+        if ((index + 1) % 4 === 0) {
+          this.lockerPrice += 10;
+        } else {
+          this.lockerPrice += facility.price;
+        }
+      });
     } else {
       this.lockerPrice = 0;
     }

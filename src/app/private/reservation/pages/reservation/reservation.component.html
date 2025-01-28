@@ -7,7 +7,7 @@
             pButton
             pRipple
             [label]="facility.number"
-            class="mr-2 mt-2 p-width p-button-rounded"
+            class="mb-1 mr-1 p-width p-button-rounded"
             (click)="
               reservationId ? changeLocker(reservationId, facility.id) : null
             "></button>
@@ -16,7 +16,7 @@
             pButton
             pRipple
             [label]="facility.number"
-            class="mr-2 mt-2 p-width p-button-rounded"></button>
+            class="mb-1 mr-1 p-width p-button-rounded"></button>
           <!-- (click)="
               reservationId ? changeRoom(reservationId, facility.id) : null
             " -->
@@ -122,7 +122,24 @@
                   X{{ product.quantity }} {{ product.name }} - S/
                   {{ product.total }}
                 </p>
-                <div class="flex">
+                <div class="flex align-items-center">
+                  @for (
+                    facility of product.selectedFacilities;
+                    track facility.number
+                  ) {
+                    <p
+                      class="m-0 p-0 mr-1"
+                      [ngClass]="
+                        facility.isSelected ? 'paid-status' : 'unpaid-status'
+                      ">
+                      {{ facility.number }}
+                    </p>
+                    <p-checkbox
+                      class="mr-2"
+                      [(ngModel)]="facility.isSelected"
+                      [binary]="true"
+                      [inputId]="'binary-' + $index + '-' + facility.number" />
+                  }
                   <p
                     class="m-0 p-0 mr-1"
                     [ngClass]="

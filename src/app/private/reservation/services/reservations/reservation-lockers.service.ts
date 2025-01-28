@@ -13,12 +13,14 @@ export class ReservationLockersService {
     lockerId: number,
     price: number,
     isPaid: boolean = false,
+    consumption: number = 0,
   ): Observable<void> {
     return this.apiService.post(
       `reservations/${reservationId}/lockers/${lockerId}`,
       {
         price,
         isPaid,
+        consumption,
       },
     );
   }
@@ -27,11 +29,13 @@ export class ReservationLockersService {
     reservationId: number,
     lockerId: number,
     isPaid: boolean = false,
+    consumption: number = 0,
   ): Observable<void> {
     return this.apiService.patch(
       `reservations/${reservationId}/lockers/${lockerId}`,
       {
         isPaid,
+        consumption,
       },
     );
   }
