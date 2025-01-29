@@ -49,4 +49,15 @@ export class ReservationLockersService {
       `reservations/${reservationId}/lockers/${lockerId}/price/${price}`,
     );
   }
+
+  updateConsumption(
+    reservationId: number,
+    lockerId: number,
+    consumption: number,
+  ): Observable<void> {
+    return this.apiService.post(
+      `reservations/${reservationId}/lockers/${lockerId}/consumption/${consumption}`,
+      {},
+    );
+  }
 }
