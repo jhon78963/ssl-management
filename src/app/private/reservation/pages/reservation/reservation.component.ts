@@ -482,26 +482,28 @@ export class ReservationComponent implements OnInit {
       acceptIcon: 'none',
       rejectIcon: 'none',
       accept: () => {
-        if (reservationId && product.type == FacilityType.PRODUCT) {
-          this.reservationProductsService
-            .remove(reservationId, product.id, product.quantity)
-            .subscribe();
-          this.reservationPaymentTypesService
-            .remove(reservationId, 1, product.total)
-            .subscribe({
-              next: () => {},
-            });
-        }
+        if (product.isBd) {
+          if (reservationId && product.type == FacilityType.PRODUCT) {
+            this.reservationProductsService
+              .remove(reservationId, product.id, product.quantity)
+              .subscribe();
+            this.reservationPaymentTypesService
+              .remove(reservationId, 1, product.total)
+              .subscribe({
+                next: () => {},
+              });
+          }
 
-        if (reservationId && product.type == FacilityType.SERVICE) {
-          this.reservationServicesService
-            .remove(reservationId, product.id, product.quantity)
-            .subscribe();
-          this.reservationPaymentTypesService
-            .remove(reservationId, 1, product.total)
-            .subscribe({
-              next: () => {},
-            });
+          if (reservationId && product.type == FacilityType.SERVICE) {
+            this.reservationServicesService
+              .remove(reservationId, product.id, product.quantity)
+              .subscribe();
+            this.reservationPaymentTypesService
+              .remove(reservationId, 1, product.total)
+              .subscribe({
+                next: () => {},
+              });
+          }
         }
 
         this.removeItem(product);
