@@ -90,6 +90,7 @@ export class ReservationComponent implements OnInit {
   notes: string | null = null;
   isBooking: boolean = false;
   conflict: boolean = false;
+  facilityPrice: number = 0;
 
   constructor(
     private cdr: ChangeDetectorRef,
@@ -176,6 +177,7 @@ export class ReservationComponent implements OnInit {
     this.brokenThings = null;
     this.previousBrokenThings = 0;
     this.notes = null;
+    this.facilityPrice = 0;
   }
 
   getRentedTime(startDate: string | null | undefined) {
@@ -382,8 +384,10 @@ export class ReservationComponent implements OnInit {
     if (isSelected) {
       if (this.selectedFacilities.length % 4 === 0) {
         this.total -= 10;
+        this.facilityPrice -= 10;
       } else {
         this.total -= facility.price;
+        this.facilityPrice -= facility.price;
       }
       this.selectedFacilities.splice(index, 1);
       this.pricePerAdditionalPerson = 0;
@@ -421,8 +425,10 @@ export class ReservationComponent implements OnInit {
     this.selectedFacilities.push(facility);
     if (this.selectedFacilities.length % 4 === 0) {
       this.total += 10;
+      this.facilityPrice += 10;
     } else {
       this.total += facility.price;
+      this.facilityPrice += facility.price;
     }
     this.pricePerAdditionalPerson = facility.pricePerAdditionalPerson;
     this.pricePerExtraHour = facility.pricePerExtraHour;
@@ -624,35 +630,52 @@ export class ReservationComponent implements OnInit {
     return this.selectedProducts.includes(product);
   }
 
+  getPreviousTotal(): number {
+    const priceAdditionalPerson =
+      (this.pricePerAdditionalPerson ?? 0) * (this.additionalPeople ?? 0);
+    const priceExtraHours =
+      (this.pricePerExtraHour ?? 0) * (this.extraHours ?? 0);
+    const brokenThings = this.brokenThings ?? 0;
+
+    return (
+      (this.facilityPrice ?? 0) +
+      Number(priceAdditionalPerson) +
+      Number(priceExtraHours) +
+      Number(brokenThings)
+    );
+  }
+
   getProducts(product: any) {
+    // Buscar si el producto ya existe en la lista
     const index = this.selectedProducts.findIndex(
       productInList =>
         productInList.id === product.id &&
-        productInList.type == product.type &&
-        productInList.isPaid == product.isPaid,
+        productInList.type === product.type &&
+        productInList.isPaid === product.isPaid &&
+        productInList.isBd === product.isBd,
     );
 
     if (index !== -1) {
-      if (product.isAdd) {
-        this.selectedProducts[index].quantity += 1;
-        this.selectedProducts[index].total += product.price;
-        this.total += product.price;
-      } else {
-        this.selectedProducts[index].quantity -= 1;
-        this.selectedProducts[index].total -= product.price;
-        this.total -= product.price;
-        if (this.selectedProducts[index].quantity == 0) {
-          this.selectedProducts.splice(index, 1);
-        }
+      const existingProduct = this.selectedProducts[index];
+      existingProduct.quantity = product.quantity;
+      existingProduct.total = existingProduct.quantity * existingProduct.price;
+
+      const previousTotal = this.getPreviousTotal();
+      this.total = previousTotal;
+      const productsToSum = this.selectedProducts.filter(p => !p.isPaid);
+      productsToSum.forEach((prod: any) => {
+        this.total += prod.total;
+      });
+
+      if (this.selectedProducts[index].quantity == 0) {
+        this.selectedProducts.splice(index, 1);
       }
-    } else {
-      ++product.quantity;
-      product.total = product.quantity * product.price;
+    } else if (product.quantity > 0 && !isNaN(product.quantity)) {
       product.selectedFacilities = this.selectedFacilities.map(facility => ({
         ...facility,
       }));
       this.selectedProducts.push(product);
-      this.total += product.price;
+      this.total += product.total;
     }
   }
 

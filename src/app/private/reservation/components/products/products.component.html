@@ -28,21 +28,20 @@
             </span>
           </div>
 
-          <div class="flex align-items-center justify-content-between gap-2">
-            <button
-              pButton
-              pRipple
-              icon="pi pi-minus"
-              class="p-button-warning"
-              (click)="subProduct(product)"
-              [disabled]="product.quantity < 1"></button>
+          <div class="flex align-items-center justify-content-end gap-2">
+            <p-inputNumber
+              [(ngModel)]="product.quantity"
+              (ngModelChange)="addProduct(product)"
+              [showButtons]="true"
+              buttonLayout="horizontal"
+              inputId="horizontal"
+              spinnerMode="horizontal"
+              decrementButtonClass="p-button-primary"
+              incrementButtonClass="p-button-primary"
+              incrementButtonIcon="pi pi-plus"
+              decrementButtonIcon="pi pi-minus"
+              [inputId]="'number-' + $index" />
             <span class="text-900 font-bold"> S/ {{ product.total }}</span>
-            <button
-              pButton
-              pRipple
-              icon="pi pi-plus"
-              class="p-button-warning"
-              (click)="addProduct(product)"></button>
           </div>
         </div>
         <div style="text-align: start !important">

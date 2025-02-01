@@ -7,6 +7,7 @@ import { TooltipModule } from 'primeng/tooltip';
 import { debounceTime, Observable, Subject } from 'rxjs';
 import { Product } from '../../models/product.model';
 import { ProductsService } from '../../services/products.service';
+import { InputNumberModule } from 'primeng/inputnumber';
 
 @Component({
   selector: 'app-products',
@@ -17,6 +18,7 @@ import { ProductsService } from '../../services/products.service';
     ButtonModule,
     TooltipModule,
     CheckboxModule,
+    InputNumberModule,
   ],
   templateUrl: './products.component.html',
   styleUrl: './products.component.scss',
@@ -26,6 +28,7 @@ export class ProductsComponent implements OnInit {
   @Output() productChanges = new EventEmitter<Product>();
   nameQuery: string = '';
   private nameSearchTermSubject = new Subject<string>();
+  productQuantity: number = 0;
 
   constructor(private readonly productsService: ProductsService) {}
   ngOnInit(): void {
@@ -53,7 +56,9 @@ export class ProductsComponent implements OnInit {
   }
 
   addProduct(product: Product) {
+    product.total = product.price * product.quantity;
     product.isAdd = true;
+    product.isBd = false;
     this.productChanges.emit(product);
   }
 
