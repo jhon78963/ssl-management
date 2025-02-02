@@ -525,7 +525,7 @@ export class ReservationComponent implements OnInit {
       if (!this.reservationId) {
         this.total -= product.price;
       } else {
-        this.clearSelections();
+        // this.clearSelections();
         this.cashService.getCashTotal().subscribe();
         this.cdr.detectChanges();
       }
@@ -706,6 +706,19 @@ export class ReservationComponent implements OnInit {
     brokenThings: number | null,
     notes: string | null,
   ) {
+    selectedProducts.forEach((product: Product) => {
+      if (product.isAdd) {
+        product.isSent = true;
+      } else {
+        if (product.isBd) {
+          if (product.isPaid) {
+            product.isSent = false;
+          } else {
+            product.isSent = true;
+          }
+        }
+      }
+    });
     console.log(selectedProducts);
     if (!customer) {
       customer = {

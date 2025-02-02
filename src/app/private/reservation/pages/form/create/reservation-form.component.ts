@@ -885,6 +885,7 @@ export class ReservationFormComponent implements OnInit {
             product.id,
             product.quantity,
             product.isPaid,
+            product.isPaidBd,
             product.isFree,
           )
           .subscribe();
@@ -911,6 +912,7 @@ export class ReservationFormComponent implements OnInit {
             service.id,
             service.quantity,
             service.isPaid,
+            service.isPaidBd,
             service.isFree,
           )
           .subscribe();

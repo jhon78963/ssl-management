@@ -15,5 +15,6 @@ export interface Product {
   isAdd: boolean;
   isChecked: boolean;
   isBd: boolean;
+  isSent: boolean;
   selectedFacilities: any[];
 }

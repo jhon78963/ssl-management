@@ -30,6 +30,7 @@ export class ReservationServicesService {
     serviceId: number,
     quantity: number,
     isPaid: boolean = false,
+    isPaidBd: boolean = false,
     isFree: boolean = false,
   ): Observable<void> {
     return this.apiService.patch(
@@ -37,6 +38,7 @@ export class ReservationServicesService {
       {
         quantity,
         isPaid,
+        isPaidBd,
         isFree,
       },
     );
