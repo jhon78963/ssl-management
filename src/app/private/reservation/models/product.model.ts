@@ -11,6 +11,7 @@ export interface Product {
   isPaid: boolean;
   isPaidBd: boolean;
   isFree: boolean;
+  isFreeBd: boolean;
   type: string;
   isAdd: boolean;
   isChecked: boolean;

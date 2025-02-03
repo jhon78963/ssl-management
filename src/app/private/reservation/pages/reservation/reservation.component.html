@@ -118,7 +118,11 @@
               <div class="col-12 md:col-12 flex justify-content-between">
                 <p
                   class="m-0 p-0 mr-4 flex"
-                  [ngClass]="product.isPaid ? 'paid-status' : 'unpaid-status'">
+                  [ngClass]="
+                    product.isPaid || product.isFree
+                      ? 'paid-status'
+                      : 'unpaid-status'
+                  ">
                   X{{ product.quantity }} {{ product.name }} - S/
                   {{ product.total }}
                 </p>
@@ -152,7 +156,9 @@
                     [(ngModel)]="product.isPaid"
                     [binary]="true"
                     [inputId]="'binary-' + $index"
-                    [disabled]="product.isBd && product.isPaidBd" />
+                    [disabled]="
+                      product.isBd && (product.isFreeBd || product.isPaidBd)
+                    " />
                   <p
                     class="m-0 p-0 mr-1"
                     [ngClass]="
@@ -166,7 +172,9 @@
                     (ngModelChange)="changeFreeProduct($event, product)"
                     [binary]="true"
                     [inputId]="'binary-' + $index"
-                    [disabled]="product.isBd && product.isPaidBd" />
+                    [disabled]="
+                      product.isBd && (product.isFreeBd || product.isPaidBd)
+                    " />
                   <button
                     pButton
                     pRipple

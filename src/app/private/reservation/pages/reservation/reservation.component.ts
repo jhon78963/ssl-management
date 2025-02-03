@@ -711,7 +711,7 @@ export class ReservationComponent implements OnInit {
         product.isSent = true;
       } else {
         if (product.isBd) {
-          if (product.isPaid) {
+          if (product.isPaidBd) {
             product.isSent = false;
           } else {
             product.isSent = true;
@@ -719,7 +719,6 @@ export class ReservationComponent implements OnInit {
         }
       }
     });
-    console.log(selectedProducts);
     if (!customer) {
       customer = {
         id: 1,

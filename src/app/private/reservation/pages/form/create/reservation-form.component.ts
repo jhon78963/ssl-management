@@ -878,7 +878,8 @@ export class ReservationFormComponent implements OnInit {
       });
     }
     if (paidProducts.length > 0) {
-      paidProducts.forEach((product: any) => {
+      const products = paidProducts.filter(p => p.isSent);
+      products.forEach((product: any) => {
         this.reservationProductsService
           .modify(
             reservationId,
@@ -905,7 +906,8 @@ export class ReservationFormComponent implements OnInit {
       });
     }
     if (paidServices.length > 0) {
-      paidServices.forEach((service: any) => {
+      const services = paidServices.filter(s => s.isSent);
+      services.forEach((service: any) => {
         this.reservationServicesService
           .modify(
             reservationId,
