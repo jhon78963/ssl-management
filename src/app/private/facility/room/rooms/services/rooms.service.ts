@@ -111,6 +111,18 @@ export class RoomsService {
     );
   }
 
+  changeLocker(
+    reservationId: number,
+    roomId: number,
+    newLockerId: number,
+    price: number,
+  ): Observable<void> {
+    return this.apiService.post(
+      `reservations/${reservationId}/rooms/${roomId}/new-lockers/${newLockerId}/price/${price}`,
+      {},
+    );
+  }
+
   private updateRooms(value: Room[]): void {
     this.rooms = value;
     this.rooms$.next(this.rooms);

@@ -8,6 +8,8 @@ import { LockersService } from '../../../facility/locker/services/lockers.servic
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ConfirmationService } from 'primeng/api';
 import { FacilitiesService } from '../../services/facilities.service';
+import { RoomsService } from '../../../facility/room/rooms/services/rooms.service';
+import { CRoom } from '../../../facility/room/rooms/models/rooms.model';
 
 @Component({
   selector: 'app-change-lockers',
@@ -23,10 +25,12 @@ export class ChangeLockersComponent implements OnInit {
     private readonly confirmationService: ConfirmationService,
     private readonly lockersService: LockersService,
     private readonly facilitiesService: FacilitiesService,
+    private readonly roomsService: RoomsService,
   ) {}
 
   ngOnInit(): void {
     this.getLockers();
+    this.getRooms();
   }
 
   getLockers() {
@@ -43,13 +47,12 @@ export class ChangeLockersComponent implements OnInit {
 
     this.confirmationService.confirm({
       message: `Deseas cambiar al locker N° ${newLocker.number}?`,
-      header: `Cambiar locker N° L${lockerId}`,
+      header: `Locker N° ${newLocker.number}`,
       icon: 'pi pi-info-circle',
       acceptButtonStyleClass: 'p-button-danger p-button-text',
       rejectButtonStyleClass: 'p-button-text p-button-text',
       acceptIcon: 'none',
       rejectIcon: 'none',
-
       accept: () => {
         if (newLocker && newLocker.id) {
           this.lockersService
@@ -81,6 +84,60 @@ export class ChangeLockersComponent implements OnInit {
     };
     if (lockerId) {
       this.facilitiesService.changeLockerStatus(lockerId, body).subscribe();
+    }
+  }
+
+  getRooms() {
+    this.roomsService.getRoomsAvailable().subscribe();
+  }
+
+  get rooms(): Observable<CRoom[]> {
+    return this.roomsService.getAvailableList();
+  }
+
+  changeRoom(newRoom: CRoom) {
+    const reservationId = this.dynamicDialogConfig.data.reservationId;
+    const lockerId = this.dynamicDialogConfig.data.lockerId;
+
+    this.confirmationService.confirm({
+      message: `Deseas cambiar a la habitación N° ${newRoom.number}?`,
+      header: `Habitación N° ${newRoom.number}`,
+      icon: 'pi pi-info-circle',
+      acceptButtonStyleClass: 'p-button-danger p-button-text',
+      rejectButtonStyleClass: 'p-button-text p-button-text',
+      acceptIcon: 'none',
+      rejectIcon: 'none',
+      accept: () => {
+        if (newRoom && newRoom.id) {
+          this.lockersService
+            .changeLocker(reservationId, lockerId, newRoom.id, newRoom.price)
+            .subscribe({
+              next: () => {
+                this.getRooms();
+                if (newRoom && newRoom.id) {
+                  this.updateLocker(lockerId, 'AVAILABLE');
+                  this.updateRoom(newRoom.id, 'IN_USE');
+                  this.dynamicDialogRef.close({
+                    success: true,
+                    oldLockerId: lockerId,
+                    newRoom: newRoom,
+                  });
+                }
+              },
+            });
+        }
+      },
+      reject: () => {},
+    });
+  }
+
+  updateRoom(roomId: number, status: string): void {
+    const body: any = {
+      id: roomId,
+      status,
+    };
+    if (roomId) {
+      this.facilitiesService.changeRoomStatus(roomId, body).subscribe();
     }
   }
 }

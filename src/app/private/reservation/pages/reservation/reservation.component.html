@@ -16,10 +16,10 @@
             pButton
             pRipple
             [label]="facility.number"
-            class="mb-1 mr-1 p-width p-button-rounded"></button>
-          <!-- (click)="
+            class="mb-1 mr-1 p-width p-button-rounded"
+            (click)="
               reservationId ? changeRoom(reservationId, facility.id) : null
-            " -->
+            "></button>
         }
       }
       <p-divider *ngIf="selectedFacilities.length > 0" />
@@ -127,7 +127,7 @@
                   {{ product.total }}
                 </p>
                 <div class="flex align-items-center">
-                  @for (
+                  <!-- @for (
                     facility of product.selectedFacilities;
                     track facility.number
                   ) {
@@ -143,7 +143,7 @@
                       [(ngModel)]="facility.isSelected"
                       [binary]="true"
                       [inputId]="'binary-' + $index + '-' + facility.number" />
-                  }
+                  } -->
                   <p
                     class="m-0 p-0 mr-1"
                     [ngClass]="
