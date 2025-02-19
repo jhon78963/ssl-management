@@ -55,14 +55,15 @@ export class LockersService {
     );
   }
 
-  changeLocker(
+  changeToRoom(
     reservationId: number,
     lockerId: number,
     newRoomId: number,
-    price: number,
+    newPrice: number,
+    oldPrice: number,
   ): Observable<void> {
     return this.apiService.post(
-      `reservations/${reservationId}/lockers/${lockerId}/new-rooms/${newRoomId}/price/${price}`,
+      `reservations/${reservationId}/lockers/${lockerId}/new-rooms/${newRoomId}/new-price/${newPrice}/old-price/${oldPrice}`,
       {},
     );
   }

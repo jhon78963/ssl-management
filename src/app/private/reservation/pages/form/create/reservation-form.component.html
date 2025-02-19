@@ -312,6 +312,14 @@
             [inputId]="'binary'"
             (ngModelChange)="finishReservation($event)" />
         }
+        @if (pending < 0) {
+          <button
+            pButton
+            pRipple
+            class="p-button-primary w-full lg:w-auto mr-1 flex-order-1 lg:flex-order-2"
+            label="Devolución"
+            icon="pi pi-fw pi-history"></button>
+        }
         <button
           pButton
           pRipple

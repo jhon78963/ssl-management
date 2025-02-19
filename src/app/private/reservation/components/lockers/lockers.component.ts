@@ -98,6 +98,7 @@ export class ChangeLockersComponent implements OnInit {
   changeRoom(newRoom: CRoom) {
     const reservationId = this.dynamicDialogConfig.data.reservationId;
     const lockerId = this.dynamicDialogConfig.data.lockerId;
+    const oldPrice = this.dynamicDialogConfig.data.price;
 
     this.confirmationService.confirm({
       message: `Deseas cambiar a la habitación N° ${newRoom.number}?`,
@@ -110,7 +111,13 @@ export class ChangeLockersComponent implements OnInit {
       accept: () => {
         if (newRoom && newRoom.id) {
           this.lockersService
-            .changeLocker(reservationId, lockerId, newRoom.id, newRoom.price)
+            .changeToRoom(
+              reservationId,
+              lockerId,
+              newRoom.id,
+              newRoom.price,
+              oldPrice,
+            )
             .subscribe({
               next: () => {
                 this.getRooms();
@@ -120,7 +127,7 @@ export class ChangeLockersComponent implements OnInit {
                   this.dynamicDialogRef.close({
                     success: true,
                     oldLockerId: lockerId,
-                    newRoom: newRoom,
+                    newLocker: newRoom,
                   });
                 }
               },

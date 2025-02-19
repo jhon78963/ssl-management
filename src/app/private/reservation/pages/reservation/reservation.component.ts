@@ -91,6 +91,7 @@ export class ReservationComponent implements OnInit {
   isBooking: boolean = false;
   conflict: boolean = false;
   facilityPrice: number = 0;
+  refund: number = 0;
 
   constructor(
     private cdr: ChangeDetectorRef,
@@ -556,12 +557,13 @@ export class ReservationComponent implements OnInit {
     }
   }
 
-  changeLocker(reservationId: number, lockerId: number) {
+  changeLocker(reservationId: number, lockerId: number, price: number) {
     const modal = this.dialogService.open(ChangeLockersComponent, {
       header: 'Cambiar Locker',
       data: {
         reservationId,
         lockerId,
+        price,
       },
     });
 
@@ -579,12 +581,13 @@ export class ReservationComponent implements OnInit {
     });
   }
 
-  changeRoom(reservationId: number, roomId: number) {
+  changeRoom(reservationId: number, roomId: number, price: number) {
     const modal = this.dialogService.open(ChangeRoomsComponent, {
       header: 'Cambiar Habitación',
       data: {
         reservationId,
         roomId,
+        price,
       },
     });
 

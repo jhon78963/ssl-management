@@ -9,7 +9,9 @@
             [label]="facility.number"
             class="mb-1 mr-1 p-width p-button-rounded"
             (click)="
-              reservationId ? changeLocker(reservationId, facility.id) : null
+              reservationId
+                ? changeLocker(reservationId, facility.id, facility.price)
+                : null
             "></button>
         } @else {
           <button
@@ -18,7 +20,9 @@
             [label]="facility.number"
             class="mb-1 mr-1 p-width p-button-rounded"
             (click)="
-              reservationId ? changeRoom(reservationId, facility.id) : null
+              reservationId
+                ? changeRoom(reservationId, facility.id, facility.price)
+                : null
             "></button>
         }
       }
@@ -259,6 +263,22 @@
             [pKeyFilter]="'num'"
             [disabled]="reservationId === undefined" />
         </p>
+      }
+      @if (reservationId) {
+        <div class="flex align-items-center justify-content-center mt-3">
+          <input
+            type="text"
+            pInputText
+            [(ngModel)]="refund"
+            class="w-4 mr-1 text-center" />
+          <button
+            pButton
+            pRipple
+            class="p-button-primary w-full lg:w-auto flex-order-1 lg:flex-order-2"
+            label="Devolución"
+            icon="pi pi-fw pi-history"
+            [disabled]="refund <= 0"></button>
+        </div>
       }
     </div>
   </div>
