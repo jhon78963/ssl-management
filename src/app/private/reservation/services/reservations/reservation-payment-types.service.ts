@@ -36,4 +36,11 @@ export class ReservationPaymentTypesService {
       `reservations/${reservationId}/payment-types/${paymentTypeId}/payment/${payment}`,
     );
   }
+
+  refund(reservationId: number, refundedAmount: number): Observable<void> {
+    return this.apiService.post(
+      `reservations/${reservationId}/refunded-amount/${refundedAmount}`,
+      {},
+    );
+  }
 }

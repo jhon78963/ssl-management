@@ -92,6 +92,7 @@ export class ReservationComponent implements OnInit {
   conflict: boolean = false;
   facilityPrice: number = 0;
   refund: number = 0;
+  previousRefund: number = 0;
 
   constructor(
     private cdr: ChangeDetectorRef,
@@ -177,6 +178,8 @@ export class ReservationComponent implements OnInit {
     this.rentedTime = undefined;
     this.brokenThings = null;
     this.previousBrokenThings = 0;
+    this.refund = 0;
+    this.previousRefund = 0;
     this.notes = null;
     this.facilityPrice = 0;
   }
@@ -300,22 +303,6 @@ export class ReservationComponent implements OnInit {
         });
       },
     });
-    // const isSelected = this.isSelected(facility);
-
-    // if (!isSelected) {
-    //   if (facility.type == FacilityType.ROOM) {
-    //     const startDate = currentDateTime(this.datePipe);
-    //     const hasConflict = await this.checkScheduleAndAct(
-    //       facility.id,
-    //       startDate,
-    //     );
-
-    //     if (!hasConflict) {
-    //       this.pushFacility(facility);
-    //       this.cdr.detectChanges();
-    //     }
-    //   }
-    // }
   }
 
   showFacility(facility: any) {
@@ -450,7 +437,7 @@ export class ReservationComponent implements OnInit {
             );
           }
           this.cdr.detectChanges();
-          resolve(resp.conflict); // Resolver directamente si hay conflicto o no
+          resolve(resp.conflict);
         },
       });
     });
@@ -840,6 +827,42 @@ export class ReservationComponent implements OnInit {
     const currentBrokenThings = Number(this.brokenThings) || 0;
     this.total += currentBrokenThings;
     this.previousBrokenThings = currentBrokenThings;
+  }
+
+  refundedTotal() {
+    if (this.previousRefund) {
+      this.total -= this.previousRefund;
+    }
+
+    const currentRefund = Number(this.refund) || 0;
+    this.total += currentRefund;
+    this.previousRefund = currentRefund;
+  }
+
+  refunded() {
+    console.log(this.refund);
+    this.confirmationService.confirm({
+      message: `Deseas hacer una devolución de S/ ${this.refund}?`,
+      header: `Devolución de dinero`,
+      icon: 'pi pi-info-circle',
+      acceptButtonStyleClass: 'p-button-danger p-button-text',
+      rejectButtonStyleClass: 'p-button-text p-button-text',
+      acceptIcon: 'none',
+      rejectIcon: 'none',
+      accept: () => {
+        if (this.reservationId) {
+          this.reservationPaymentTypesService
+            .refund(this.reservationId, this.refund)
+            .subscribe({
+              next: () => {
+                this.clearReservation();
+              },
+              error: () => {},
+            });
+        }
+      },
+      reject: () => {},
+    });
   }
 
   clearReservation() {

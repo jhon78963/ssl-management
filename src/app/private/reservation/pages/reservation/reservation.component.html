@@ -270,6 +270,7 @@
             type="text"
             pInputText
             [(ngModel)]="refund"
+            (ngModelChange)="refundedTotal()"
             class="w-4 mr-1 text-center" />
           <button
             pButton
@@ -277,6 +278,7 @@
             class="p-button-primary w-full lg:w-auto flex-order-1 lg:flex-order-2"
             label="Devolución"
             icon="pi pi-fw pi-history"
+            (click)="refunded()"
             [disabled]="refund <= 0"></button>
         </div>
       }
