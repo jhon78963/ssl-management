@@ -338,8 +338,8 @@ export class ReservationComponent implements OnInit {
 
         this.total = reservation.total;
         this.total = reservation.totalLeft;
-        if (rented.hours > 0) {
-          this.extraHours = rented.hours;
+        if (rented.hours - 4 > 0) {
+          this.extraHours = rented.hours - 4;
           this.total +=
             (reservation.facilities[0].pricePerExtraHour ?? 0) *
             this.extraHours;
