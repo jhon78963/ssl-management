@@ -354,6 +354,7 @@ export class ReservationComponent implements OnInit {
         this.isPaid = true;
         this.selectedPaymentTypes = reservation.paymentTypes;
         this.isBooking = false;
+        this.notes = reservation.notes;
         this.cdr.detectChanges();
       },
     });

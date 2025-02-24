@@ -97,6 +97,7 @@ export class ReservationFormComponent implements OnInit {
   card: number = 0;
   advance: number = 0;
   pending: number = 0;
+  newPending: number = 0;
 
   isBooking: boolean = false;
   isBookingView: boolean = false;
@@ -268,6 +269,15 @@ export class ReservationFormComponent implements OnInit {
       (Number(this.brokenThings) ?? 0);
   }
 
+  getTotalWithoutProducts() {
+    const total =
+      this.lockerPrice +
+      (this.pricePerAdditionalPerson ?? 0) +
+      (this.pricePerExtraHour ?? 0) +
+      (Number(this.brokenThings) ?? 0);
+    this.newPending = total - this.pending;
+  }
+
   calculateTotalPaid(): void {
     const calculateSum = (
       items: any[],
@@ -363,6 +373,7 @@ export class ReservationFormComponent implements OnInit {
     // this.validatePaid();
     this.getStatus();
     this.getDate();
+    this.getTotalWithoutProducts();
   }
 
   plusTotalPayment(event: any, price: number) {
@@ -1129,6 +1140,7 @@ export class ReservationFormComponent implements OnInit {
     this.card = 0;
     this.advance = 0;
     this.pending = 0;
+    this.newPending = 0;
     this.paymentTypes = [];
   }
 }
