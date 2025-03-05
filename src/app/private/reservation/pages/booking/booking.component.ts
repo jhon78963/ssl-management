@@ -107,6 +107,15 @@ export class BookingComponent implements OnInit {
       tooltipPosition: 'bottom',
       click: (rowData: Booking) => this.bookingBookButton(rowData),
     },
+    {
+      type: 'button',
+      size: 'small',
+      icon: 'pi pi-times',
+      outlined: true,
+      pTooltip: 'Cancelar',
+      tooltipPosition: 'bottom',
+      click: (rowData: Booking) => this.cancelButton(rowData),
+    },
   ];
 
   constructor(
@@ -286,6 +295,16 @@ export class BookingComponent implements OnInit {
 
   bookingEditButton(id: number | undefined) {
     console.log(id);
+  }
+
+  cancelButton(booking: any) {
+    this.bookingsService
+      .changeStatus(booking.id, 'CANCELLED', booking.total)
+      .subscribe({
+        next: () => {
+          this.getOrupdateBookings();
+        },
+      });
   }
 
   private updatePage(value: number): void {

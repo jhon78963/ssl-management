@@ -13,7 +13,9 @@
               name="category"
               [value]="payment"
               [(ngModel)]="selectedPaymentType"
-              [disabled]="status === 'COMPLETED' || isList" />
+              [disabled]="
+                status === 'COMPLETED' || status === 'CANCELLED' || isList
+              " />
             <label [for]="payment.id" class="ml-2">
               {{ payment.description }}
             </label>
@@ -244,7 +246,9 @@
               [(ngModel)]="paid"
               [min]="0"
               [max]="reservationId || bookingId ? pending : total"
-              [disabled]="status === 'COMPLETED' || isList" />
+              [disabled]="
+                status === 'COMPLETED' || status === 'CANCELLED' || isList
+              " />
           </span>
         </div>
         <div
@@ -257,7 +261,9 @@
               [(ngModel)]="paid"
               [min]="0"
               [max]="reservationId || bookingId ? pending : total"
-              [disabled]="status === 'COMPLETED' || isList" />
+              [disabled]="
+                status === 'COMPLETED' || status === 'CANCELLED' || isList
+              " />
           </span>
         </div>
         <div
@@ -270,7 +276,12 @@
               [(ngModel)]="paid"
               [min]="0"
               [max]="reservationId || bookingId ? pending : total"
-              [disabled]="status === 'COMPLETED' || isList" />
+              [disabled]="
+                status === 'COMPLETED' ||
+                status === 'CANCELLED' ||
+                status === 'CANCELLED' ||
+                isList
+              " />
           </span>
         </div>
         <div
@@ -282,7 +293,9 @@
               inputId="integeronly"
               [(ngModel)]="cash"
               (ngModelChange)="calculateTotalCash($event)"
-              [disabled]="status === 'COMPLETED' || isList" />
+              [disabled]="
+                status === 'COMPLETED' || status === 'CANCELLED' || isList
+              " />
           </span>
         </div>
         <div
@@ -295,14 +308,16 @@
               inputId="integeronly"
               [(ngModel)]="card"
               (ngModelChange)="calculateTotalCard($event)"
-              [disabled]="status === 'COMPLETED' || isList" />
+              [disabled]="
+                status === 'COMPLETED' || status === 'CANCELLED' || isList
+              " />
           </span>
         </div>
       </div>
     </div>
     <div
       class="flex flex-column lg:flex-row justify-content-center align-items-center lg:justify-content-end">
-      @if (status !== 'COMPLETED' && !isList) {
+      @if (status !== 'COMPLETED' && status !== 'CANCELLED' && !isList) {
         @if (reservationId > 0) {
           <p class="m-0 p-0 mr-1">Finalizar</p>
           <p-checkbox
