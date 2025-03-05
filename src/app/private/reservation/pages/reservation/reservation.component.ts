@@ -355,6 +355,7 @@ export class ReservationComponent implements OnInit {
         this.selectedPaymentTypes = reservation.paymentTypes;
         this.isBooking = false;
         this.notes = reservation.notes;
+        this.facilityPrice = reservation.facilitiesImport;
         this.cdr.detectChanges();
       },
     });
@@ -510,11 +511,9 @@ export class ReservationComponent implements OnInit {
     );
 
     if (index != -1) {
+      this.total -= product.total;
       this.selectedProducts.splice(index, 1);
-      if (!this.reservationId) {
-        this.total -= product.price;
-      } else {
-        // this.clearSelections();
+      if (this.reservationId) {
         this.cashService.getCashTotal().subscribe();
         this.cdr.detectChanges();
       }
@@ -638,42 +637,7 @@ export class ReservationComponent implements OnInit {
     );
   }
 
-  // getProducts(product: any) {
-  //   console.log(product);
-  //   const index = this.selectedProducts.findIndex(
-  //     productInList =>
-  //       productInList.id === product.id &&
-  //       productInList.type === product.type &&
-  //       productInList.isPaid === product.isPaid &&
-  //       productInList.isBd === product.isBd,
-  //   );
-
-  //   if (index !== -1) {
-  //     const existingProduct = this.selectedProducts[index];
-  //     existingProduct.quantity = product.quantity;
-  //     existingProduct.total = existingProduct.quantity * existingProduct.price;
-
-  //     const previousTotal = this.getPreviousTotal();
-  //     this.total = previousTotal;
-  //     const productsToSum = this.selectedProducts.filter(p => !p.isPaid);
-  //     productsToSum.forEach((prod: any) => {
-  //       this.total += prod.total;
-  //     });
-
-  //     if (this.selectedProducts[index].quantity == 0) {
-  //       this.selectedProducts.splice(index, 1);
-  //     }
-  //   } else if (product.quantity > 0 && !isNaN(product.quantity)) {
-  //     product.selectedFacilities = this.selectedFacilities.map(facility => ({
-  //       ...facility,
-  //     }));
-  //     this.selectedProducts.push(product);
-  //     this.total += product.total;
-  //   }
-  // }
-
   getProducts(product: any) {
-    console.log(product);
     const index = this.selectedProducts.findIndex(
       productInList =>
         productInList.id === product.id &&
@@ -902,7 +866,6 @@ export class ReservationComponent implements OnInit {
   }
 
   refunded() {
-    console.log(this.refund);
     this.confirmationService.confirm({
       message: `Deseas hacer una devolución de S/ ${this.refund}?`,
       header: `Devolución de dinero`,
