@@ -638,8 +638,42 @@ export class ReservationComponent implements OnInit {
     );
   }
 
+  // getProducts(product: any) {
+  //   console.log(product);
+  //   const index = this.selectedProducts.findIndex(
+  //     productInList =>
+  //       productInList.id === product.id &&
+  //       productInList.type === product.type &&
+  //       productInList.isPaid === product.isPaid &&
+  //       productInList.isBd === product.isBd,
+  //   );
+
+  //   if (index !== -1) {
+  //     const existingProduct = this.selectedProducts[index];
+  //     existingProduct.quantity = product.quantity;
+  //     existingProduct.total = existingProduct.quantity * existingProduct.price;
+
+  //     const previousTotal = this.getPreviousTotal();
+  //     this.total = previousTotal;
+  //     const productsToSum = this.selectedProducts.filter(p => !p.isPaid);
+  //     productsToSum.forEach((prod: any) => {
+  //       this.total += prod.total;
+  //     });
+
+  //     if (this.selectedProducts[index].quantity == 0) {
+  //       this.selectedProducts.splice(index, 1);
+  //     }
+  //   } else if (product.quantity > 0 && !isNaN(product.quantity)) {
+  //     product.selectedFacilities = this.selectedFacilities.map(facility => ({
+  //       ...facility,
+  //     }));
+  //     this.selectedProducts.push(product);
+  //     this.total += product.total;
+  //   }
+  // }
+
   getProducts(product: any) {
-    // Buscar si el producto ya existe en la lista
+    console.log(product);
     const index = this.selectedProducts.findIndex(
       productInList =>
         productInList.id === product.id &&
@@ -651,7 +685,16 @@ export class ReservationComponent implements OnInit {
     if (index !== -1) {
       const existingProduct = this.selectedProducts[index];
       existingProduct.quantity = product.quantity;
-      existingProduct.total = existingProduct.quantity * existingProduct.price;
+
+      if (existingProduct.productTypeId === 5) {
+        existingProduct.total = this.calculatePromotionPrice(
+          existingProduct.quantity,
+          existingProduct.price,
+        );
+      } else {
+        existingProduct.total =
+          existingProduct.quantity * existingProduct.price;
+      }
 
       const previousTotal = this.getPreviousTotal();
       this.total = previousTotal;
@@ -660,16 +703,34 @@ export class ReservationComponent implements OnInit {
         this.total += prod.total;
       });
 
-      if (this.selectedProducts[index].quantity == 0) {
+      if (existingProduct.quantity == 0) {
         this.selectedProducts.splice(index, 1);
       }
     } else if (product.quantity > 0 && !isNaN(product.quantity)) {
       product.selectedFacilities = this.selectedFacilities.map(facility => ({
         ...facility,
       }));
+
+      if (product.productTypeId === 5) {
+        product.total = this.calculatePromotionPrice(
+          product.quantity,
+          product.price,
+        );
+      } else {
+        product.total = product.quantity * product.price;
+      }
+
       this.selectedProducts.push(product);
       this.total += product.total;
     }
+  }
+
+  calculatePromotionPrice(quantity: number, price: number): number {
+    const promoPrice = 20;
+    const normalPrice = price;
+    const pairs = Math.floor(quantity / 2);
+    const remainder = quantity % 2;
+    return pairs * promoPrice + remainder * normalPrice;
   }
 
   getCustomer(customer: Customer | null) {
