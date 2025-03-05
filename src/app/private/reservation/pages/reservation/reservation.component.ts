@@ -650,15 +650,21 @@ export class ReservationComponent implements OnInit {
         productInList.isBd === product.isBd,
     );
 
+    const now = new Date();
+    const hour = now.getHours();
+    console.log(hour);
+
     if (index !== -1) {
       const existingProduct = this.selectedProducts[index];
       existingProduct.quantity = product.quantity;
 
       if (existingProduct.productTypeId === 5) {
-        existingProduct.total = this.calculatePromotionPrice(
-          existingProduct.quantity,
-          existingProduct.price,
-        );
+        if (hour >= 19 && hour < 21) {
+          existingProduct.total = this.calculatePromotionPrice(
+            existingProduct.quantity,
+            existingProduct.price,
+          );
+        }
       } else {
         existingProduct.total =
           existingProduct.quantity * existingProduct.price;
@@ -680,10 +686,12 @@ export class ReservationComponent implements OnInit {
       }));
 
       if (product.productTypeId === 5) {
-        product.total = this.calculatePromotionPrice(
-          product.quantity,
-          product.price,
-        );
+        if (hour >= 19 && hour < 21) {
+          product.total = this.calculatePromotionPrice(
+            product.quantity,
+            product.price,
+          );
+        }
       } else {
         product.total = product.quantity * product.price;
       }
