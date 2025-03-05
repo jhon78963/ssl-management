@@ -462,6 +462,7 @@ export class ReservationComponent implements OnInit {
     reservationId: number | null | undefined,
     event: Event,
   ): void {
+    console.log(product);
     this.confirmationService.confirm({
       target: event.target as EventTarget,
       message: this.message(product),
@@ -477,8 +478,9 @@ export class ReservationComponent implements OnInit {
             this.reservationProductsService
               .remove(reservationId, product.id, product.quantity)
               .subscribe();
+            const createCash = product.isPaid;
             this.reservationPaymentTypesService
-              .remove(reservationId, 1, product.total)
+              .remove(reservationId, 1, product.total, createCash)
               .subscribe({
                 next: () => {},
               });
@@ -511,7 +513,9 @@ export class ReservationComponent implements OnInit {
     );
 
     if (index != -1) {
-      this.total -= product.total;
+      if (this.total > this.facilityPrice) {
+        this.total -= product.total;
+      }
       this.selectedProducts.splice(index, 1);
       if (this.reservationId) {
         this.cashService.getCashTotal().subscribe();

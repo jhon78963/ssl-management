@@ -31,9 +31,10 @@ export class ReservationPaymentTypesService {
     reservationId: number,
     paymentTypeId: number,
     payment: number,
+    cash: boolean = true,
   ): Observable<void> {
     return this.apiService.delete(
-      `reservations/${reservationId}/payment-types/${paymentTypeId}/payment/${payment}`,
+      `reservations/${reservationId}/payment-types/${paymentTypeId}/payment/${payment}/create-cash/${cash}`,
     );
   }
 
