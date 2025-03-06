@@ -565,7 +565,7 @@ export class ReservationComponent implements OnInit {
             locker => locker.id === response.oldLockerId,
           );
           this.selectedFacilities.splice(index, 1);
-          this.selectedFacilities.push(response.newLocker);
+          this.selectedFacilities.push(response.newLocker.id);
           this.getFacilities();
         }
       },

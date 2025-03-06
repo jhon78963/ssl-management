@@ -373,7 +373,7 @@ export class ReservationFormComponent implements OnInit {
     // this.validatePaid();
     this.getStatus();
     this.getDate();
-    this.getTotalWithoutProducts();
+    // this.getTotalWithoutProducts();
   }
 
   plusTotalPayment(event: any, price: number) {
