@@ -462,7 +462,6 @@ export class ReservationComponent implements OnInit {
     reservationId: number | null | undefined,
     event: Event,
   ): void {
-    console.log(product);
     this.confirmationService.confirm({
       target: event.target as EventTarget,
       message: this.message(product),
@@ -567,7 +566,6 @@ export class ReservationComponent implements OnInit {
           );
           this.selectedFacilities.splice(index, 1);
           this.selectedFacilities.push(response.newLocker);
-          this.getFacilities();
         }
       },
     });
@@ -592,7 +590,6 @@ export class ReservationComponent implements OnInit {
           );
           this.selectedFacilities.splice(index, 1);
           this.selectedFacilities.push(response.newRoom);
-          this.getFacilities();
         }
       },
     });
@@ -654,7 +651,6 @@ export class ReservationComponent implements OnInit {
 
     const now = new Date();
     const hour = now.getHours();
-    console.log(hour);
 
     if (index !== -1) {
       const existingProduct = this.selectedProducts[index];

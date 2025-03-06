@@ -1,6 +1,12 @@
 import { Injectable } from '@angular/core';
 import { Facility, FacilityCount } from '../models/facility.model';
-import { BehaviorSubject, debounceTime, map, Observable } from 'rxjs';
+import {
+  BehaviorSubject,
+  debounceTime,
+  map,
+  Observable,
+  switchMap,
+} from 'rxjs';
 import { ApiService } from '../../../services/api.service';
 import { StatusLocker } from '../../facility/locker/models/locker.model';
 
@@ -36,11 +42,15 @@ export class FacilitiesService {
   }
 
   changeLockerStatus(id: number, data: StatusLocker) {
-    return this.apiService.patch(`lockers/change-status/${id}`, data);
+    return this.apiService
+      .patch(`lockers/change-status/${id}`, data)
+      .pipe(switchMap(() => this.callGetList()));
   }
 
   changeRoomStatus(id: number, data: StatusLocker) {
-    return this.apiService.patch(`rooms/change-status/${id}`, data);
+    return this.apiService
+      .patch(`rooms/change-status/${id}`, data)
+      .pipe(switchMap(() => this.callGetList()));
   }
 
   countFacilities(): Observable<void> {
