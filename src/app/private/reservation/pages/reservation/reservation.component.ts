@@ -560,12 +560,13 @@ export class ReservationComponent implements OnInit {
 
     modal.onClose.subscribe({
       next: (response: any) => {
+        console.log(response);
         if (response && response.success) {
           const index = this.selectedFacilities.findIndex(
             locker => locker.id === response.oldLockerId,
           );
           this.selectedFacilities.splice(index, 1);
-          this.selectedFacilities.push(response.newLocker.id);
+          this.selectedFacilities.push(response.newLocker);
           this.getFacilities();
         }
       },
@@ -584,6 +585,7 @@ export class ReservationComponent implements OnInit {
 
     modal.onClose.subscribe({
       next: (response: any) => {
+        console.log(response);
         if (response && response.success) {
           const index = this.selectedFacilities.findIndex(
             room => room.id === response.oldRoomId,
